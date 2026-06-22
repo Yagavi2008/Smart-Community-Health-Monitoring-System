@@ -1,0 +1,2207 @@
+
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>HealthPulse — Smart Community Health Monitoring System</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+/* ===== DESIGN TOKENS ===== */
+:root {
+  --teal-900: #0d3b38;
+  --teal-700: #0f5c57;
+  --teal-500: #13827a;
+  --teal-400: #17a89e;
+  --teal-300: #2ec8bd;
+  --teal-100: #d0f4f2;
+  --teal-50:  #eafbfa;
+  --ocean-600: #1a6fa8;
+  --ocean-400: #2492d4;
+  --ocean-200: #a8d8f3;
+  --mint-400: #34d399;
+  --mint-200: #a7f3d0;
+  --amber-400: #fbbf24;
+  --rose-500: #f43f5e;
+  --rose-100: #ffe4e6;
+  --purple-500: #8b5cf6;
+  --purple-100: #ede9fe;
+  --slate-900: #0f172a;
+  --slate-700: #334155;
+  --slate-500: #64748b;
+  --slate-300: #cbd5e1;
+  --slate-100: #f1f5f9;
+  --slate-50:  #f8fafc;
+  --white: #ffffff;
+
+  --sidebar-w: 260px;
+  --topbar-h: 64px;
+  --radius-lg: 16px;
+  --radius-md: 10px;
+  --radius-sm: 6px;
+  --shadow-card: 0 2px 12px rgba(15,92,87,.08), 0 1px 3px rgba(0,0,0,.04);
+  --shadow-lift: 0 8px 32px rgba(15,92,87,.14);
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --transition: 0.22s cubic-bezier(.4,0,.2,1);
+}
+[data-theme="dark"] {
+  --slate-50: #0f172a;
+  --slate-100: #1e293b;
+  --slate-300: #334155;
+  --slate-500: #94a3b8;
+  --slate-700: #cbd5e1;
+  --slate-900: #f1f5f9;
+  --white: #1e293b;
+  --shadow-card: 0 2px 12px rgba(0,0,0,.3);
+}
+
+/* ===== RESET & BASE ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font-body);
+  background: var(--slate-50);
+  color: var(--slate-900);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+a { text-decoration: none; color: inherit; }
+button { cursor: pointer; border: none; background: none; }
+input, select, textarea { font-family: var(--font-body); }
+
+/* ===== PUBLIC PAGES ===== */
+.public-page { display: none; }
+.public-page.active { display: block; }
+
+/* ===== AUTH OVERLAY ===== */
+#authOverlay {
+  position: fixed; inset: 0; z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--teal-900) 0%, #0a2a45 60%, #0d1b2a 100%);
+  overflow-y: auto;
+}
+#authOverlay.hidden { display: none; }
+
+.auth-brand {
+  text-align: center; margin-bottom: 28px;
+}
+.auth-brand .logo-pulse {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: var(--font-display); font-size: 1.7rem; font-weight: 700;
+  color: var(--white);
+}
+.auth-brand .logo-icon {
+  width: 44px; height: 44px; border-radius: 12px;
+  background: linear-gradient(135deg, var(--teal-400), var(--ocean-400));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; color: white;
+  box-shadow: 0 4px 14px rgba(19,130,122,.5);
+}
+.auth-brand p { color: rgba(255,255,255,.55); font-size: .85rem; margin-top: 6px; }
+
+.auth-box {
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.1);
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
+  padding: 40px;
+  width: 100%; max-width: 440px;
+  box-shadow: 0 24px 80px rgba(0,0,0,.4);
+}
+.auth-tabs { display: flex; gap: 4px; background: rgba(255,255,255,.06); border-radius: 10px; padding: 4px; margin-bottom: 28px; }
+.auth-tab {
+  flex: 1; padding: 9px; border-radius: 8px; font-size: .88rem; font-weight: 500;
+  color: rgba(255,255,255,.5); transition: var(--transition);
+}
+.auth-tab.active { background: rgba(255,255,255,.14); color: white; }
+.auth-form { display: none; }
+.auth-form.active { display: block; }
+.auth-label { color: rgba(255,255,255,.7); font-size: .82rem; font-weight: 500; margin-bottom: 6px; display: block; }
+.auth-input {
+  width: 100%; padding: 11px 14px; border-radius: 9px;
+  background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12);
+  color: white; font-size: .9rem; transition: var(--transition); margin-bottom: 14px;
+}
+.auth-input::placeholder { color: rgba(255,255,255,.3); }
+.auth-input:focus { outline: none; border-color: var(--teal-400); background: rgba(255,255,255,.12); }
+.auth-select {
+  width: 100%; padding: 11px 14px; border-radius: 9px;
+  background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12);
+  color: white; font-size: .9rem; margin-bottom: 14px;
+}
+.auth-select option { background: #1a3a36; color: white; }
+.btn-auth {
+  width: 100%; padding: 13px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--teal-400), var(--ocean-400));
+  color: white; font-weight: 600; font-size: .95rem;
+  box-shadow: 0 4px 18px rgba(19,130,122,.4);
+  transition: var(--transition); margin-top: 6px;
+}
+.btn-auth:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(19,130,122,.5); }
+.auth-divider { text-align: center; color: rgba(255,255,255,.3); font-size: .8rem; margin: 16px 0; }
+.role-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.role-chip {
+  padding: 6px 14px; border-radius: 50px; font-size: .8rem; font-weight: 500;
+  border: 1px solid rgba(255,255,255,.15); color: rgba(255,255,255,.6);
+  transition: var(--transition);
+}
+.role-chip.selected, .role-chip:hover {
+  border-color: var(--teal-400); color: var(--teal-400);
+  background: rgba(46,200,189,.08);
+}
+
+/* ===== APP SHELL ===== */
+#appShell { display: none; min-height: 100vh; }
+#appShell.active { display: flex; }
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+  width: var(--sidebar-w); min-height: 100vh;
+  background: var(--teal-900);
+  display: flex; flex-direction: column;
+  position: fixed; left: 0; top: 0; z-index: 100;
+  transition: transform var(--transition);
+  overflow: hidden;
+}
+.sidebar-header {
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+.sidebar-logo {
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; color: white;
+}
+.sidebar-logo-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--teal-400), var(--ocean-400));
+  display: flex; align-items: center; justify-content: center;
+  font-size: .95rem; color: white; flex-shrink: 0;
+}
+.sidebar-user {
+  padding: 14px 20px;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  display: flex; align-items: center; gap: 10px;
+}
+.sidebar-avatar {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--teal-400), var(--ocean-400));
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-weight: 600; font-size: .9rem; flex-shrink: 0;
+}
+.sidebar-user-info .user-name { color: white; font-size: .88rem; font-weight: 600; }
+.sidebar-user-info .user-role {
+  font-size: .72rem; color: var(--teal-300); text-transform: uppercase;
+  letter-spacing: .06em; font-weight: 500;
+}
+.sidebar-nav { flex: 1; padding: 10px 12px; overflow-y: auto; }
+.sidebar-nav::-webkit-scrollbar { width: 3px; }
+.sidebar-nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 4px; }
+.nav-group-label {
+  font-size: .68rem; text-transform: uppercase; letter-spacing: .1em;
+  color: rgba(255,255,255,.3); font-weight: 600; padding: 14px 8px 6px;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: 9px;
+  color: rgba(255,255,255,.55); font-size: .87rem; font-weight: 500;
+  transition: var(--transition); cursor: pointer; margin-bottom: 2px;
+  position: relative;
+}
+.nav-item:hover { background: rgba(255,255,255,.07); color: rgba(255,255,255,.85); }
+.nav-item.active {
+  background: linear-gradient(135deg, rgba(46,200,189,.18), rgba(36,146,212,.12));
+  color: var(--teal-300);
+}
+.nav-item.active::before {
+  content: ''; position: absolute; left: 0; top: 20%; bottom: 20%;
+  width: 3px; border-radius: 0 3px 3px 0; background: var(--teal-300);
+}
+.nav-item .nav-icon { width: 18px; text-align: center; flex-shrink: 0; }
+.nav-badge {
+  margin-left: auto; background: var(--rose-500); color: white;
+  font-size: .65rem; font-weight: 700; padding: 2px 6px; border-radius: 50px;
+}
+.sidebar-footer {
+  padding: 14px 20px; border-top: 1px solid rgba(255,255,255,.06);
+}
+.btn-logout {
+  width: 100%; padding: 9px; border-radius: 9px;
+  color: rgba(255,255,255,.5); font-size: .85rem; font-weight: 500;
+  display: flex; align-items: center; gap: 8px; justify-content: center;
+  transition: var(--transition);
+}
+.btn-logout:hover { background: rgba(244,63,94,.12); color: var(--rose-500); }
+
+/* ===== TOPBAR ===== */
+.topbar {
+  height: var(--topbar-h); background: var(--white);
+  border-bottom: 1px solid var(--slate-300);
+  display: flex; align-items: center; gap: 16px;
+  padding: 0 24px; position: sticky; top: 0; z-index: 50;
+  box-shadow: 0 1px 4px rgba(0,0,0,.05);
+}
+.topbar-title { font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; color: var(--slate-900); flex: 1; }
+.topbar-search {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--slate-100); border-radius: 9px; padding: 8px 14px;
+  border: 1px solid var(--slate-300); transition: var(--transition);
+}
+.topbar-search:focus-within { border-color: var(--teal-400); background: var(--white); }
+.topbar-search input {
+  background: none; border: none; outline: none; color: var(--slate-900);
+  font-size: .87rem; width: 200px;
+}
+.topbar-search i { color: var(--slate-500); font-size: .85rem; }
+.topbar-actions { display: flex; align-items: center; gap: 8px; }
+.topbar-btn {
+  width: 38px; height: 38px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--slate-500); transition: var(--transition); position: relative;
+  background: var(--slate-100);
+}
+.topbar-btn:hover { background: var(--teal-50); color: var(--teal-500); }
+.topbar-badge {
+  position: absolute; top: 6px; right: 6px;
+  width: 8px; height: 8px; border-radius: 50%; background: var(--rose-500);
+  border: 2px solid var(--white);
+}
+.dark-toggle i { font-size: .9rem; }
+
+/* ===== MAIN CONTENT ===== */
+.main-content {
+  margin-left: var(--sidebar-w);
+  display: flex; flex-direction: column; min-height: 100vh; flex: 1;
+}
+.page-content { padding: 24px; flex: 1; display: none; }
+.page-content.active { display: block; }
+
+/* ===== CARDS ===== */
+.card {
+  background: var(--white); border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card); border: 1px solid var(--slate-100);
+  overflow: hidden;
+}
+.card-header {
+  padding: 18px 20px 0; display: flex; align-items: center; justify-content: space-between;
+}
+.card-title { font-family: var(--font-display); font-weight: 600; font-size: .95rem; color: var(--slate-900); }
+.card-body { padding: 20px; }
+.card-body-sm { padding: 14px 20px; }
+
+/* ===== STAT CARDS ===== */
+.stat-card {
+  background: var(--white); border-radius: var(--radius-lg);
+  padding: 20px; box-shadow: var(--shadow-card);
+  border: 1px solid var(--slate-100); position: relative; overflow: hidden;
+  transition: var(--transition);
+}
+.stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lift); }
+.stat-card::after {
+  content: ''; position: absolute; top: 0; right: 0;
+  width: 80px; height: 80px; border-radius: 50%;
+  background: currentColor; opacity: .04; transform: translate(20px,-20px);
+}
+.stat-icon {
+  width: 44px; height: 44px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; margin-bottom: 12px;
+}
+.stat-value {
+  font-family: var(--font-display); font-size: 1.9rem; font-weight: 700;
+  color: var(--slate-900); line-height: 1;
+}
+.stat-label { font-size: .8rem; color: var(--slate-500); margin-top: 4px; font-weight: 500; }
+.stat-delta {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: .75rem; font-weight: 600; margin-top: 8px; padding: 3px 8px;
+  border-radius: 50px;
+}
+.delta-up { background: #d1fae5; color: #065f46; }
+.delta-down { background: var(--rose-100); color: #9f1239; }
+.delta-neutral { background: var(--slate-100); color: var(--slate-500); }
+
+/* color variants */
+.icon-teal { background: var(--teal-100); color: var(--teal-600, var(--teal-500)); }
+.icon-ocean { background: #dbeafe; color: var(--ocean-600); }
+.icon-amber { background: #fef3c7; color: #92400e; }
+.icon-rose { background: var(--rose-100); color: var(--rose-500); }
+.icon-mint { background: #d1fae5; color: #065f46; }
+.icon-purple { background: var(--purple-100); color: var(--purple-500); }
+
+/* ===== VITALS GAUGE ===== */
+.vitals-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.vital-item {
+  background: var(--slate-100); border-radius: var(--radius-md); padding: 14px;
+  text-align: center; transition: var(--transition); cursor: default;
+}
+.vital-item:hover { background: var(--teal-50); }
+.vital-icon-wrap { font-size: 1.3rem; margin-bottom: 6px; }
+.vital-value { font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; color: var(--slate-900); }
+.vital-unit { font-size: .7rem; color: var(--slate-500); }
+.vital-label { font-size: .72rem; color: var(--slate-500); margin-top: 2px; font-weight: 500; }
+.vital-status {
+  display: inline-block; font-size: .65rem; font-weight: 600;
+  padding: 2px 7px; border-radius: 50px; margin-top: 4px; text-transform: uppercase;
+}
+.status-normal { background: #d1fae5; color: #065f46; }
+.status-high { background: var(--rose-100); color: #9f1239; }
+.status-low { background: #fef3c7; color: #92400e; }
+
+/* ===== CHARTS ===== */
+.chart-wrap { position: relative; }
+
+/* ===== ACTIVITY FEED ===== */
+.activity-item {
+  display: flex; align-items: flex-start; gap: 12px; padding: 12px 0;
+  border-bottom: 1px solid var(--slate-100);
+}
+.activity-item:last-child { border-bottom: none; }
+.activity-dot {
+  width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: .8rem;
+}
+.activity-content .act-title { font-size: .87rem; font-weight: 500; color: var(--slate-900); }
+.activity-content .act-time { font-size: .75rem; color: var(--slate-500); margin-top: 2px; }
+
+/* ===== ALERT BANNERS ===== */
+.alert-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px; border-radius: var(--radius-md); margin-bottom: 10px;
+  border-left: 4px solid;
+}
+.alert-critical { background: #fff1f2; border-color: var(--rose-500); }
+.alert-warning { background: #fffbeb; border-color: var(--amber-400); }
+.alert-info { background: var(--teal-50); border-color: var(--teal-400); }
+.alert-icon { font-size: 1rem; }
+.alert-content .al-title { font-size: .87rem; font-weight: 600; color: var(--slate-900); }
+.alert-content .al-desc { font-size: .78rem; color: var(--slate-500); margin-top: 2px; }
+.alert-time { margin-left: auto; font-size: .72rem; color: var(--slate-500); white-space: nowrap; }
+
+/* ===== PROGRESS BARS ===== */
+.progress-item { margin-bottom: 14px; }
+.progress-header { display: flex; justify-content: space-between; margin-bottom: 6px; }
+.progress-label { font-size: .82rem; font-weight: 500; color: var(--slate-700); }
+.progress-val { font-size: .82rem; font-weight: 600; color: var(--slate-900); }
+.progress-bar-track {
+  height: 8px; background: var(--slate-100); border-radius: 4px; overflow: hidden;
+}
+.progress-bar-fill { height: 100%; border-radius: 4px; transition: width 1s ease; }
+
+/* ===== TABLE ===== */
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th {
+  background: var(--slate-100); padding: 10px 14px; text-align: left;
+  font-size: .77rem; font-weight: 600; color: var(--slate-500);
+  text-transform: uppercase; letter-spacing: .06em;
+}
+.data-table td { padding: 11px 14px; border-bottom: 1px solid var(--slate-100); font-size: .86rem; color: var(--slate-700); }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: var(--teal-50); }
+.pill {
+  display: inline-block; padding: 3px 10px; border-radius: 50px;
+  font-size: .72rem; font-weight: 600;
+}
+.pill-green { background: #d1fae5; color: #065f46; }
+.pill-amber { background: #fef3c7; color: #92400e; }
+.pill-red { background: var(--rose-100); color: #9f1239; }
+.pill-blue { background: #dbeafe; color: #1e40af; }
+.pill-gray { background: var(--slate-100); color: var(--slate-500); }
+
+/* ===== FORMS ===== */
+.form-group { margin-bottom: 18px; }
+.form-label {
+  display: block; font-size: .83rem; font-weight: 500;
+  color: var(--slate-700); margin-bottom: 6px;
+}
+.form-control, .form-select {
+  width: 100%; padding: 10px 14px; border-radius: 9px;
+  border: 1px solid var(--slate-300); color: var(--slate-900);
+  font-size: .9rem; background: var(--white); transition: var(--transition);
+  font-family: var(--font-body);
+}
+.form-control:focus, .form-select:focus {
+  outline: none; border-color: var(--teal-400);
+  box-shadow: 0 0 0 3px rgba(46,200,189,.12);
+}
+.form-hint { font-size: .75rem; color: var(--slate-500); margin-top: 4px; }
+.row { display: flex; flex-wrap: wrap; gap: 0; margin: 0 -10px; }
+.col-6 { width: 50%; padding: 0 10px; }
+.col-4 { width: 33.333%; padding: 0 10px; }
+.col-12 { width: 100%; padding: 0 10px; }
+
+/* ===== BUTTONS ===== */
+.btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 9px 18px; border-radius: 9px; font-size: .87rem; font-weight: 600;
+  transition: var(--transition); cursor: pointer;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--teal-500), var(--ocean-600));
+  color: white; box-shadow: 0 3px 12px rgba(19,130,122,.3);
+}
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(19,130,122,.4); }
+.btn-outline {
+  border: 1.5px solid var(--teal-400); color: var(--teal-500); background: var(--white);
+}
+.btn-outline:hover { background: var(--teal-50); }
+.btn-danger { background: var(--rose-500); color: white; }
+.btn-danger:hover { background: #e11d48; }
+.btn-sm { padding: 6px 12px; font-size: .8rem; }
+.btn-xs { padding: 4px 9px; font-size: .75rem; border-radius: 6px; }
+
+/* ===== APPOINTMENT CARD ===== */
+.appt-card {
+  display: flex; align-items: center; gap: 14px; padding: 14px;
+  background: var(--slate-100); border-radius: var(--radius-md); margin-bottom: 10px;
+  transition: var(--transition);
+}
+.appt-card:hover { background: var(--teal-50); }
+.appt-date {
+  width: 50px; height: 54px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--teal-500), var(--ocean-600));
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  color: white; flex-shrink: 0;
+}
+.appt-day { font-size: 1.3rem; font-weight: 700; line-height: 1; }
+.appt-mon { font-size: .65rem; text-transform: uppercase; letter-spacing: .05em; }
+.appt-info { flex: 1; }
+.appt-doc { font-size: .9rem; font-weight: 600; color: var(--slate-900); }
+.appt-type { font-size: .78rem; color: var(--slate-500); }
+
+/* ===== MEDICINE CARDS ===== */
+.med-card {
+  display: flex; align-items: center; gap: 12px; padding: 13px 16px;
+  border: 1px solid var(--slate-100); border-radius: var(--radius-md); margin-bottom: 8px;
+  transition: var(--transition);
+}
+.med-card:hover { border-color: var(--teal-300); background: var(--teal-50); }
+.med-icon { font-size: 1.3rem; width: 36px; text-align: center; }
+.med-info { flex: 1; }
+.med-name { font-size: .9rem; font-weight: 600; color: var(--slate-900); }
+.med-time { font-size: .77rem; color: var(--slate-500); }
+.med-taken { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--slate-300); cursor: pointer; }
+.med-taken.done { background: var(--mint-400); border-color: var(--mint-400); }
+
+/* ===== AI ASSISTANT ===== */
+.chat-messages {
+  height: 340px; overflow-y: auto; padding: 16px;
+  background: var(--slate-50); border-radius: var(--radius-md);
+  border: 1px solid var(--slate-100); margin-bottom: 12px;
+  scroll-behavior: smooth;
+}
+.chat-messages::-webkit-scrollbar { width: 4px; }
+.chat-messages::-webkit-scrollbar-thumb { background: var(--slate-300); border-radius: 4px; }
+.chat-msg { display: flex; gap: 10px; margin-bottom: 14px; }
+.chat-msg.user { flex-direction: row-reverse; }
+.chat-bubble {
+  max-width: 75%; padding: 10px 14px; border-radius: 14px; font-size: .86rem; line-height: 1.5;
+}
+.msg-ai .chat-bubble { background: var(--white); border: 1px solid var(--slate-100); color: var(--slate-800); border-radius: 4px 14px 14px 14px; }
+.msg-user .chat-bubble { background: linear-gradient(135deg, var(--teal-500), var(--ocean-600)); color: white; border-radius: 14px 14px 4px 14px; }
+.chat-avatar {
+  width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: .75rem; font-weight: 700;
+}
+.ai-avatar { background: linear-gradient(135deg, var(--teal-400), var(--ocean-400)); color: white; }
+.user-avatar-chat { background: var(--purple-100); color: var(--purple-500); }
+.chat-input-wrap { display: flex; gap: 8px; }
+.chat-input {
+  flex: 1; padding: 10px 14px; border-radius: 9px;
+  border: 1.5px solid var(--slate-300); color: var(--slate-900);
+  font-size: .88rem; background: var(--white); transition: var(--transition);
+}
+.chat-input:focus { outline: none; border-color: var(--teal-400); box-shadow: 0 0 0 3px rgba(46,200,189,.1); }
+.btn-send {
+  padding: 10px 16px; border-radius: 9px;
+  background: linear-gradient(135deg, var(--teal-500), var(--ocean-600));
+  color: white; font-size: .9rem;
+}
+
+/* ===== MAP PLACEHOLDER ===== */
+.map-placeholder {
+  height: 300px; border-radius: var(--radius-md); overflow: hidden;
+  background: linear-gradient(135deg, #e8f5e9, #e0f7fa);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 10px; color: var(--teal-700); font-size: .9rem; font-weight: 500;
+  border: 2px dashed var(--teal-300);
+}
+.map-placeholder i { font-size: 2.5rem; opacity: .5; }
+
+/* ===== RISK METER ===== */
+.risk-meter { margin: 10px 0; }
+.risk-header { display: flex; justify-content: space-between; margin-bottom: 6px; }
+.risk-label { font-size: .85rem; font-weight: 500; color: var(--slate-700); }
+.risk-score { font-size: .85rem; font-weight: 700; }
+.risk-bar-track { height: 10px; background: var(--slate-100); border-radius: 5px; overflow: hidden; }
+.risk-bar-fill { height: 100%; border-radius: 5px; transition: width 1.2s ease; }
+.risk-low .risk-bar-fill { background: linear-gradient(90deg, var(--mint-400), #10b981); }
+.risk-medium .risk-bar-fill { background: linear-gradient(90deg, var(--amber-400), #f59e0b); }
+.risk-high .risk-bar-fill { background: linear-gradient(90deg, #fb923c, var(--rose-500)); }
+
+/* ===== VACC TIMELINE ===== */
+.vacc-item {
+  display: flex; align-items: center; gap: 14px; padding: 12px;
+  border-radius: var(--radius-md); margin-bottom: 8px;
+  background: var(--slate-50); border: 1px solid var(--slate-100);
+}
+.vacc-dot {
+  width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0;
+}
+.vacc-done { background: var(--mint-400); }
+.vacc-upcoming { background: var(--amber-400); }
+.vacc-overdue { background: var(--rose-500); }
+.vacc-name { font-size: .88rem; font-weight: 600; color: var(--slate-900); }
+.vacc-date { font-size: .75rem; color: var(--slate-500); }
+.vacc-status { margin-left: auto; }
+
+/* ===== FITNESS RINGS ===== */
+.fitness-ring-wrap { display: flex; justify-content: center; margin: 10px 0; }
+.ring-chart { position: relative; width: 140px; height: 140px; }
+.ring-center {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  text-align: center;
+}
+.ring-center .ring-value { font-family: var(--font-display); font-size: 1.4rem; font-weight: 700; color: var(--slate-900); }
+.ring-center .ring-label { font-size: .7rem; color: var(--slate-500); }
+
+/* ===== PAGE HEADER ===== */
+.page-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 24px; padding-bottom: 16px;
+  border-bottom: 1px solid var(--slate-100);
+}
+.page-title { font-family: var(--font-display); font-size: 1.3rem; font-weight: 700; color: var(--slate-900); }
+.page-subtitle { font-size: .83rem; color: var(--slate-500); margin-top: 3px; }
+
+/* ===== SECTION HEADER ===== */
+.section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.section-title { font-family: var(--font-display); font-weight: 600; font-size: .95rem; color: var(--slate-900); }
+.section-link { font-size: .8rem; color: var(--teal-500); font-weight: 500; cursor: pointer; }
+.section-link:hover { text-decoration: underline; }
+
+/* ===== GRID UTILITIES ===== */
+.grid { display: grid; gap: 20px; }
+.g-4cols { grid-template-columns: repeat(4, 1fr); }
+.g-3cols { grid-template-columns: repeat(3, 1fr); }
+.g-2cols { grid-template-columns: repeat(2, 1fr); }
+.g-13 { grid-template-columns: 1fr 3fr; }
+.g-31 { grid-template-columns: 3fr 1fr; }
+.g-21 { grid-template-columns: 2fr 1fr; }
+.g-12 { grid-template-columns: 1fr 2fr; }
+
+/* ===== DARK MODE ===== */
+[data-theme="dark"] .sidebar { background: #0a1628; }
+[data-theme="dark"] .stat-card,
+[data-theme="dark"] .card,
+[data-theme="dark"] .topbar { background: #1e293b; border-color: #334155; color: #f1f5f9; }
+[data-theme="dark"] .topbar-search, [data-theme="dark"] .vital-item { background: #334155; }
+[data-theme="dark"] .topbar-btn { background: #334155; }
+[data-theme="dark"] .data-table th { background: #0f172a; }
+[data-theme="dark"] .data-table tr:hover td { background: #1a3a36; }
+[data-theme="dark"] .form-control, [data-theme="dark"] .form-select { background: #0f172a; border-color: #334155; color: #f1f5f9; }
+[data-theme="dark"] .appt-card, [data-theme="dark"] .chat-messages { background: #0f172a; }
+[data-theme="dark"] .msg-ai .chat-bubble { background: #334155; border-color: #475569; color: #f1f5f9; }
+[data-theme="dark"] .vacc-item { background: #0f172a; border-color: #334155; }
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--slate-300); border-radius: 4px; }
+
+/* ===== NOTIFICATION BADGE ===== */
+.notif-item {
+  display: flex; gap: 12px; padding: 12px 0;
+  border-bottom: 1px solid var(--slate-100); align-items: flex-start;
+}
+.notif-item:last-child { border-bottom: none; }
+.notif-dot-wrap { padding-top: 3px; }
+.notif-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--teal-400); flex-shrink: 0; }
+.notif-dot.read { background: var(--slate-300); }
+.notif-title { font-size: .87rem; font-weight: 500; color: var(--slate-900); }
+.notif-desc { font-size: .78rem; color: var(--slate-500); margin-top: 2px; }
+.notif-time { font-size: .72rem; color: var(--slate-400); margin-top: 4px; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1100px) {
+  .g-4cols { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 900px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .main-content { margin-left: 0; }
+  .g-3cols { grid-template-columns: repeat(2, 1fr); }
+  .g-2cols { grid-template-columns: 1fr; }
+  .g-21, .g-12, .g-13, .g-31 { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .g-4cols, .g-3cols, .g-2cols { grid-template-columns: 1fr; }
+  .vitals-grid { grid-template-columns: repeat(2, 1fr); }
+  .col-6, .col-4 { width: 100%; }
+  .page-content { padding: 16px; }
+}
+
+/* ===== MOBILE MENU BUTTON ===== */
+#mobileMenuBtn { display: none; }
+@media (max-width: 900px) { #mobileMenuBtn { display: flex; } }
+
+/* ===== OVERLAY BACKDROP ===== */
+.sidebar-backdrop {
+  display: none; position: fixed; inset: 0; z-index: 99;
+  background: rgba(0,0,0,.4);
+}
+.sidebar-backdrop.open { display: block; }
+
+/* ===== LANDING PAGE ===== */
+.landing-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  padding: 0 40px; height: 70px; display: flex; align-items: center; justify-content: space-between;
+  background: rgba(13,59,56,.92); backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.landing-nav-logo { font-family: var(--font-display); font-weight: 700; font-size: 1.2rem; color: white; display: flex; align-items: center; gap: 10px; }
+.landing-nav-links { display: flex; gap: 28px; }
+.landing-nav-links a { color: rgba(255,255,255,.7); font-size: .9rem; font-weight: 500; transition: color .2s; }
+.landing-nav-links a:hover { color: var(--teal-300); }
+.landing-nav-cta { display: flex; gap: 10px; }
+.btn-nav-login { padding: 8px 18px; border-radius: 8px; color: white; font-size: .87rem; font-weight: 600; border: 1px solid rgba(255,255,255,.25); }
+.btn-nav-login:hover { background: rgba(255,255,255,.1); }
+.btn-nav-start { padding: 8px 18px; border-radius: 8px; background: var(--teal-400); color: white; font-size: .87rem; font-weight: 600; }
+.btn-nav-start:hover { background: var(--teal-300); }
+
+.hero {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--teal-900) 0%, #0a2a45 50%, #0d1b2a 100%);
+  position: relative; overflow: hidden; padding: 100px 40px 60px;
+}
+.hero::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 60% 30%, rgba(46,200,189,.12), transparent);
+}
+.hero-content { position: relative; max-width: 700px; }
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px; margin-bottom: 20px;
+  background: rgba(46,200,189,.12); border: 1px solid rgba(46,200,189,.25);
+  padding: 6px 14px; border-radius: 50px; color: var(--teal-300); font-size: .82rem; font-weight: 600;
+}
+.hero-title {
+  font-family: var(--font-display); font-size: 3.2rem; font-weight: 800;
+  color: white; line-height: 1.15; margin-bottom: 20px;
+}
+.hero-title span { color: var(--teal-300); }
+.hero-desc { color: rgba(255,255,255,.65); font-size: 1.05rem; line-height: 1.7; margin-bottom: 32px; max-width: 560px; }
+.hero-ctas { display: flex; gap: 12px; flex-wrap: wrap; }
+.btn-hero-primary {
+  padding: 13px 28px; border-radius: 11px; font-size: .95rem; font-weight: 700;
+  background: linear-gradient(135deg, var(--teal-400), var(--ocean-400));
+  color: white; box-shadow: 0 6px 24px rgba(46,200,189,.35);
+  display: inline-flex; align-items: center; gap: 9px;
+}
+.btn-hero-secondary {
+  padding: 13px 28px; border-radius: 11px; font-size: .95rem; font-weight: 600;
+  border: 1.5px solid rgba(255,255,255,.25); color: rgba(255,255,255,.85);
+  display: inline-flex; align-items: center; gap: 9px;
+}
+.btn-hero-secondary:hover { background: rgba(255,255,255,.08); }
+.hero-stats { display: flex; gap: 32px; margin-top: 44px; }
+.hero-stat-value { font-family: var(--font-display); font-size: 1.8rem; font-weight: 800; color: white; }
+.hero-stat-label { font-size: .8rem; color: rgba(255,255,255,.5); margin-top: 2px; }
+.hero-visual {
+  position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+  width: 520px; pointer-events: none;
+}
+@media (max-width: 1100px) { .hero-visual { display: none; } }
+
+.features-section { padding: 80px 40px; background: var(--white); }
+.features-section-dark { background: var(--slate-50); }
+.section-eyebrow {
+  text-align: center; font-size: .8rem; text-transform: uppercase; letter-spacing: .12em;
+  color: var(--teal-500); font-weight: 700; margin-bottom: 12px;
+}
+.section-heading {
+  text-align: center; font-family: var(--font-display); font-size: 2rem; font-weight: 700;
+  color: var(--slate-900); margin-bottom: 10px;
+}
+.section-subheading { text-align: center; color: var(--slate-500); font-size: .95rem; max-width: 540px; margin: 0 auto 48px; line-height: 1.6; }
+
+.feature-card {
+  background: var(--white); border-radius: var(--radius-lg); padding: 28px;
+  box-shadow: var(--shadow-card); border: 1px solid var(--slate-100);
+  transition: var(--transition);
+}
+.feature-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lift); }
+.feature-icon-wrap {
+  width: 52px; height: 52px; border-radius: 14px; margin-bottom: 18px;
+  display: flex; align-items: center; justify-content: center; font-size: 1.3rem;
+  background: linear-gradient(135deg, var(--teal-100), #dbeafe);
+  color: var(--teal-600, var(--teal-500));
+}
+.feature-title { font-family: var(--font-display); font-size: 1rem; font-weight: 700; color: var(--slate-900); margin-bottom: 8px; }
+.feature-desc { font-size: .87rem; color: var(--slate-500); line-height: 1.6; }
+
+.landing-footer {
+  background: var(--teal-900); color: rgba(255,255,255,.5); padding: 40px;
+  text-align: center; font-size: .85rem;
+}
+
+/* ===== TOAST ===== */
+.toast-container {
+  position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px;
+}
+.toast-msg {
+  padding: 12px 18px; border-radius: 10px; font-size: .87rem; font-weight: 500;
+  display: flex; align-items: center; gap: 10px; animation: slideIn .3s ease;
+  box-shadow: 0 4px 16px rgba(0,0,0,.15);
+}
+.toast-success { background: #d1fae5; color: #065f46; border-left: 4px solid var(--mint-400); }
+.toast-error { background: var(--rose-100); color: #9f1239; border-left: 4px solid var(--rose-500); }
+.toast-info { background: var(--teal-50); color: var(--teal-700); border-left: 4px solid var(--teal-400); }
+@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+/* ===== SPINNER ===== */
+.spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,.3); border-top-color: white; border-radius: 50%; animation: spin .7s linear infinite; display: inline-block; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ===== PROFILE CARD ===== */
+.profile-hero {
+  background: linear-gradient(135deg, var(--teal-700), var(--ocean-600));
+  border-radius: var(--radius-lg); padding: 28px; color: white; margin-bottom: 20px;
+  display: flex; align-items: center; gap: 20px;
+}
+.profile-big-avatar {
+  width: 80px; height: 80px; border-radius: 50%;
+  background: rgba(255,255,255,.2); display: flex; align-items: center; justify-content: center;
+  font-size: 2rem; font-weight: 700; border: 3px solid rgba(255,255,255,.4); flex-shrink: 0;
+}
+.profile-name { font-family: var(--font-display); font-size: 1.4rem; font-weight: 700; }
+.profile-role-badge { display: inline-block; background: rgba(255,255,255,.2); padding: 3px 10px; border-radius: 50px; font-size: .78rem; font-weight: 600; margin-top: 5px; }
+.profile-meta { display: flex; gap: 16px; margin-top: 12px; }
+.profile-meta-item { font-size: .82rem; opacity: .8; }
+.profile-meta-item strong { opacity: 1; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<!-- ===== TOAST CONTAINER ===== -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ===== AUTH OVERLAY ===== -->
+<div id="authOverlay">
+  <div style="padding:40px 20px; width:100%; display:flex; flex-direction:column; align-items:center;">
+    <div class="auth-brand">
+      <div class="logo-pulse">
+        <div class="logo-icon"><i class="fa-solid fa-heart-pulse"></i></div>
+        HealthPulse
+      </div>
+      <p>Smart Community Health Monitoring System</p>
+    </div>
+    <div class="auth-box">
+      <div class="auth-tabs">
+        <button class="auth-tab active" onclick="switchAuth('login')">Sign In</button>
+        <button class="auth-tab" onclick="switchAuth('register')">Register</button>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <div class="auth-form active" id="loginForm">
+        <div>
+          <label class="auth-label">Email Address</label>
+          <input class="auth-input" type="email" placeholder="admin@healthpulse.com" id="loginEmail" value="admin@healthpulse.com"/>
+        </div>
+        <div>
+          <label class="auth-label">Password</label>
+          <input class="auth-input" type="password" placeholder="••••••••" id="loginPass" value="password"/>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <label style="display:flex;align-items:center;gap:6px;color:rgba(255,255,255,.6);font-size:.82rem;cursor:pointer;">
+            <input type="checkbox" style="accent-color:var(--teal-400)"/> Remember me
+          </label>
+          <span style="color:var(--teal-300);font-size:.82rem;cursor:pointer;">Forgot password?</span>
+        </div>
+        <div style="margin-bottom:14px;">
+          <label class="auth-label">Sign in as</label>
+          <div class="role-chips" id="loginRoleChips">
+            <div class="role-chip selected" onclick="selectRole(this,'login')">Admin</div>
+            <div class="role-chip" onclick="selectRole(this,'login')">Doctor</div>
+            <div class="role-chip" onclick="selectRole(this,'login')">Healthcare Worker</div>
+            <div class="role-chip" onclick="selectRole(this,'login')">Community Member</div>
+          </div>
+        </div>
+        <button class="btn-auth" onclick="doLogin()">
+          <span id="loginBtnText">Sign In to Dashboard</span>
+        </button>
+        <div class="auth-divider">— or continue with demo account —</div>
+        <div style="display:flex;gap:8px;">
+          <button class="role-chip" style="flex:1;text-align:center;padding:9px;" onclick="quickLogin('doctor')"><i class="fa-solid fa-user-doctor"></i> Doctor Demo</button>
+          <button class="role-chip" style="flex:1;text-align:center;padding:9px;" onclick="quickLogin('member')"><i class="fa-solid fa-user"></i> Member Demo</button>
+        </div>
+      </div>
+
+      <!-- REGISTER FORM -->
+      <div class="auth-form" id="registerForm">
+        <div style="display:flex;gap:10px;">
+          <div style="flex:1;"><label class="auth-label">First Name</label><input class="auth-input" placeholder="John"/></div>
+          <div style="flex:1;"><label class="auth-label">Last Name</label><input class="auth-input" placeholder="Doe"/></div>
+        </div>
+        <label class="auth-label">Email Address</label>
+        <input class="auth-input" type="email" placeholder="john@example.com"/>
+        <label class="auth-label">Password</label>
+        <input class="auth-input" type="password" placeholder="Create a strong password"/>
+        <label class="auth-label">Register as</label>
+        <select class="auth-select">
+          <option>Community Member</option>
+          <option>Healthcare Worker</option>
+          <option>Doctor</option>
+        </select>
+        <label class="auth-label">Phone Number</label>
+        <input class="auth-input" placeholder="+91 98765 43210"/>
+        <button class="btn-auth" onclick="doRegister()">Create Account</button>
+      </div>
+    </div>
+
+    <!-- Landing page preview teaser -->
+    <div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
+      <button onclick="showLanding()" style="padding:8px 20px;border-radius:8px;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.7);font-size:.85rem;">
+        <i class="fa-solid fa-globe" style="margin-right:6px;"></i>View Landing Page
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== LANDING PAGE ===== -->
+<div id="landingPage" style="display:none;">
+  <nav class="landing-nav">
+    <div class="landing-nav-logo"><div class="logo-icon" style="width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--teal-400),var(--ocean-400));display:flex;align-items:center;justify-content:center;color:white;font-size:.9rem;"><i class="fa-solid fa-heart-pulse"></i></div> HealthPulse</div>
+    <div class="landing-nav-links">
+      <a href="#">Features</a><a href="#">Solutions</a><a href="#">About</a><a href="#">Contact</a>
+    </div>
+    <div class="landing-nav-cta">
+      <button class="btn-nav-login" onclick="hideLanding()">Sign In</button>
+      <button class="btn-nav-start" onclick="hideLanding()">Get Started</button>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-eyebrow"><i class="fa-solid fa-circle-nodes"></i> AI-Powered Community Healthcare</div>
+      <h1 class="hero-title">Monitor. Predict.<br><span>Protect</span> Your Community.</h1>
+      <p class="hero-desc">HealthPulse brings real-time health monitoring, AI-driven disease prediction, and intelligent emergency alerts to community healthcare — empowering both patients and providers.</p>
+      <div class="hero-ctas">
+        <button class="btn-hero-primary" onclick="hideLanding()"><i class="fa-solid fa-rocket"></i> Start Free Trial</button>
+        <button class="btn-hero-secondary"><i class="fa-solid fa-play"></i> Watch Demo</button>
+      </div>
+      <div class="hero-stats">
+        <div><div class="hero-stat-value">12,400+</div><div class="hero-stat-label">Community Members</div></div>
+        <div><div class="hero-stat-value">98.7%</div><div class="hero-stat-label">Alert Accuracy</div></div>
+        <div><div class="hero-stat-value">340+</div><div class="hero-stat-label">Healthcare Providers</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="features-section">
+    <div class="section-eyebrow">Core Platform</div>
+    <h2 class="section-heading">Everything your community needs</h2>
+    <p class="section-subheading">A complete healthcare management platform built for modern communities and healthcare organizations.</p>
+    <div class="grid g-3cols" style="max-width:1100px;margin:0 auto;">
+      <div class="feature-card"><div class="feature-icon-wrap"><i class="fa-solid fa-brain"></i></div><div class="feature-title">AI Health Assistant</div><div class="feature-desc">Symptom-based guidance, preventive recommendations, and personalized health coaching powered by advanced AI.</div></div>
+      <div class="feature-card"><div class="feature-icon-wrap"><i class="fa-solid fa-triangle-exclamation"></i></div><div class="feature-title">Emergency Alert System</div><div class="feature-desc">Detect abnormal readings in real-time and instantly notify healthcare workers, doctors, and family members.</div></div>
+      <div class="feature-card"><div class="feature-icon-wrap"><i class="fa-solid fa-chart-line"></i></div><div class="feature-title">Disease Risk Prediction</div><div class="feature-desc">ML-based risk prediction for diabetes, hypertension, obesity, and heart disease based on health records.</div></div>
+      <div class="feature-card"><div class="feature-icon-wrap"><i class="fa-solid fa-map-location-dot"></i></div><div class="feature-title">Healthcare Locator</div><div class="feature-desc">Find nearby hospitals, clinics, pharmacies, and emergency services with real-time availability.</div></div>
+      <div class="feature-card"><div class="feature-icon-wrap"><i class="fa-solid fa-syringe"></i></div><div class="feature-title">Vaccination Tracker</div><div class="feature-desc">Track immunization history, upcoming vaccine reminders, and community vaccination compliance.</div></div>
+      <div class="feature-card"><div class="feature-icon-wrap"><i class="fa-solid fa-users"></i></div><div class="feature-title">Community Analytics</div><div class="feature-desc">Population-level insights, disease trends, age-group statistics, and public health risk distribution.</div></div>
+    </div>
+  </section>
+
+  <div class="landing-footer">
+    <p>© 2025 HealthPulse · Smart Community Health Monitoring System · All rights reserved.</p>
+    <p style="margin-top:8px;font-size:.78rem;">Built with ❤️ for healthier communities</p>
+  </div>
+</div>
+
+<!-- ===== APP SHELL ===== -->
+<div id="appShell">
+  <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeMobileMenu()"></div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon"><i class="fa-solid fa-heart-pulse"></i></div>
+        HealthPulse
+      </div>
+    </div>
+    <div class="sidebar-user">
+      <div class="sidebar-avatar" id="sidebarAvatar">A</div>
+      <div class="sidebar-user-info">
+        <div class="user-name" id="sidebarUserName">Admin User</div>
+        <div class="user-role" id="sidebarUserRole">Administrator</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-group-label">Overview</div>
+      <div class="nav-item active" onclick="navigate('dashboard')">
+        <i class="fa-solid fa-gauge-high nav-icon"></i> Dashboard
+      </div>
+      <div class="nav-item" onclick="navigate('notifications')">
+        <i class="fa-solid fa-bell nav-icon"></i> Notifications
+        <span class="nav-badge">4</span>
+      </div>
+
+      <div class="nav-group-label">Health</div>
+      <div class="nav-item" onclick="navigate('profile')">
+        <i class="fa-solid fa-id-card-clip nav-icon"></i> Health Profile
+      </div>
+      <div class="nav-item" onclick="navigate('monitoring')">
+        <i class="fa-solid fa-heart-pulse nav-icon"></i> Health Monitoring
+      </div>
+      <div class="nav-item" onclick="navigate('records')">
+        <i class="fa-solid fa-folder-open nav-icon"></i> Medical Records
+      </div>
+      <div class="nav-item" onclick="navigate('risk')">
+        <i class="fa-solid fa-triangle-exclamation nav-icon"></i> Disease Risk
+      </div>
+
+      <div class="nav-group-label">Care</div>
+      <div class="nav-item" onclick="navigate('appointments')">
+        <i class="fa-solid fa-calendar-check nav-icon"></i> Appointments
+      </div>
+      <div class="nav-item" onclick="navigate('medicines')">
+        <i class="fa-solid fa-pills nav-icon"></i> Medicine Reminder
+      </div>
+      <div class="nav-item" onclick="navigate('vaccinations')">
+        <i class="fa-solid fa-syringe nav-icon"></i> Vaccination Tracker
+      </div>
+      <div class="nav-item" onclick="navigate('fitness')">
+        <i class="fa-solid fa-dumbbell nav-icon"></i> Fitness Tracker
+      </div>
+
+      <div class="nav-group-label">Smart Tools</div>
+      <div class="nav-item" onclick="navigate('aiassistant')">
+        <i class="fa-solid fa-brain nav-icon"></i> AI Assistant
+      </div>
+      <div class="nav-item" onclick="navigate('locator')">
+        <i class="fa-solid fa-map-location-dot nav-icon"></i> Healthcare Locator
+      </div>
+      <div class="nav-item" onclick="navigate('analytics')">
+        <i class="fa-solid fa-chart-bar nav-icon"></i> Community Analytics
+      </div>
+
+      <div class="nav-group-label" id="adminNav">Administration</div>
+      <div class="nav-item" onclick="navigate('admin')" id="adminNavItem">
+        <i class="fa-solid fa-shield-halved nav-icon"></i> Admin Dashboard
+      </div>
+      <div class="nav-item" onclick="navigate('usermgmt')" id="userMgmtNavItem">
+        <i class="fa-solid fa-users-gear nav-icon"></i> User Management
+      </div>
+      <div class="nav-item" onclick="navigate('reports')" id="reportsNavItem">
+        <i class="fa-solid fa-file-medical nav-icon"></i> Reports
+      </div>
+
+      <div class="nav-group-label">Account</div>
+      <div class="nav-item" onclick="navigate('settings')">
+        <i class="fa-solid fa-sliders nav-icon"></i> Settings
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="btn-logout" onclick="doLogout()">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <button class="topbar-btn" id="mobileMenuBtn" onclick="openMobileMenu()" style="margin-right:8px;">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <div class="topbar-title" id="topbarTitle">Dashboard</div>
+      <div class="topbar-search">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" placeholder="Search patients, records, doctors…"/>
+      </div>
+      <div class="topbar-actions">
+        <button class="topbar-btn" onclick="navigate('notifications')" title="Notifications">
+          <i class="fa-solid fa-bell"></i>
+          <span class="topbar-badge"></span>
+        </button>
+        <button class="topbar-btn dark-toggle" onclick="toggleDark()" title="Toggle dark mode">
+          <i class="fa-solid fa-moon" id="darkIcon"></i>
+        </button>
+        <button class="topbar-btn" onclick="navigate('profile')" title="Profile">
+          <i class="fa-solid fa-circle-user"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- ========== DASHBOARD PAGE ========== -->
+    <div class="page-content active" id="page-dashboard">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Good morning, <span id="dashWelcomeName">Admin</span> 👋</div>
+          <div class="page-subtitle">Here's your community health overview for today</div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-outline btn-sm" onclick="showToast('Report exported!','success')"><i class="fa-solid fa-download"></i> Export</button>
+          <button class="btn btn-primary btn-sm" onclick="navigate('monitoring')"><i class="fa-solid fa-plus"></i> Add Record</button>
+        </div>
+      </div>
+
+      <!-- STAT CARDS -->
+      <div class="grid g-4cols" style="margin-bottom:20px;">
+        <div class="stat-card">
+          <div class="stat-icon icon-teal"><i class="fa-solid fa-users"></i></div>
+          <div class="stat-value">12,482</div>
+          <div class="stat-label">Registered Members</div>
+          <span class="stat-delta delta-up"><i class="fa-solid fa-arrow-up"></i> 8.2% this month</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon icon-ocean"><i class="fa-solid fa-user-injured"></i></div>
+          <div class="stat-value">3,847</div>
+          <div class="stat-label">Active Patients</div>
+          <span class="stat-delta delta-up"><i class="fa-solid fa-arrow-up"></i> 3.5% today</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon icon-mint"><i class="fa-solid fa-calendar-check"></i></div>
+          <div class="stat-value">284</div>
+          <div class="stat-label">Appointments Today</div>
+          <span class="stat-delta delta-neutral"><i class="fa-solid fa-minus"></i> Same as yesterday</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon icon-rose"><i class="fa-solid fa-triangle-exclamation"></i></div>
+          <div class="stat-value">17</div>
+          <div class="stat-label">Emergency Cases</div>
+          <span class="stat-delta delta-down"><i class="fa-solid fa-arrow-down"></i> 2 from yesterday</span>
+        </div>
+      </div>
+      <div class="grid g-4cols" style="margin-bottom:24px;">
+        <div class="stat-card">
+          <div class="stat-icon icon-amber"><i class="fa-solid fa-bell"></i></div>
+          <div class="stat-value">43</div>
+          <div class="stat-label">Health Alerts</div>
+          <span class="stat-delta delta-down"><i class="fa-solid fa-arrow-down"></i> 12% this week</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon icon-teal"><i class="fa-solid fa-syringe"></i></div>
+          <div class="stat-value">89.4%</div>
+          <div class="stat-label">Vaccination Rate</div>
+          <span class="stat-delta delta-up"><i class="fa-solid fa-arrow-up"></i> 2.1% this quarter</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon icon-purple"><i class="fa-solid fa-pills"></i></div>
+          <div class="stat-value">76.8%</div>
+          <div class="stat-label">Medicine Adherence</div>
+          <span class="stat-delta delta-up"><i class="fa-solid fa-arrow-up"></i> 5.3% this week</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon icon-ocean"><i class="fa-solid fa-person-walking"></i></div>
+          <div class="stat-value">8,241</div>
+          <div class="stat-label">Avg Daily Steps</div>
+          <span class="stat-delta delta-up"><i class="fa-solid fa-arrow-up"></i> 11% this week</span>
+        </div>
+      </div>
+
+      <!-- CHARTS ROW -->
+      <div class="grid g-21" style="margin-bottom:24px;">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Health Trends — Last 7 Days</div>
+            <div style="display:flex;gap:6px;">
+              <button class="btn btn-xs btn-outline">Week</button>
+              <button class="btn btn-xs btn-primary">Month</button>
+              <button class="btn btn-xs btn-outline">Year</button>
+            </div>
+          </div>
+          <div class="card-body"><div class="chart-wrap"><canvas id="healthTrendChart" height="90"></canvas></div></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Disease Distribution</div></div>
+          <div class="card-body"><div class="chart-wrap"><canvas id="diseasePieChart" height="160"></canvas></div></div>
+        </div>
+      </div>
+
+      <!-- VITALS + ACTIVITY + ALERTS -->
+      <div class="grid g-3cols" style="margin-bottom:24px;">
+        <!-- MY VITALS -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">My Vitals <span style="font-size:.72rem;color:var(--teal-500);font-weight:500;margin-left:6px;"><i class="fa-solid fa-circle" style="font-size:.5rem;"></i> Live</span></div>
+            <button class="btn btn-xs btn-outline" onclick="navigate('monitoring')">Update</button>
+          </div>
+          <div class="card-body">
+            <div class="vitals-grid">
+              <div class="vital-item"><div class="vital-icon-wrap">❤️</div><div class="vital-value">76</div><div class="vital-unit">bpm</div><div class="vital-label">Heart Rate</div><span class="vital-status status-normal">Normal</span></div>
+              <div class="vital-item"><div class="vital-icon-wrap">🩸</div><div class="vital-value">120/80</div><div class="vital-unit">mmHg</div><div class="vital-label">Blood Pressure</div><span class="vital-status status-normal">Normal</span></div>
+              <div class="vital-item"><div class="vital-icon-wrap">🩺</div><div class="vital-value">98</div><div class="vital-unit">mg/dL</div><div class="vital-label">Blood Sugar</div><span class="vital-status status-normal">Normal</span></div>
+              <div class="vital-item"><div class="vital-icon-wrap">💨</div><div class="vital-value">98.5</div><div class="vital-unit">%</div><div class="vital-label">SpO₂</div><span class="vital-status status-normal">Normal</span></div>
+              <div class="vital-item"><div class="vital-icon-wrap">🌡️</div><div class="vital-value">98.6</div><div class="vital-unit">°F</div><div class="vital-label">Temp</div><span class="vital-status status-normal">Normal</span></div>
+              <div class="vital-item"><div class="vital-icon-wrap">⚖️</div><div class="vital-value">22.4</div><div class="vital-unit">kg/m²</div><div class="vital-label">BMI</div><span class="vital-status status-normal">Healthy</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- EMERGENCY ALERTS -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Emergency Alerts</div>
+            <span class="pill pill-red" style="font-size:.72rem;">3 Critical</span>
+          </div>
+          <div class="card-body-sm">
+            <div class="alert-item alert-critical"><span class="alert-icon" style="color:var(--rose-500);">🚨</span><div class="alert-content"><div class="al-title">Priya Sharma — High BP Alert</div><div class="al-desc">BP reading: 180/110 mmHg. Immediate attention required.</div></div><div class="alert-time">2m ago</div></div>
+            <div class="alert-item alert-critical"><span class="alert-icon" style="color:var(--rose-500);">🚨</span><div class="alert-content"><div class="al-title">Ravi Kumar — Low SpO₂</div><div class="al-desc">SpO₂ dropped to 88%. Emergency protocol activated.</div></div><div class="alert-time">8m ago</div></div>
+            <div class="alert-item alert-warning"><span class="alert-icon" style="color:var(--amber-400);">⚠️</span><div class="alert-content"><div class="al-title">Sunita Devi — Blood Sugar High</div><div class="al-desc">Fasting sugar: 210 mg/dL. Follow-up recommended.</div></div><div class="alert-time">23m ago</div></div>
+            <div class="alert-item alert-info"><span class="alert-icon" style="color:var(--teal-500);">ℹ️</span><div class="alert-content"><div class="al-title">Arun Patel — Missed Medication</div><div class="al-desc">Morning dose missed. Reminder sent to patient.</div></div><div class="alert-time">1h ago</div></div>
+          </div>
+        </div>
+
+        <!-- RECENT ACTIVITY -->
+        <div class="card">
+          <div class="card-header"><div class="card-title">Recent Activity</div></div>
+          <div class="card-body-sm">
+            <div class="activity-item"><div class="activity-dot icon-teal"><i class="fa-solid fa-user-plus" style="font-size:.75rem;"></i></div><div class="activity-content"><div class="act-title">New member registered</div><div class="act-time">Meena Krishnan · 5 min ago</div></div></div>
+            <div class="activity-item"><div class="activity-dot icon-ocean"><i class="fa-solid fa-calendar" style="font-size:.75rem;"></i></div><div class="activity-content"><div class="act-title">Appointment booked</div><div class="act-time">With Dr. Mehta · 14 min ago</div></div></div>
+            <div class="activity-item"><div class="activity-dot icon-amber"><i class="fa-solid fa-vials" style="font-size:.75rem;"></i></div><div class="activity-content"><div class="act-title">Lab report uploaded</div><div class="act-time">Sanjay Verma · 31 min ago</div></div></div>
+            <div class="activity-item"><div class="activity-dot icon-mint"><i class="fa-solid fa-syringe" style="font-size:.75rem;"></i></div><div class="activity-content"><div class="act-title">Vaccination completed</div><div class="act-time">Lakshmi R. · 1h ago</div></div></div>
+            <div class="activity-item"><div class="activity-dot icon-rose"><i class="fa-solid fa-heart-pulse" style="font-size:.75rem;"></i></div><div class="activity-content"><div class="act-title">Vitals recorded</div><div class="act-time">Rajesh Kumar · 1.5h ago</div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOTTOM ROW: Appointments + AI Suggestions + Medicine -->
+      <div class="grid g-3cols">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Upcoming Appointments</div>
+            <span class="section-link" onclick="navigate('appointments')">View all</span>
+          </div>
+          <div class="card-body-sm">
+            <div class="appt-card"><div class="appt-date"><div class="appt-day">18</div><div class="appt-mon">Jun</div></div><div class="appt-info"><div class="appt-doc">Dr. Anjali Mehta</div><div class="appt-type">General Consultation · 10:30 AM</div></div><span class="pill pill-green">Today</span></div>
+            <div class="appt-card"><div class="appt-date"><div class="appt-day">22</div><div class="appt-mon">Jun</div></div><div class="appt-info"><div class="appt-doc">Dr. Suresh Nair</div><div class="appt-type">Cardiology Review · 3:00 PM</div></div><span class="pill pill-blue">Soon</span></div>
+            <div class="appt-card"><div class="appt-date"><div class="appt-day">28</div><div class="appt-mon">Jun</div></div><div class="appt-info"><div class="appt-doc">Dr. Priya Rao</div><div class="appt-type">Diabetes Follow-up · 11:00 AM</div></div><span class="pill pill-gray">Later</span></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-title">AI Health Suggestions</div><span class="pill pill-blue" style="font-size:.7rem;">Personalized</span></div>
+          <div class="card-body-sm">
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div style="display:flex;gap:10px;align-items:flex-start;padding:10px;background:var(--teal-50);border-radius:var(--radius-md);">
+                <span style="font-size:1.2rem;">💧</span><div><div style="font-size:.85rem;font-weight:600;color:var(--slate-900);">Increase Water Intake</div><div style="font-size:.77rem;color:var(--slate-500);">You've had 4 glasses. Target 8 glasses/day based on your BMI.</div></div>
+              </div>
+              <div style="display:flex;gap:10px;align-items:flex-start;padding:10px;background:#fef3c7;border-radius:var(--radius-md);">
+                <span style="font-size:1.2rem;">🚶</span><div><div style="font-size:.85rem;font-weight:600;color:var(--slate-900);">Evening Walk Reminder</div><div style="font-size:.77rem;color:var(--slate-500);">3,200 steps today. A 20-min walk will meet your daily goal.</div></div>
+              </div>
+              <div style="display:flex;gap:10px;align-items:flex-start;padding:10px;background:var(--purple-100);border-radius:var(--radius-md);">
+                <span style="font-size:1.2rem;">😴</span><div><div style="font-size:.85rem;font-weight:600;color:var(--slate-900);">Sleep Quality Alert</div><div style="font-size:.77rem;color:var(--slate-500);">Avg 5.8h this week. Your target is 7–8h for optimal health.</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-title">Today's Medicines</div><span class="section-link" onclick="navigate('medicines')">Manage</span></div>
+          <div class="card-body-sm">
+            <div class="med-card"><div class="med-icon">💊</div><div class="med-info"><div class="med-name">Metformin 500mg</div><div class="med-time">After breakfast · 8:00 AM</div></div><div class="med-taken done" onclick="this.classList.toggle('done')"></div></div>
+            <div class="med-card"><div class="med-icon">💊</div><div class="med-info"><div class="med-name">Amlodipine 5mg</div><div class="med-time">After lunch · 1:00 PM</div></div><div class="med-taken done" onclick="this.classList.toggle('done')"></div></div>
+            <div class="med-card"><div class="med-icon">💊</div><div class="med-info"><div class="med-name">Atorvastatin 10mg</div><div class="med-time">Bedtime · 10:00 PM</div></div><div class="med-taken" onclick="this.classList.toggle('done')"></div></div>
+            <div class="med-card"><div class="med-icon">🫁</div><div class="med-info"><div class="med-name">Vitamin D3 60K</div><div class="med-time">Weekly · Sunday</div></div><div class="med-taken" onclick="this.classList.toggle('done')"></div></div>
+            <div style="margin-top:12px;"><div class="progress-item"><div class="progress-header"><span class="progress-label">Today's adherence</span><span class="progress-val">50%</span></div><div class="progress-bar-track"><div class="progress-bar-fill" style="width:50%;background:linear-gradient(90deg,var(--teal-400),var(--ocean-400));"></div></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== HEALTH PROFILE ========== -->
+    <div class="page-content" id="page-profile">
+      <div class="page-header">
+        <div><div class="page-title">Health Profile</div><div class="page-subtitle">Manage your personal health information</div></div>
+        <button class="btn btn-primary btn-sm" onclick="showToast('Profile saved!','success')"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button>
+      </div>
+      <div class="profile-hero">
+        <div class="profile-big-avatar">👤</div>
+        <div>
+          <div class="profile-name" id="profileName">Admin User</div>
+          <div class="profile-role-badge" id="profileRole">Administrator</div>
+          <div class="profile-meta">
+            <div class="profile-meta-item"><strong>Age:</strong> 34</div>
+            <div class="profile-meta-item"><strong>Blood:</strong> O+</div>
+            <div class="profile-meta-item"><strong>BMI:</strong> 22.4</div>
+            <div class="profile-meta-item"><strong>Member since:</strong> Jan 2024</div>
+          </div>
+        </div>
+      </div>
+      <div class="grid g-2cols">
+        <div class="card"><div class="card-header"><div class="card-title">Personal Information</div></div>
+          <div class="card-body">
+            <div class="row"><div class="col-6"><div class="form-group"><label class="form-label">First Name</label><input class="form-control" value="Admin"/></div></div><div class="col-6"><div class="form-group"><label class="form-label">Last Name</label><input class="form-control" value="User"/></div></div></div>
+            <div class="row"><div class="col-6"><div class="form-group"><label class="form-label">Date of Birth</label><input class="form-control" type="date" value="1991-03-15"/></div></div><div class="col-6"><div class="form-group"><label class="form-label">Gender</label><select class="form-select"><option>Male</option><option>Female</option><option>Other</option></select></div></div></div>
+            <div class="row"><div class="col-6"><div class="form-group"><label class="form-label">Phone Number</label><input class="form-control" value="+91 98765 43210"/></div></div><div class="col-6"><div class="form-group"><label class="form-label">Email Address</label><input class="form-control" type="email" value="admin@healthpulse.com"/></div></div></div>
+            <div class="form-group"><label class="form-label">Address</label><textarea class="form-control" rows="2">12, MG Road, Anna Nagar, Chennai, Tamil Nadu - 600040</textarea></div>
+          </div>
+        </div>
+        <div class="card"><div class="card-header"><div class="card-title">Health Metrics</div></div>
+          <div class="card-body">
+            <div class="row"><div class="col-6"><div class="form-group"><label class="form-label">Height (cm)</label><input class="form-control" value="172"/></div></div><div class="col-6"><div class="form-group"><label class="form-label">Weight (kg)</label><input class="form-control" value="66"/></div></div></div>
+            <div class="row"><div class="col-6"><div class="form-group"><label class="form-label">Blood Group</label><select class="form-select"><option>O+</option><option>O-</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option></select></div></div><div class="col-6"><div class="form-group"><label class="form-label">BMI (auto-calc)</label><input class="form-control" value="22.4" readonly style="background:var(--slate-100);"/></div></div></div>
+            <div class="form-group"><label class="form-label">Known Allergies</label><input class="form-control" value="Penicillin, Dust mites"/></div>
+            <div class="form-group"><label class="form-label">Chronic Conditions</label><input class="form-control" value="Type 2 Diabetes (controlled), Hypertension"/></div>
+            <div class="form-group"><label class="form-label">Current Medications</label><input class="form-control" value="Metformin 500mg, Amlodipine 5mg"/></div>
+          </div>
+        </div>
+        <div class="card"><div class="card-header"><div class="card-title">Emergency Contact</div></div>
+          <div class="card-body">
+            <div class="row"><div class="col-6"><div class="form-group"><label class="form-label">Contact Name</label><input class="form-control" value="Priya (Spouse)"/></div></div><div class="col-6"><div class="form-group"><label class="form-label">Relationship</label><input class="form-control" value="Spouse"/></div></div></div>
+            <div class="row"><div class="col-6"><div class="form-group"><label class="form-label">Phone Number</label><input class="form-control" value="+91 98765 11111"/></div></div><div class="col-6"><div class="form-group"><label class="form-label">Email</label><input class="form-control" value="priya@example.com"/></div></div></div>
+          </div>
+        </div>
+        <div class="card"><div class="card-header"><div class="card-title">Insurance Information</div></div>
+          <div class="card-body">
+            <div class="row"><div class="col-6"><div class="form-group"><label class="form-label">Provider</label><input class="form-control" value="Star Health Insurance"/></div></div><div class="col-6"><div class="form-group"><label class="form-label">Policy Number</label><input class="form-control" value="SH-2024-789456"/></div></div></div>
+            <div class="row"><div class="col-6"><div class="form-group"><label class="form-label">Valid Until</label><input class="form-control" type="date" value="2025-12-31"/></div></div><div class="col-6"><div class="form-group"><label class="form-label">Coverage Amount</label><input class="form-control" value="₹5,00,000"/></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== HEALTH MONITORING ========== -->
+    <div class="page-content" id="page-monitoring">
+      <div class="page-header">
+        <div><div class="page-title">Health Monitoring</div><div class="page-subtitle">Record and track your vital signs</div></div>
+        <button class="btn btn-primary btn-sm" onclick="showToast('Vitals saved!','success')"><i class="fa-solid fa-plus"></i> Save Vitals</button>
+      </div>
+      <div class="grid g-2cols" style="margin-bottom:20px;">
+        <div class="card"><div class="card-header"><div class="card-title">Record Vitals</div></div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-6"><div class="form-group"><label class="form-label"><i class="fa-solid fa-heart" style="color:var(--rose-500);"></i> Heart Rate (bpm)</label><input class="form-control" type="number" placeholder="60-100" value="76"/><div class="form-hint">Normal: 60–100 bpm</div></div></div>
+              <div class="col-6"><div class="form-group"><label class="form-label"><i class="fa-solid fa-droplet" style="color:var(--rose-500);"></i> Blood Pressure</label><input class="form-control" placeholder="120/80 mmHg" value="120/80"/><div class="form-hint">Normal: below 120/80</div></div></div>
+              <div class="col-6"><div class="form-group"><label class="form-label"><i class="fa-solid fa-vial" style="color:var(--amber-400);"></i> Blood Sugar (mg/dL)</label><input class="form-control" type="number" placeholder="70-140" value="98"/><div class="form-hint">Fasting: 70–100 mg/dL</div></div></div>
+              <div class="col-6"><div class="form-group"><label class="form-label"><i class="fa-solid fa-lungs" style="color:var(--ocean-400);"></i> Oxygen Level (SpO₂ %)</label><input class="form-control" type="number" placeholder="95-100" value="98.5"/><div class="form-hint">Normal: 95–100%</div></div></div>
+              <div class="col-6"><div class="form-group"><label class="form-label"><i class="fa-solid fa-temperature-half" style="color:var(--teal-500);"></i> Body Temperature (°F)</label><input class="form-control" type="number" placeholder="98.6" value="98.6"/><div class="form-hint">Normal: 97–99°F</div></div></div>
+              <div class="col-6"><div class="form-group"><label class="form-label"><i class="fa-solid fa-weight-scale" style="color:var(--purple-500);"></i> Weight (kg)</label><input class="form-control" type="number" placeholder="Weight" value="66"/></div></div>
+            </div>
+            <div class="form-group"><label class="form-label">Notes / Symptoms</label><textarea class="form-control" rows="2" placeholder="Any symptoms, observations…"></textarea></div>
+          </div>
+        </div>
+        <div>
+          <div class="card" style="margin-bottom:20px;"><div class="card-header"><div class="card-title">Vitals History — Heart Rate</div></div>
+            <div class="card-body"><canvas id="hrHistoryChart" height="120"></canvas></div>
+          </div>
+          <div class="card"><div class="card-header"><div class="card-title">Blood Pressure Trend</div></div>
+            <div class="card-body"><canvas id="bpHistoryChart" height="120"></canvas></div>
+          </div>
+        </div>
+      </div>
+      <div class="card"><div class="card-header"><div class="card-title">Vitals Log</div></div>
+        <div class="card-body" style="overflow-x:auto;">
+          <table class="data-table">
+            <thead><tr><th>Date</th><th>Heart Rate</th><th>Blood Pressure</th><th>Blood Sugar</th><th>SpO₂</th><th>Temp</th><th>BMI</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>18 Jun 2025</td><td>76 bpm</td><td>120/80</td><td>98 mg/dL</td><td>98.5%</td><td>98.6°F</td><td>22.4</td><td><span class="pill pill-green">Normal</span></td></tr>
+              <tr><td>17 Jun 2025</td><td>82 bpm</td><td>125/82</td><td>105 mg/dL</td><td>97.8%</td><td>99.1°F</td><td>22.4</td><td><span class="pill pill-amber">Mild Alert</span></td></tr>
+              <tr><td>16 Jun 2025</td><td>79 bpm</td><td>118/78</td><td>92 mg/dL</td><td>99.0%</td><td>98.4°F</td><td>22.3</td><td><span class="pill pill-green">Normal</span></td></tr>
+              <tr><td>15 Jun 2025</td><td>88 bpm</td><td>135/90</td><td>118 mg/dL</td><td>96.5%</td><td>100.2°F</td><td>22.5</td><td><span class="pill pill-red">Alert</span></td></tr>
+              <tr><td>14 Jun 2025</td><td>74 bpm</td><td>117/76</td><td>88 mg/dL</td><td>98.8%</td><td>98.5°F</td><td>22.3</td><td><span class="pill pill-green">Normal</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== MEDICAL RECORDS ========== -->
+    <div class="page-content" id="page-records">
+      <div class="page-header">
+        <div><div class="page-title">Medical Records</div><div class="page-subtitle">Your complete health document archive</div></div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-outline btn-sm"><i class="fa-solid fa-filter"></i> Filter</button>
+          <button class="btn btn-primary btn-sm" onclick="showToast('Upload feature: connect Flask backend!','info')"><i class="fa-solid fa-upload"></i> Upload Report</button>
+        </div>
+      </div>
+      <div class="grid g-4cols" style="margin-bottom:20px;">
+        <div class="stat-card"><div class="stat-icon icon-teal"><i class="fa-solid fa-file-medical"></i></div><div class="stat-value">47</div><div class="stat-label">Total Records</div></div>
+        <div class="stat-card"><div class="stat-icon icon-ocean"><i class="fa-solid fa-flask-vial"></i></div><div class="stat-value">18</div><div class="stat-label">Lab Reports</div></div>
+        <div class="stat-card"><div class="stat-icon icon-amber"><i class="fa-solid fa-x-ray"></i></div><div class="stat-value">7</div><div class="stat-label">Imaging</div></div>
+        <div class="stat-card"><div class="stat-icon icon-mint"><i class="fa-solid fa-prescription"></i></div><div class="stat-value">22</div><div class="stat-label">Prescriptions</div></div>
+      </div>
+      <div class="card"><div class="card-header"><div class="card-title">All Medical Records</div>
+          <div style="display:flex;gap:8px;">
+            <select class="form-select" style="width:auto;padding:6px 10px;font-size:.82rem;">
+              <option>All Types</option><option>Lab Reports</option><option>Prescriptions</option><option>Imaging</option>
+            </select>
+          </div>
+        </div>
+        <div class="card-body" style="overflow-x:auto;">
+          <table class="data-table">
+            <thead><tr><th>Record ID</th><th>Type</th><th>Title</th><th>Doctor</th><th>Date</th><th>Hospital</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr><td>#REC-001</td><td><span class="pill pill-blue">Lab Report</span></td><td>CBC + Metabolic Panel</td><td>Dr. Anjali Mehta</td><td>15 Jun 2025</td><td>Apollo Hospitals</td><td><span class="pill pill-green">Reviewed</span></td><td><button class="btn btn-xs btn-outline"><i class="fa-solid fa-eye"></i> View</button></td></tr>
+              <tr><td>#REC-002</td><td><span class="pill pill-green">Prescription</span></td><td>Diabetes Management</td><td>Dr. Suresh Nair</td><td>10 Jun 2025</td><td>Fortis Hospital</td><td><span class="pill pill-green">Active</span></td><td><button class="btn btn-xs btn-outline"><i class="fa-solid fa-eye"></i> View</button></td></tr>
+              <tr><td>#REC-003</td><td><span class="pill pill-amber">Imaging</span></td><td>Chest X-Ray</td><td>Dr. Priya Rao</td><td>02 Jun 2025</td><td>MIOT Hospital</td><td><span class="pill pill-green">Normal</span></td><td><button class="btn btn-xs btn-outline"><i class="fa-solid fa-eye"></i> View</button></td></tr>
+              <tr><td>#REC-004</td><td><span class="pill pill-blue">Lab Report</span></td><td>HbA1c Test</td><td>Dr. Anjali Mehta</td><td>28 May 2025</td><td>Apollo Hospitals</td><td><span class="pill pill-amber">Follow-up</span></td><td><button class="btn btn-xs btn-outline"><i class="fa-solid fa-eye"></i> View</button></td></tr>
+              <tr><td>#REC-005</td><td><span class="pill pill-purple" style="background:var(--purple-100);color:var(--purple-500);">ECG</span></td><td>Resting ECG</td><td>Dr. Suresh Nair</td><td>20 May 2025</td><td>Fortis Hospital</td><td><span class="pill pill-green">Normal</span></td><td><button class="btn btn-xs btn-outline"><i class="fa-solid fa-eye"></i> View</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== APPOINTMENTS ========== -->
+    <div class="page-content" id="page-appointments">
+      <div class="page-header">
+        <div><div class="page-title">Appointment Management</div><div class="page-subtitle">Book and manage your doctor appointments</div></div>
+        <button class="btn btn-primary btn-sm" onclick="showToast('Appointment booked!','success')"><i class="fa-solid fa-calendar-plus"></i> Book Appointment</button>
+      </div>
+      <div class="grid g-2cols" style="margin-bottom:20px;">
+        <div class="card"><div class="card-header"><div class="card-title">Book New Appointment</div></div>
+          <div class="card-body">
+            <div class="form-group"><label class="form-label">Select Doctor</label>
+              <select class="form-select">
+                <option>Dr. Anjali Mehta — General Medicine</option>
+                <option>Dr. Suresh Nair — Cardiology</option>
+                <option>Dr. Priya Rao — Endocrinology</option>
+                <option>Dr. Ramesh Kumar — Orthopedics</option>
+              </select>
+            </div>
+            <div class="row">
+              <div class="col-6"><div class="form-group"><label class="form-label">Preferred Date</label><input class="form-control" type="date"/></div></div>
+              <div class="col-6"><div class="form-group"><label class="form-label">Preferred Time</label><select class="form-select"><option>9:00 AM</option><option>10:30 AM</option><option>11:00 AM</option><option>2:00 PM</option><option>3:30 PM</option><option>5:00 PM</option></select></div></div>
+            </div>
+            <div class="form-group"><label class="form-label">Appointment Type</label>
+              <select class="form-select"><option>General Consultation</option><option>Follow-up</option><option>Emergency</option><option>Telemedicine</option></select>
+            </div>
+            <div class="form-group"><label class="form-label">Reason for Visit</label><textarea class="form-control" rows="2" placeholder="Describe your symptoms or reason…"></textarea></div>
+            <button class="btn btn-primary" onclick="showToast('Appointment request sent!','success')"><i class="fa-solid fa-paper-plane"></i> Confirm Appointment</button>
+          </div>
+        </div>
+        <div class="card"><div class="card-header"><div class="card-title">Upcoming Appointments</div></div>
+          <div class="card-body">
+            <div class="appt-card" style="background:var(--teal-50);"><div class="appt-date"><div class="appt-day">18</div><div class="appt-mon">Jun</div></div><div class="appt-info"><div class="appt-doc">Dr. Anjali Mehta</div><div class="appt-type">General Consultation · 10:30 AM</div><div style="font-size:.75rem;color:var(--slate-500);margin-top:3px;"><i class="fa-solid fa-location-dot"></i> Apollo Hospital, Chennai</div></div><div style="display:flex;flex-direction:column;gap:4px;"><span class="pill pill-green">Confirmed</span><button class="btn btn-xs btn-outline" style="margin-top:4px;" onclick="showToast('Appointment cancelled','error')">Cancel</button></div></div>
+            <div class="appt-card"><div class="appt-date"><div class="appt-day">22</div><div class="appt-mon">Jun</div></div><div class="appt-info"><div class="appt-doc">Dr. Suresh Nair</div><div class="appt-type">Cardiology Review · 3:00 PM</div><div style="font-size:.75rem;color:var(--slate-500);margin-top:3px;"><i class="fa-solid fa-location-dot"></i> Fortis Hospital, Chennai</div></div><div><span class="pill pill-blue">Scheduled</span></div></div>
+            <div class="appt-card"><div class="appt-date"><div class="appt-day">28</div><div class="appt-mon">Jun</div></div><div class="appt-info"><div class="appt-doc">Dr. Priya Rao</div><div class="appt-type">Diabetes Follow-up · 11:00 AM</div></div><span class="pill pill-gray">Pending</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="card"><div class="card-header"><div class="card-title">Appointment History</div></div>
+        <div class="card-body" style="overflow-x:auto;">
+          <table class="data-table">
+            <thead><tr><th>Date</th><th>Doctor</th><th>Specialty</th><th>Type</th><th>Status</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>10 Jun 2025</td><td>Dr. Anjali Mehta</td><td>General Medicine</td><td>Consultation</td><td><span class="pill pill-green">Completed</span></td><td>Routine checkup, all normal</td></tr>
+              <tr><td>02 Jun 2025</td><td>Dr. Priya Rao</td><td>Endocrinology</td><td>Follow-up</td><td><span class="pill pill-green">Completed</span></td><td>HbA1c improved to 6.8%</td></tr>
+              <tr><td>15 May 2025</td><td>Dr. Suresh Nair</td><td>Cardiology</td><td>Emergency</td><td><span class="pill pill-red">Critical</span></td><td>Chest pain, ECG done</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== MEDICINE REMINDER ========== -->
+    <div class="page-content" id="page-medicines">
+      <div class="page-header">
+        <div><div class="page-title">Medicine Reminder</div><div class="page-subtitle">Track your daily medications and adherence</div></div>
+        <button class="btn btn-primary btn-sm" onclick="showToast('Medicine added!','success')"><i class="fa-solid fa-plus"></i> Add Medicine</button>
+      </div>
+      <div class="grid g-4cols" style="margin-bottom:20px;">
+        <div class="stat-card"><div class="stat-icon icon-teal"><i class="fa-solid fa-pills"></i></div><div class="stat-value">8</div><div class="stat-label">Active Medicines</div></div>
+        <div class="stat-card"><div class="stat-icon icon-mint"><i class="fa-solid fa-check-circle"></i></div><div class="stat-value">76%</div><div class="stat-label">This Week Adherence</div></div>
+        <div class="stat-card"><div class="stat-icon icon-amber"><i class="fa-solid fa-clock"></i></div><div class="stat-value">3</div><div class="stat-label">Due Today</div></div>
+        <div class="stat-card"><div class="stat-icon icon-rose"><i class="fa-solid fa-xmark-circle"></i></div><div class="stat-value">2</div><div class="stat-label">Missed This Week</div></div>
+      </div>
+      <div class="grid g-2cols">
+        <div class="card"><div class="card-header"><div class="card-title">Add New Medicine</div></div>
+          <div class="card-body">
+            <div class="form-group"><label class="form-label">Medicine Name</label><input class="form-control" placeholder="e.g., Metformin 500mg"/></div>
+            <div class="row">
+              <div class="col-6"><div class="form-group"><label class="form-label">Dosage</label><input class="form-control" placeholder="e.g., 1 tablet"/></div></div>
+              <div class="col-6"><div class="form-group"><label class="form-label">Frequency</label><select class="form-select"><option>Once daily</option><option>Twice daily</option><option>Three times daily</option><option>Weekly</option></select></div></div>
+            </div>
+            <div class="row">
+              <div class="col-6"><div class="form-group"><label class="form-label">Reminder Time</label><input class="form-control" type="time" value="08:00"/></div></div>
+              <div class="col-6"><div class="form-group"><label class="form-label">With Food</label><select class="form-select"><option>After food</option><option>Before food</option><option>Empty stomach</option></select></div></div>
+            </div>
+            <div class="row">
+              <div class="col-6"><div class="form-group"><label class="form-label">Start Date</label><input class="form-control" type="date"/></div></div>
+              <div class="col-6"><div class="form-group"><label class="form-label">End Date</label><input class="form-control" type="date"/></div></div>
+            </div>
+            <button class="btn btn-primary" onclick="showToast('Medicine reminder set!','success')"><i class="fa-solid fa-bell"></i> Set Reminder</button>
+          </div>
+        </div>
+        <div class="card"><div class="card-header"><div class="card-title">Today's Schedule</div></div>
+          <div class="card-body">
+            <div style="font-size:.8rem;font-weight:600;color:var(--slate-500);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Morning (8:00 AM)</div>
+            <div class="med-card"><div class="med-icon">💊</div><div class="med-info"><div class="med-name">Metformin 500mg</div><div class="med-time">After breakfast</div></div><div class="med-taken done"></div></div>
+            <div class="med-card"><div class="med-icon">💊</div><div class="med-info"><div class="med-name">Vitamin D3</div><div class="med-time">With milk</div></div><div class="med-taken done"></div></div>
+            <div style="font-size:.8rem;font-weight:600;color:var(--slate-500);text-transform:uppercase;letter-spacing:.06em;margin:14px 0 10px;">Afternoon (1:00 PM)</div>
+            <div class="med-card"><div class="med-icon">💊</div><div class="med-info"><div class="med-name">Amlodipine 5mg</div><div class="med-time">After lunch</div></div><div class="med-taken done"></div></div>
+            <div style="font-size:.8rem;font-weight:600;color:var(--slate-500);text-transform:uppercase;letter-spacing:.06em;margin:14px 0 10px;">Evening (10:00 PM)</div>
+            <div class="med-card"><div class="med-icon">💊</div><div class="med-info"><div class="med-name">Atorvastatin 10mg</div><div class="med-time">Before bedtime</div></div><div class="med-taken" onclick="this.classList.toggle('done')"></div></div>
+            <div style="margin-top:16px;">
+              <div class="progress-item"><div class="progress-header"><span class="progress-label">Today's adherence</span><span class="progress-val" style="color:var(--teal-500);">75%</span></div><div class="progress-bar-track"><div class="progress-bar-fill" style="width:75%;background:linear-gradient(90deg,var(--teal-400),var(--mint-400));"></div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== VACCINATION TRACKER ========== -->
+    <div class="page-content" id="page-vaccinations">
+      <div class="page-header">
+        <div><div class="page-title">Vaccination Tracker</div><div class="page-subtitle">Track your immunization history and upcoming vaccines</div></div>
+        <button class="btn btn-primary btn-sm" onclick="showToast('Vaccination record added!','success')"><i class="fa-solid fa-plus"></i> Add Record</button>
+      </div>
+      <div class="grid g-4cols" style="margin-bottom:20px;">
+        <div class="stat-card"><div class="stat-icon icon-teal"><i class="fa-solid fa-syringe"></i></div><div class="stat-value">12</div><div class="stat-label">Completed Vaccines</div></div>
+        <div class="stat-card"><div class="stat-icon icon-amber"><i class="fa-solid fa-clock"></i></div><div class="stat-value">2</div><div class="stat-label">Upcoming</div></div>
+        <div class="stat-card"><div class="stat-icon icon-rose"><i class="fa-solid fa-calendar-xmark"></i></div><div class="stat-value">1</div><div class="stat-label">Overdue</div></div>
+        <div class="stat-card"><div class="stat-icon icon-mint"><i class="fa-solid fa-shield-virus"></i></div><div class="stat-value">85%</div><div class="stat-label">Coverage Score</div></div>
+      </div>
+      <div class="grid g-2cols">
+        <div class="card"><div class="card-header"><div class="card-title">Vaccination History</div></div>
+          <div class="card-body">
+            <div class="vacc-item"><div class="vacc-dot vacc-done"></div><div class="vacc-info" style="flex:1;"><div class="vacc-name">COVID-19 (Covishield) — 2nd Dose</div><div class="vacc-date">15 Sep 2021 · Apollo Hospital</div></div><div class="vacc-status"><span class="pill pill-green">Done</span></div></div>
+            <div class="vacc-item"><div class="vacc-dot vacc-done"></div><div class="vacc-info" style="flex:1;"><div class="vacc-name">Hepatitis B — 3rd Dose</div><div class="vacc-date">10 Mar 2022 · Primary Health Center</div></div><div class="vacc-status"><span class="pill pill-green">Done</span></div></div>
+            <div class="vacc-item"><div class="vacc-dot vacc-done"></div><div class="vacc-info" style="flex:1;"><div class="vacc-name">Tetanus Booster (Td)</div><div class="vacc-date">22 Jul 2023 · Government Hospital</div></div><div class="vacc-status"><span class="pill pill-green">Done</span></div></div>
+            <div class="vacc-item"><div class="vacc-dot vacc-upcoming"></div><div class="vacc-info" style="flex:1;"><div class="vacc-name">Influenza (Flu) — Annual</div><div class="vacc-date">Due: Jul 2025</div></div><div class="vacc-status"><span class="pill pill-amber">Upcoming</span></div></div>
+            <div class="vacc-item"><div class="vacc-dot vacc-upcoming"></div><div class="vacc-info" style="flex:1;"><div class="vacc-name">Pneumococcal (PCV13)</div><div class="vacc-date">Due: Aug 2025</div></div><div class="vacc-status"><span class="pill pill-amber">Upcoming</span></div></div>
+            <div class="vacc-item"><div class="vacc-dot vacc-overdue"></div><div class="vacc-info" style="flex:1;"><div class="vacc-name">HPV Vaccine — Dose 2</div><div class="vacc-date">Overdue since: Mar 2025</div></div><div class="vacc-status"><span class="pill pill-red">Overdue</span></div></div>
+          </div>
+        </div>
+        <div class="card"><div class="card-header"><div class="card-title">Community Vaccination Stats</div></div>
+          <div class="card-body">
+            <canvas id="vaccChart" height="180"></canvas>
+            <div style="margin-top:16px;">
+              <div class="progress-item"><div class="progress-header"><span class="progress-label">COVID-19 Coverage</span><span class="progress-val">91%</span></div><div class="progress-bar-track"><div class="progress-bar-fill" style="width:91%;background:linear-gradient(90deg,var(--teal-400),var(--ocean-400));"></div></div></div>
+              <div class="progress-item"><div class="progress-header"><span class="progress-label">Flu Vaccine</span><span class="progress-val">67%</span></div><div class="progress-bar-track"><div class="progress-bar-fill" style="width:67%;background:linear-gradient(90deg,var(--amber-400),#f59e0b);"></div></div></div>
+              <div class="progress-item"><div class="progress-header"><span class="progress-label">Hepatitis B</span><span class="progress-val">78%</span></div><div class="progress-bar-track"><div class="progress-bar-fill" style="width:78%;background:linear-gradient(90deg,var(--mint-400),#059669);"></div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== FITNESS TRACKER ========== -->
+    <div class="page-content" id="page-fitness">
+      <div class="page-header">
+        <div><div class="page-title">Fitness & Activity Tracker</div><div class="page-subtitle">Monitor your daily physical activity and wellness</div></div>
+        <button class="btn btn-primary btn-sm" onclick="showToast('Activity logged!','success')"><i class="fa-solid fa-plus"></i> Log Activity</button>
+      </div>
+      <div class="grid g-4cols" style="margin-bottom:20px;">
+        <div class="stat-card"><div class="stat-icon icon-teal"><i class="fa-solid fa-person-walking"></i></div><div class="stat-value">6,248</div><div class="stat-label">Steps Today</div><span class="stat-delta delta-neutral">Goal: 10,000</span></div>
+        <div class="stat-card"><div class="stat-icon icon-rose"><i class="fa-solid fa-fire"></i></div><div class="stat-value">1,842</div><div class="stat-label">Calories Burned</div><span class="stat-delta delta-up"><i class="fa-solid fa-arrow-up"></i> 7% today</span></div>
+        <div class="stat-card"><div class="stat-icon icon-ocean"><i class="fa-solid fa-droplet"></i></div><div class="stat-value">1.8L</div><div class="stat-label">Water Intake</div><span class="stat-delta delta-neutral">Goal: 2.5L</span></div>
+        <div class="stat-card"><div class="stat-icon icon-amber"><i class="fa-solid fa-dumbbell"></i></div><div class="stat-value">45 min</div><div class="stat-label">Exercise Time</div><span class="stat-delta delta-up"><i class="fa-solid fa-arrow-up"></i> 15 min extra</span></div>
+      </div>
+      <div class="grid g-21" style="margin-bottom:20px;">
+        <div class="card"><div class="card-header"><div class="card-title">Weekly Activity Overview</div></div>
+          <div class="card-body"><canvas id="fitnessChart" height="100"></canvas></div>
+        </div>
+        <div class="card"><div class="card-header"><div class="card-title">Daily Goals</div></div>
+          <div class="card-body">
+            <div class="progress-item"><div class="progress-header"><span class="progress-label">🚶 Steps (6,248 / 10,000)</span><span class="progress-val" style="color:var(--amber-400);">62%</span></div><div class="progress-bar-track"><div class="progress-bar-fill" style="width:62%;background:linear-gradient(90deg,var(--teal-400),var(--mint-400));"></div></div></div>
+            <div class="progress-item"><div class="progress-header"><span class="progress-label">💧 Water (1.8L / 2.5L)</span><span class="progress-val" style="color:var(--ocean-400);">72%</span></div><div class="progress-bar-track"><div class="progress-bar-fill" style="width:72%;background:linear-gradient(90deg,var(--ocean-400),#67e8f9);"></div></div></div>
+            <div class="progress-item"><div class="progress-header"><span class="progress-label">🔥 Calories (1842 / 2200 kcal)</span><span class="progress-val" style="color:var(--rose-500);">84%</span></div><div class="progress-bar-track"><div class="progress-bar-fill" style="width:84%;background:linear-gradient(90deg,var(--amber-400),var(--rose-500));"></div></div></div>
+            <div class="progress-item"><div class="progress-header"><span class="progress-label">😴 Sleep (6.2h / 8h)</span><span class="progress-val" style="color:var(--purple-500);">78%</span></div><div class="progress-bar-track"><div class="progress-bar-fill" style="width:78%;background:linear-gradient(90deg,var(--purple-500),#a78bfa);"></div></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="grid g-2cols">
+        <div class="card"><div class="card-header"><div class="card-title">Log Activity</div></div>
+          <div class="card-body">
+            <div class="form-group"><label class="form-label">Activity Type</label><select class="form-select"><option>Walking</option><option>Running</option><option>Cycling</option><option>Swimming</option><option>Yoga</option><option>Gym Workout</option><option>Other</option></select></div>
+            <div class="row">
+              <div class="col-6"><div class="form-group"><label class="form-label">Duration (minutes)</label><input class="form-control" type="number" placeholder="30"/></div></div>
+              <div class="col-6"><div class="form-group"><label class="form-label">Distance (km)</label><input class="form-control" type="number" placeholder="2.5"/></div></div>
+            </div>
+            <div class="row">
+              <div class="col-6"><div class="form-group"><label class="form-label">Calories Burned</label><input class="form-control" type="number" placeholder="Auto-calculated"/></div></div>
+              <div class="col-6"><div class="form-group"><label class="form-label">Date & Time</label><input class="form-control" type="datetime-local"/></div></div>
+            </div>
+            <button class="btn btn-primary" onclick="showToast('Activity saved!','success')"><i class="fa-solid fa-save"></i> Save Activity</button>
+          </div>
+        </div>
+        <div class="card"><div class="card-header"><div class="card-title">Smart Diet Recommendations</div></div>
+          <div class="card-body">
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div style="padding:12px;background:var(--teal-50);border-radius:var(--radius-md);border-left:3px solid var(--teal-400);">
+                <div style="font-size:.85rem;font-weight:600;color:var(--slate-900);">🥗 Breakfast Suggestion</div>
+                <div style="font-size:.78rem;color:var(--slate-500);margin-top:4px;">Oatmeal with fresh fruits + 1 boiled egg. ~350 kcal, high fiber for blood sugar control.</div>
+              </div>
+              <div style="padding:12px;background:#fef3c7;border-radius:var(--radius-md);border-left:3px solid var(--amber-400);">
+                <div style="font-size:.85rem;font-weight:600;color:var(--slate-900);">🍱 Lunch Suggestion</div>
+                <div style="font-size:.78rem;color:var(--slate-500);margin-top:4px;">2 rotis + dal + mixed vegetables + raita. ~550 kcal, balanced macros.</div>
+              </div>
+              <div style="padding:12px;background:var(--purple-100);border-radius:var(--radius-md);border-left:3px solid var(--purple-500);">
+                <div style="font-size:.85rem;font-weight:600;color:var(--slate-900);">🌙 Dinner Suggestion</div>
+                <div style="font-size:.78rem;color:var(--slate-500);margin-top:4px;">Grilled fish + steamed broccoli + brown rice. ~480 kcal, low glycemic index.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== AI ASSISTANT ========== -->
+    <div class="page-content" id="page-aiassistant">
+      <div class="page-header">
+        <div><div class="page-title">AI Health Assistant</div><div class="page-subtitle">Get personalized health guidance powered by AI</div></div>
+        <button class="btn btn-outline btn-sm" onclick="clearChat()"><i class="fa-solid fa-rotate-left"></i> Clear Chat</button>
+      </div>
+      <div class="grid g-12">
+        <div class="card">
+          <div class="card-header">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--teal-400),var(--ocean-400));display:flex;align-items:center;justify-content:center;color:white;font-size:.9rem;"><i class="fa-solid fa-brain"></i></div>
+              <div><div class="card-title">HealthPulse AI</div><div style="font-size:.72rem;color:var(--teal-500);"><i class="fa-solid fa-circle" style="font-size:.5rem;"></i> Online · Powered by AI</div></div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="chat-messages" id="chatMessages">
+              <div class="chat-msg msg-ai">
+                <div class="chat-avatar ai-avatar"><i class="fa-solid fa-brain" style="font-size:.65rem;"></i></div>
+                <div class="chat-bubble">👋 Hello! I'm your HealthPulse AI assistant. I can help you with:<br><br>• Symptom analysis and guidance<br>• Understanding your health readings<br>• Diet and lifestyle recommendations<br>• Medication information<br>• General health questions<br><br>How can I help you today?</div>
+              </div>
+            </div>
+            <div class="chat-input-wrap">
+              <input class="chat-input" id="chatInput" placeholder="Ask me about your symptoms, health questions…" onkeypress="if(event.key==='Enter')sendMessage()"/>
+              <button class="btn-send" onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div class="card"><div class="card-header"><div class="card-title">Quick Questions</div></div>
+            <div class="card-body" style="display:flex;flex-direction:column;gap:7px;">
+              <button class="btn btn-outline btn-sm" style="text-align:left;justify-content:flex-start;" onclick="askQuick('What does my blood pressure reading mean?')">🩺 Explain my blood pressure</button>
+              <button class="btn btn-outline btn-sm" style="text-align:left;justify-content:flex-start;" onclick="askQuick('I have a headache and mild fever. What should I do?')">🤒 Headache + mild fever advice</button>
+              <button class="btn btn-outline btn-sm" style="text-align:left;justify-content:flex-start;" onclick="askQuick('What foods should I eat to control blood sugar?')">🥗 Diet for blood sugar control</button>
+              <button class="btn btn-outline btn-sm" style="text-align:left;justify-content:flex-start;" onclick="askQuick('How much exercise is recommended for my age?')">🏃 Exercise recommendations</button>
+              <button class="btn btn-outline btn-sm" style="text-align:left;justify-content:flex-start;" onclick="askQuick('What are the symptoms of heart disease I should watch for?')">❤️ Heart disease warning signs</button>
+            </div>
+          </div>
+          <div class="card"><div class="card-header"><div class="card-title">Your Health Summary</div></div>
+            <div class="card-body">
+              <div style="font-size:.82rem;color:var(--slate-600);line-height:1.7;">
+                <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span>Risk Level</span><span class="pill pill-amber">Moderate</span></div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span>Primary Concern</span><span style="font-weight:600;color:var(--slate-900);">Diabetes</span></div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span>Last Checkup</span><span style="font-weight:600;">10 Jun 2025</span></div>
+                <div style="display:flex;justify-content:space-between;"><span>Wellness Score</span><span style="font-weight:700;color:var(--teal-500);">72 / 100</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== DISEASE RISK ========== -->
+    <div class="page-content" id="page-risk">
+      <div class="page-header">
+        <div><div class="page-title">Disease Risk Prediction</div><div class="page-subtitle">AI-powered health risk assessment based on your vitals</div></div>
+        <button class="btn btn-primary btn-sm" onclick="showToast('Risk analysis updated!','success')"><i class="fa-solid fa-rotate"></i> Re-analyze</button>
+      </div>
+      <div class="grid g-2cols" style="margin-bottom:20px;">
+        <div class="card"><div class="card-header"><div class="card-title">Your Risk Profile</div></div>
+          <div class="card-body">
+            <div class="risk-meter risk-high"><div class="risk-header"><span class="risk-label">🩺 Diabetes Risk</span><span class="risk-score" style="color:var(--rose-500);">72% — High</span></div><div class="risk-bar-track"><div class="risk-bar-fill" style="width:72%;"></div></div></div>
+            <div style="font-size:.77rem;color:var(--slate-500);margin:-8px 0 14px;padding:8px;background:var(--rose-100);border-radius:6px;">HbA1c at 6.8%, fasting sugar elevated. Lifestyle changes and medication review recommended.</div>
+            <div class="risk-meter risk-medium"><div class="risk-header"><span class="risk-label">💓 Hypertension Risk</span><span class="risk-score" style="color:var(--amber-400);">48% — Moderate</span></div><div class="risk-bar-track"><div class="risk-bar-fill" style="width:48%;"></div></div></div>
+            <div style="font-size:.77rem;color:var(--slate-500);margin:-8px 0 14px;padding:8px;background:#fef3c7;border-radius:6px;">BP readings slightly elevated. Reduce sodium intake and increase physical activity.</div>
+            <div class="risk-meter risk-low"><div class="risk-header"><span class="risk-label">❤️ Heart Disease Risk</span><span class="risk-score" style="color:#065f46);">22% — Low</span></div><div class="risk-bar-track"><div class="risk-bar-fill" style="width:22%;"></div></div></div>
+            <div style="font-size:.77rem;color:var(--slate-500);margin:-8px 0 14px;padding:8px;background:#d1fae5;border-radius:6px;">Cholesterol and ECG within normal limits. Continue current healthy habits.</div>
+            <div class="risk-meter risk-low"><div class="risk-header"><span class="risk-label">⚖️ Obesity Risk</span><span class="risk-score" style="color:#065f46;">18% — Low</span></div><div class="risk-bar-track"><div class="risk-bar-fill" style="width:18%;"></div></div></div>
+          </div>
+        </div>
+        <div class="card"><div class="card-header"><div class="card-title">Risk Analysis — Radar View</div></div>
+          <div class="card-body"><canvas id="riskRadarChart" height="280"></canvas></div>
+        </div>
+      </div>
+      <div class="card"><div class="card-header"><div class="card-title">Personalized Risk Reduction Plan</div></div>
+        <div class="card-body">
+          <div class="grid g-2cols">
+            <div><div style="font-weight:600;font-size:.9rem;color:var(--slate-900);margin-bottom:12px;"><i class="fa-solid fa-utensils" style="color:var(--teal-500);"></i> Diet Recommendations</div>
+              <ul style="font-size:.85rem;color:var(--slate-600);line-height:1.9;padding-left:18px;">
+                <li>Reduce refined carbohydrates and sugar</li><li>Increase dietary fiber (30g/day)</li><li>Limit sodium to &lt;2000mg/day</li><li>Include omega-3 rich foods (fish, flaxseed)</li><li>Eat 5 servings of vegetables daily</li>
+              </ul>
+            </div>
+            <div><div style="font-weight:600;font-size:.9rem;color:var(--slate-900);margin-bottom:12px;"><i class="fa-solid fa-dumbbell" style="color:var(--ocean-400);"></i> Exercise Plan</div>
+              <ul style="font-size:.85rem;color:var(--slate-600);line-height:1.9;padding-left:18px;">
+                <li>30 min brisk walking, 5 days/week</li><li>Resistance training 2x/week</li><li>Yoga for stress and BP management</li><li>Target: 10,000 steps/day</li><li>Avoid prolonged sitting</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== HEALTHCARE LOCATOR ========== -->
+    <div class="page-content" id="page-locator">
+      <div class="page-header">
+        <div><div class="page-title">Nearby Healthcare Locator</div><div class="page-subtitle">Find hospitals, clinics, pharmacies and emergency services near you</div></div>
+      </div>
+      <div class="grid g-4cols" style="margin-bottom:20px;">
+        <div class="stat-card" style="cursor:pointer;" onclick="showToast('Showing hospitals','info')"><div class="stat-icon icon-rose"><i class="fa-solid fa-hospital"></i></div><div class="stat-value">12</div><div class="stat-label">Hospitals Nearby</div></div>
+        <div class="stat-card" style="cursor:pointer;" onclick="showToast('Showing clinics','info')"><div class="stat-icon icon-ocean"><i class="fa-solid fa-clinic-medical"></i></div><div class="stat-value">28</div><div class="stat-label">Clinics Nearby</div></div>
+        <div class="stat-card" style="cursor:pointer;" onclick="showToast('Showing pharmacies','info')"><div class="stat-icon icon-teal"><i class="fa-solid fa-prescription-bottle-medical"></i></div><div class="stat-value">45</div><div class="stat-label">Pharmacies Nearby</div></div>
+        <div class="stat-card" style="cursor:pointer;" onclick="showToast('Emergency: 108','error')"><div class="stat-icon icon-amber"><i class="fa-solid fa-truck-medical"></i></div><div class="stat-value">3</div><div class="stat-label">Emergency Centers</div></div>
+      </div>
+      <div class="grid g-12">
+        <div class="card"><div class="card-header"><div class="card-title">Nearby Facilities</div>
+          <div style="display:flex;gap:6px;">
+            <button class="btn btn-xs btn-primary">All</button>
+            <button class="btn btn-xs btn-outline">Hospitals</button>
+            <button class="btn btn-xs btn-outline">Clinics</button>
+            <button class="btn btn-xs btn-outline">Pharmacy</button>
+          </div></div>
+          <div class="card-body" style="overflow-x:auto;">
+            <table class="data-table">
+              <thead><tr><th>Facility</th><th>Type</th><th>Distance</th><th>Rating</th><th>Status</th><th></th></tr></thead>
+              <tbody>
+                <tr><td><div style="font-weight:600;">Apollo Hospitals</div><div style="font-size:.75rem;color:var(--slate-500);">Greams Road, Chennai</div></td><td><span class="pill pill-red">Hospital</span></td><td>1.2 km</td><td>⭐ 4.8</td><td><span class="pill pill-green">Open</span></td><td><button class="btn btn-xs btn-outline" onclick="showToast('Directions: Apollo Hospital','info')">📍 Directions</button></td></tr>
+                <tr><td><div style="font-weight:600;">Fortis Malar Hospital</div><div style="font-size:.75rem;color:var(--slate-500);">Adyar, Chennai</div></td><td><span class="pill pill-red">Hospital</span></td><td>3.5 km</td><td>⭐ 4.6</td><td><span class="pill pill-green">Open</span></td><td><button class="btn btn-xs btn-outline" onclick="showToast('Directions: Fortis','info')">📍 Directions</button></td></tr>
+                <tr><td><div style="font-weight:600;">CityMax Clinic</div><div style="font-size:.75rem;color:var(--slate-500);">Anna Nagar, Chennai</div></td><td><span class="pill pill-blue">Clinic</span></td><td>0.8 km</td><td>⭐ 4.3</td><td><span class="pill pill-green">Open</span></td><td><button class="btn btn-xs btn-outline" onclick="showToast('Directions: CityMax','info')">📍 Directions</button></td></tr>
+                <tr><td><div style="font-weight:600;">MedPlus Pharmacy</div><div style="font-size:.75rem;color:var(--slate-500);">KK Nagar, Chennai</div></td><td><span class="pill pill-green">Pharmacy</span></td><td>0.4 km</td><td>⭐ 4.5</td><td><span class="pill pill-green">24/7</span></td><td><button class="btn btn-xs btn-outline" onclick="showToast('Directions: MedPlus','info')">📍 Directions</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card"><div class="card-header"><div class="card-title">Map View</div></div>
+          <div class="card-body">
+            <div class="map-placeholder">
+              <i class="fa-solid fa-map"></i>
+              <div>Interactive Map</div>
+              <div style="font-size:.78rem;color:var(--teal-500);">Connect Google Maps API in Flask backend</div>
+              <div style="font-size:.78rem;text-align:center;max-width:200px;">12 healthcare facilities found within 5km of your location</div>
+              <button class="btn btn-primary btn-sm" style="margin-top:8px;" onclick="showToast('Map integration: add Google Maps API key in Flask config','info')">
+                <i class="fa-solid fa-location-crosshairs"></i> Enable Maps
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== COMMUNITY ANALYTICS ========== -->
+    <div class="page-content" id="page-analytics">
+      <div class="page-header">
+        <div><div class="page-title">Community Health Analytics</div><div class="page-subtitle">Population-level health insights and trends</div></div>
+        <div style="display:flex;gap:8px;">
+          <select class="form-select" style="width:auto;padding:7px 12px;font-size:.85rem;"><option>Last 30 Days</option><option>Last 3 Months</option><option>Last Year</option></select>
+          <button class="btn btn-primary btn-sm" onclick="showToast('Report generated!','success')"><i class="fa-solid fa-download"></i> Export Report</button>
+        </div>
+      </div>
+      <div class="grid g-4cols" style="margin-bottom:20px;">
+        <div class="stat-card"><div class="stat-icon icon-teal"><i class="fa-solid fa-users"></i></div><div class="stat-value">12,482</div><div class="stat-label">Total Population Tracked</div></div>
+        <div class="stat-card"><div class="stat-icon icon-amber"><i class="fa-solid fa-virus"></i></div><div class="stat-value">23.4%</div><div class="stat-label">Diabetes Prevalence</div></div>
+        <div class="stat-card"><div class="stat-icon icon-rose"><i class="fa-solid fa-heart-crack"></i></div><div class="stat-value">18.7%</div><div class="stat-label">Hypertension Rate</div></div>
+        <div class="stat-card"><div class="stat-icon icon-mint"><i class="fa-solid fa-shield-heart"></i></div><div class="stat-value">67.2%</div><div class="stat-label">Overall Health Score</div></div>
+      </div>
+      <div class="grid g-2cols" style="margin-bottom:20px;">
+        <div class="card"><div class="card-header"><div class="card-title">Monthly Health Trends</div></div>
+          <div class="card-body"><canvas id="communityTrendChart" height="160"></canvas></div>
+        </div>
+        <div class="card"><div class="card-header"><div class="card-title">Age-wise Health Statistics</div></div>
+          <div class="card-body"><canvas id="ageHealthChart" height="160"></canvas></div>
+        </div>
+      </div>
+      <div class="grid g-2cols">
+        <div class="card"><div class="card-header"><div class="card-title">Disease Burden by Category</div></div>
+          <div class="card-body">
+            <div class="progress-item"><div class="progress-header"><span class="progress-label">Metabolic Disorders</span><span class="progress-val">34%</span></div><div class="progress-bar-track"><div class="progress-bar-fill" style="width:34%;background:var(--rose-500);"></div></div></div>
+            <div class="progress-item"><div class="progress-header"><span class="progress-label">Cardiovascular</span><span class="progress-val">22%</span></div><div class="progress-bar-track"><div class="progress-bar-fill" style="width:22%;background:var(--ocean-400);"></div></div></div>
+            <div class="progress-item"><div class="progress-header"><span class="progress-label">Respiratory</span><span class="progress-val">18%</span></div><div class="progress-bar-track"><div class="progress-bar-fill" style="width:18%;background:var(--amber-400);"></div></div></div>
+            <div class="progress-item"><div class="progress-header"><span class="progress-label">Mental Health</span><span class="progress-val">14%</span></div><div class="progress-bar-track"><div class="progress-bar-fill" style="width:14%;background:var(--purple-500);"></div></div></div>
+            <div class="progress-item"><div class="progress-header"><span class="progress-label">Orthopedic</span><span class="progress-val">12%</span></div><div class="progress-bar-track"><div class="progress-bar-fill" style="width:12%;background:var(--teal-400);"></div></div></div>
+          </div>
+        </div>
+        <div class="card"><div class="card-header"><div class="card-title">High-Risk Population Segments</div></div>
+          <div class="card-body" style="overflow-x:auto;">
+            <table class="data-table">
+              <thead><tr><th>Segment</th><th>Count</th><th>Risk Level</th><th>Primary Condition</th></tr></thead>
+              <tbody>
+                <tr><td>Age 60+</td><td>1,842</td><td><span class="pill pill-red">High</span></td><td>Cardiovascular</td></tr>
+                <tr><td>Obese (BMI >30)</td><td>2,156</td><td><span class="pill pill-red">High</span></td><td>Diabetes</td></tr>
+                <tr><td>Smokers</td><td>987</td><td><span class="pill pill-amber">Medium</span></td><td>Respiratory</td></tr>
+                <tr><td>Sedentary Lifestyle</td><td>3,421</td><td><span class="pill pill-amber">Medium</span></td><td>Hypertension</td></tr>
+                <tr><td>Age 40–60</td><td>3,218</td><td><span class="pill pill-amber">Medium</span></td><td>Mixed</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== NOTIFICATIONS ========== -->
+    <div class="page-content" id="page-notifications">
+      <div class="page-header">
+        <div><div class="page-title">Notifications</div><div class="page-subtitle">Your health alerts and system messages</div></div>
+        <button class="btn btn-outline btn-sm" onclick="showToast('All notifications marked as read','success')"><i class="fa-solid fa-check-double"></i> Mark all read</button>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <div class="notif-item"><div class="notif-dot-wrap"><div class="notif-dot"></div></div><div><div class="notif-title">🚨 Emergency Alert: Abnormal BP Reading</div><div class="notif-desc">Patient Priya Sharma recorded BP of 180/110 mmHg. Immediate attention required.</div><div class="notif-time">2 minutes ago</div></div></div>
+          <div class="notif-item"><div class="notif-dot-wrap"><div class="notif-dot"></div></div><div><div class="notif-title">💊 Medicine Reminder: Atorvastatin 10mg</div><div class="notif-desc">Your bedtime medication is due at 10:00 PM tonight.</div><div class="notif-time">1 hour ago</div></div></div>
+          <div class="notif-item"><div class="notif-dot-wrap"><div class="notif-dot"></div></div><div><div class="notif-title">📅 Appointment Confirmed: Dr. Anjali Mehta</div><div class="notif-desc">Your appointment for June 18 at 10:30 AM has been confirmed.</div><div class="notif-time">3 hours ago</div></div></div>
+          <div class="notif-item"><div class="notif-dot-wrap"><div class="notif-dot read"></div></div><div><div class="notif-title" style="color:var(--slate-500);">💉 Vaccination Reminder: Influenza (Flu) Vaccine</div><div class="notif-desc">Your annual flu vaccine is due next month. Schedule an appointment.</div><div class="notif-time">Yesterday</div></div></div>
+          <div class="notif-item"><div class="notif-dot-wrap"><div class="notif-dot read"></div></div><div><div class="notif-title" style="color:var(--slate-500);">📊 Monthly Health Report Available</div><div class="notif-desc">Your May 2025 health summary report has been generated.</div><div class="notif-time">2 days ago</div></div></div>
+          <div class="notif-item"><div class="notif-dot-wrap"><div class="notif-dot read"></div></div><div><div class="notif-title" style="color:var(--slate-500);">🤖 AI Health Tip</div><div class="notif-desc">Based on your recent activity, increasing daily water intake to 2.5L could improve your blood sugar control.</div><div class="notif-time">3 days ago</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== SETTINGS ========== -->
+    <div class="page-content" id="page-settings">
+      <div class="page-header">
+        <div><div class="page-title">Settings</div><div class="page-subtitle">Manage your account and system preferences</div></div>
+      </div>
+      <div class="grid g-2cols">
+        <div class="card"><div class="card-header"><div class="card-title">Account Settings</div></div>
+          <div class="card-body">
+            <div class="form-group"><label class="form-label">Full Name</label><input class="form-control" value="Admin User"/></div>
+            <div class="form-group"><label class="form-label">Email Address</label><input class="form-control" value="admin@healthpulse.com"/></div>
+            <div class="form-group"><label class="form-label">Phone Number</label><input class="form-control" value="+91 98765 43210"/></div>
+            <div class="form-group"><label class="form-label">Language</label><select class="form-select"><option>English</option><option>Tamil</option><option>Hindi</option></select></div>
+            <button class="btn btn-primary btn-sm" onclick="showToast('Account updated!','success')"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button>
+          </div>
+        </div>
+        <div class="card"><div class="card-header"><div class="card-title">Notification Preferences</div></div>
+          <div class="card-body">
+            <div style="display:flex;flex-direction:column;gap:14px;">
+              <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+                <span style="font-size:.9rem;color:var(--slate-700);">Emergency Alerts</span>
+                <div style="width:44px;height:24px;background:var(--teal-400);border-radius:12px;position:relative;cursor:pointer;"><div style="position:absolute;right:2px;top:2px;width:20px;height:20px;background:white;border-radius:50%;transition:.2s;"></div></div>
+              </label>
+              <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+                <span style="font-size:.9rem;color:var(--slate-700);">Medicine Reminders</span>
+                <div style="width:44px;height:24px;background:var(--teal-400);border-radius:12px;position:relative;cursor:pointer;"><div style="position:absolute;right:2px;top:2px;width:20px;height:20px;background:white;border-radius:50%;transition:.2s;"></div></div>
+              </label>
+              <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+                <span style="font-size:.9rem;color:var(--slate-700);">Appointment Reminders</span>
+                <div style="width:44px;height:24px;background:var(--teal-400);border-radius:12px;position:relative;cursor:pointer;"><div style="position:absolute;right:2px;top:2px;width:20px;height:20px;background:white;border-radius:50%;transition:.2s;"></div></div>
+              </label>
+              <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+                <span style="font-size:.9rem;color:var(--slate-700);">Health Tips & AI Suggestions</span>
+                <div style="width:44px;height:24px;background:var(--slate-300);border-radius:12px;position:relative;cursor:pointer;"><div style="position:absolute;left:2px;top:2px;width:20px;height:20px;background:white;border-radius:50%;transition:.2s;"></div></div>
+              </label>
+              <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+                <span style="font-size:.9rem;color:var(--slate-700);">Dark Mode</span>
+                <div id="darkModeToggle" style="width:44px;height:24px;background:var(--slate-300);border-radius:12px;position:relative;cursor:pointer;" onclick="toggleDark()"><div id="darkModeKnob" style="position:absolute;left:2px;top:2px;width:20px;height:20px;background:white;border-radius:50%;transition:.2s;"></div></div>
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="card"><div class="card-header"><div class="card-title">Security Settings</div></div>
+          <div class="card-body">
+            <div class="form-group"><label class="form-label">Current Password</label><input class="form-control" type="password" placeholder="Enter current password"/></div>
+            <div class="form-group"><label class="form-label">New Password</label><input class="form-control" type="password" placeholder="Enter new password"/></div>
+            <div class="form-group"><label class="form-label">Confirm New Password</label><input class="form-control" type="password" placeholder="Confirm new password"/></div>
+            <button class="btn btn-primary btn-sm" onclick="showToast('Password changed!','success')"><i class="fa-solid fa-lock"></i> Change Password</button>
+          </div>
+        </div>
+        <div class="card"><div class="card-header"><div class="card-title">Data & Privacy</div></div>
+          <div class="card-body">
+            <div style="font-size:.87rem;color:var(--slate-600);line-height:1.7;margin-bottom:16px;">Your health data is encrypted and stored securely. You have full control over your data.</div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <button class="btn btn-outline btn-sm" onclick="showToast('Data export started','success')"><i class="fa-solid fa-download"></i> Export My Data</button>
+              <button class="btn btn-outline btn-sm" onclick="showToast('Privacy settings updated','success')"><i class="fa-solid fa-shield"></i> Manage Sharing</button>
+              <button class="btn btn-danger btn-sm" onclick="showToast('Request submitted','error')"><i class="fa-solid fa-trash"></i> Request Account Deletion</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== ADMIN DASHBOARD ========== -->
+    <div class="page-content" id="page-admin">
+      <div class="page-header">
+        <div><div class="page-title">Admin Dashboard</div><div class="page-subtitle">System administration and oversight</div></div>
+        <span class="pill pill-red" style="font-size:.82rem;padding:5px 12px;">Admin Only</span>
+      </div>
+      <div class="grid g-4cols" style="margin-bottom:20px;">
+        <div class="stat-card"><div class="stat-icon icon-teal"><i class="fa-solid fa-users"></i></div><div class="stat-value">12,482</div><div class="stat-label">Total Users</div><span class="stat-delta delta-up"><i class="fa-solid fa-arrow-up"></i> 127 this week</span></div>
+        <div class="stat-card"><div class="stat-icon icon-ocean"><i class="fa-solid fa-user-doctor"></i></div><div class="stat-value">48</div><div class="stat-label">Active Doctors</div></div>
+        <div class="stat-card"><div class="stat-icon icon-amber"><i class="fa-solid fa-server"></i></div><div class="stat-value">99.8%</div><div class="stat-label">System Uptime</div></div>
+        <div class="stat-card"><div class="stat-icon icon-mint"><i class="fa-solid fa-database"></i></div><div class="stat-value">2.4 GB</div><div class="stat-label">Database Size</div></div>
+      </div>
+      <div class="grid g-2cols">
+        <div class="card"><div class="card-header"><div class="card-title">System Health</div></div>
+          <div class="card-body">
+            <div class="progress-item"><div class="progress-header"><span class="progress-label">CPU Usage</span><span class="progress-val">34%</span></div><div class="progress-bar-track"><div class="progress-bar-fill" style="width:34%;background:var(--teal-400);"></div></div></div>
+            <div class="progress-item"><div class="progress-header"><span class="progress-label">Memory Usage</span><span class="progress-val">62%</span></div><div class="progress-bar-track"><div class="progress-bar-fill" style="width:62%;background:var(--ocean-400);"></div></div></div>
+            <div class="progress-item"><div class="progress-header"><span class="progress-label">Storage Usage</span><span class="progress-val">47%</span></div><div class="progress-bar-track"><div class="progress-bar-fill" style="width:47%;background:var(--amber-400);"></div></div></div>
+            <div class="progress-item"><div class="progress-header"><span class="progress-label">Network Load</span><span class="progress-val">28%</span></div><div class="progress-bar-track"><div class="progress-bar-fill" style="width:28%;background:var(--mint-400);"></div></div></div>
+          </div>
+        </div>
+        <div class="card"><div class="card-header"><div class="card-title">Recent System Logs</div></div>
+          <div class="card-body">
+            <div class="activity-item"><div class="activity-dot icon-teal"><i class="fa-solid fa-user-plus" style="font-size:.7rem;"></i></div><div class="activity-content"><div class="act-title">New user registered — Meena K.</div><div class="act-time">5 min ago · IP: 192.168.1.44</div></div></div>
+            <div class="activity-item"><div class="activity-dot icon-amber"><i class="fa-solid fa-key" style="font-size:.7rem;"></i></div><div class="activity-content"><div class="act-title">Password reset requested</div><div class="act-time">22 min ago · User ID: 1092</div></div></div>
+            <div class="activity-item"><div class="activity-dot icon-rose"><i class="fa-solid fa-triangle-exclamation" style="font-size:.7rem;"></i></div><div class="activity-content"><div class="act-title">Emergency alert triggered</div><div class="act-time">31 min ago · Patient: Priya S.</div></div></div>
+            <div class="activity-item"><div class="activity-dot icon-ocean"><i class="fa-solid fa-database" style="font-size:.7rem;"></i></div><div class="activity-content"><div class="act-title">Database backup completed</div><div class="act-time">1 hour ago · Size: 2.4GB</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== USER MANAGEMENT ========== -->
+    <div class="page-content" id="page-usermgmt">
+      <div class="page-header">
+        <div><div class="page-title">User Management</div><div class="page-subtitle">Manage all registered users and their roles</div></div>
+        <button class="btn btn-primary btn-sm" onclick="showToast('Add user: connect Flask backend','info')"><i class="fa-solid fa-user-plus"></i> Add User</button>
+      </div>
+      <div class="card"><div class="card-header"><div class="card-title">All Users</div>
+        <div style="display:flex;gap:8px;">
+          <select class="form-select" style="width:auto;padding:6px 10px;font-size:.82rem;"><option>All Roles</option><option>Admin</option><option>Doctor</option><option>Healthcare Worker</option><option>Community Member</option></select>
+          <input class="form-control" style="width:200px;" placeholder="Search users…"/>
+        </div></div>
+        <div class="card-body" style="overflow-x:auto;">
+          <table class="data-table">
+            <thead><tr><th>User</th><th>Role</th><th>Email</th><th>Joined</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr><td><div style="font-weight:600;">Priya Sharma</div></td><td><span class="pill pill-blue">Doctor</span></td><td>priya@healthpulse.com</td><td>Jan 2024</td><td><span class="pill pill-green">Active</span></td><td><div style="display:flex;gap:4px;"><button class="btn btn-xs btn-outline"><i class="fa-solid fa-pen"></i></button><button class="btn btn-xs btn-danger"><i class="fa-solid fa-ban"></i></button></div></td></tr>
+              <tr><td><div style="font-weight:600;">Ravi Kumar</div></td><td><span class="pill pill-green">Member</span></td><td>ravi@gmail.com</td><td>Mar 2024</td><td><span class="pill pill-green">Active</span></td><td><div style="display:flex;gap:4px;"><button class="btn btn-xs btn-outline"><i class="fa-solid fa-pen"></i></button><button class="btn btn-xs btn-danger"><i class="fa-solid fa-ban"></i></button></div></td></tr>
+              <tr><td><div style="font-weight:600;">Sunita Devi</div></td><td><span class="pill pill-amber">Health Worker</span></td><td>sunita@clinic.com</td><td>Feb 2024</td><td><span class="pill pill-amber">Pending</span></td><td><div style="display:flex;gap:4px;"><button class="btn btn-xs btn-outline"><i class="fa-solid fa-pen"></i></button><button class="btn btn-xs btn-danger"><i class="fa-solid fa-ban"></i></button></div></td></tr>
+              <tr><td><div style="font-weight:600;">Arun Patel</div></td><td><span class="pill pill-green">Member</span></td><td>arun@gmail.com</td><td>Apr 2024</td><td><span class="pill pill-red">Suspended</span></td><td><div style="display:flex;gap:4px;"><button class="btn btn-xs btn-outline"><i class="fa-solid fa-pen"></i></button><button class="btn btn-xs btn-danger"><i class="fa-solid fa-ban"></i></button></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== REPORTS ========== -->
+    <div class="page-content" id="page-reports">
+      <div class="page-header">
+        <div><div class="page-title">Reports Management</div><div class="page-subtitle">Generate and manage health reports</div></div>
+        <button class="btn btn-primary btn-sm" onclick="showToast('Generating report…','info')"><i class="fa-solid fa-file-circle-plus"></i> Generate Report</button>
+      </div>
+      <div class="grid g-3cols" style="margin-bottom:20px;">
+        <div class="card" style="cursor:pointer;transition:var(--transition);" onclick="showToast('Monthly report generated!','success')">
+          <div class="card-body" style="text-align:center;padding:30px;">
+            <div style="font-size:2.5rem;margin-bottom:12px;">📊</div>
+            <div style="font-weight:700;font-size:1rem;margin-bottom:6px;">Monthly Health Report</div>
+            <div style="font-size:.82rem;color:var(--slate-500);">Aggregate community health metrics for the month</div>
+            <button class="btn btn-primary btn-sm" style="margin-top:14px;">Generate</button>
+          </div>
+        </div>
+        <div class="card" style="cursor:pointer;" onclick="showToast('Disease report generated!','success')">
+          <div class="card-body" style="text-align:center;padding:30px;">
+            <div style="font-size:2.5rem;margin-bottom:12px;">🦠</div>
+            <div style="font-weight:700;font-size:1rem;margin-bottom:6px;">Disease Prevalence Report</div>
+            <div style="font-size:.82rem;color:var(--slate-500);">Distribution of diseases across age groups and regions</div>
+            <button class="btn btn-primary btn-sm" style="margin-top:14px;">Generate</button>
+          </div>
+        </div>
+        <div class="card" style="cursor:pointer;" onclick="showToast('Emergency report generated!','success')">
+          <div class="card-body" style="text-align:center;padding:30px;">
+            <div style="font-size:2.5rem;margin-bottom:12px;">🚨</div>
+            <div style="font-weight:700;font-size:1rem;margin-bottom:6px;">Emergency Incident Report</div>
+            <div style="font-size:.82rem;color:var(--slate-500);">All emergency alerts, responses, and outcomes</div>
+            <button class="btn btn-primary btn-sm" style="margin-top:14px;">Generate</button>
+          </div>
+        </div>
+      </div>
+      <div class="card"><div class="card-header"><div class="card-title">Generated Reports Archive</div></div>
+        <div class="card-body" style="overflow-x:auto;">
+          <table class="data-table">
+            <thead><tr><th>Report Name</th><th>Type</th><th>Generated By</th><th>Date</th><th>Size</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr><td>May 2025 Community Health Summary</td><td><span class="pill pill-blue">Monthly</span></td><td>Admin</td><td>01 Jun 2025</td><td>2.4 MB</td><td><div style="display:flex;gap:4px;"><button class="btn btn-xs btn-outline" onclick="showToast('Opening report…','info')"><i class="fa-solid fa-eye"></i> View</button><button class="btn btn-xs btn-outline" onclick="showToast('Downloading…','success')"><i class="fa-solid fa-download"></i></button></div></td></tr>
+              <tr><td>Q1 2025 Disease Trend Report</td><td><span class="pill pill-amber">Quarterly</span></td><td>Admin</td><td>01 Apr 2025</td><td>5.1 MB</td><td><div style="display:flex;gap:4px;"><button class="btn btn-xs btn-outline" onclick="showToast('Opening report…','info')"><i class="fa-solid fa-eye"></i> View</button><button class="btn btn-xs btn-outline" onclick="showToast('Downloading…','success')"><i class="fa-solid fa-download"></i></button></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end main-content -->
+</div><!-- end appShell -->
+
+<script>
+// ===== STATE =====
+let currentUser = null;
+let currentPage = 'dashboard';
+let isDark = false;
+
+// ===== AUTH =====
+function switchAuth(tab) {
+  document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+  const idx = tab === 'login' ? 0 : 1;
+  document.querySelectorAll('.auth-tab')[idx].classList.add('active');
+  document.getElementById(tab + 'Form').classList.add('active');
+}
+function selectRole(el, type) {
+  el.closest('.role-chips').querySelectorAll('.role-chip').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function doLogin() {
+  const email = document.getElementById('loginEmail').value || 'admin@healthpulse.com';
+  const chip = document.querySelector('#loginRoleChips .role-chip.selected');
+  const role = chip ? chip.textContent.trim() : 'Admin';
+  const name = email.split('@')[0].replace(/[._]/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+  loginUser({name, role, email});
+}
+function quickLogin(type) {
+  if (type === 'doctor') loginUser({name:'Dr. Priya Rao', role:'Doctor', email:'drpriya@healthpulse.com'});
+  else loginUser({name:'Ravi Kumar', role:'Community Member', email:'ravi@gmail.com'});
+}
+function doRegister() { showToast('Registration successful! Please log in.','success'); switchAuth('login'); }
+function loginUser(user) {
+  currentUser = user;
+  document.getElementById('authOverlay').classList.add('hidden');
+  document.getElementById('appShell').classList.add('active');
+  document.getElementById('sidebarAvatar').textContent = user.name.charAt(0).toUpperCase();
+  document.getElementById('sidebarUserName').textContent = user.name;
+  document.getElementById('sidebarUserRole').textContent = user.role;
+  document.getElementById('dashWelcomeName').textContent = user.name.split(' ')[0];
+  document.getElementById('profileName').textContent = user.name;
+  document.getElementById('profileRole').textContent = user.role;
+  // Show/hide admin nav based on role
+  const isAdmin = user.role === 'Admin' || user.role === 'Administrator';
+  ['adminNav','adminNavItem','userMgmtNavItem','reportsNavItem'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = isAdmin ? '' : 'none';
+  });
+  navigate('dashboard');
+  showToast('Welcome back, ' + user.name.split(' ')[0] + '! 👋', 'success');
+  setTimeout(() => initCharts(), 400);
+}
+function doLogout() {
+  document.getElementById('appShell').classList.remove('active');
+  document.getElementById('authOverlay').classList.remove('hidden');
+  currentUser = null;
+  showToast('Signed out successfully','info');
+}
+
+// ===== LANDING =====
+function showLanding() {
+  document.getElementById('authOverlay').classList.add('hidden');
+  document.getElementById('landingPage').style.display = 'block';
+}
+function hideLanding() {
+  document.getElementById('landingPage').style.display = 'none';
+  document.getElementById('authOverlay').classList.remove('hidden');
+}
+
+// ===== NAVIGATION =====
+function navigate(page) {
+  // Hide all pages
+  document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+  const el = document.getElementById('page-' + page);
+  if (el) el.classList.add('active');
+
+  // Activate nav item
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if (n.getAttribute('onclick') && n.getAttribute('onclick').includes("'"+page+"'")) n.classList.add('active');
+  });
+
+  // Update title
+  const titles = {
+    dashboard:'Dashboard', profile:'Health Profile', monitoring:'Health Monitoring',
+    records:'Medical Records', appointments:'Appointments', medicines:'Medicine Reminder',
+    vaccinations:'Vaccination Tracker', fitness:'Fitness Tracker', aiassistant:'AI Health Assistant',
+    locator:'Healthcare Locator', analytics:'Community Analytics', notifications:'Notifications',
+    settings:'Settings', admin:'Admin Dashboard', usermgmt:'User Management',
+    reports:'Reports', risk:'Disease Risk Prediction'
+  };
+  document.getElementById('topbarTitle').textContent = titles[page] || page;
+  currentPage = page;
+  closeMobileMenu();
+
+  // Init charts for specific pages
+  if (page === 'monitoring') setTimeout(() => initMonitoringCharts(), 200);
+  if (page === 'vaccinations') setTimeout(() => initVaccChart(), 200);
+  if (page === 'analytics') setTimeout(() => initAnalyticsCharts(), 200);
+  if (page === 'fitness') setTimeout(() => initFitnessChart(), 200);
+  if (page === 'risk') setTimeout(() => initRiskChart(), 200);
+}
+
+// ===== MOBILE MENU =====
+function openMobileMenu() {
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('sidebarBackdrop').classList.add('open');
+}
+function closeMobileMenu() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarBackdrop').classList.remove('open');
+}
+
+// ===== DARK MODE =====
+function toggleDark() {
+  isDark = !isDark;
+  document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  document.getElementById('darkIcon').className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+}
+
+// ===== TOAST =====
+function showToast(msg, type='info') {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = 'toast-msg toast-' + type;
+  const icons = { success:'fa-circle-check', error:'fa-circle-xmark', info:'fa-circle-info' };
+  toast.innerHTML = `<i class="fa-solid ${icons[type] || icons.info}"></i> ${msg}`;
+  container.appendChild(toast);
+  setTimeout(() => { toast.style.opacity='0'; toast.style.transform='translateX(100%)'; toast.style.transition='all .3s'; setTimeout(()=>toast.remove(),300); }, 3000);
+}
+
+// ===== AI CHAT =====
+const aiResponses = {
+  default: ["Based on your health profile, I recommend maintaining your current medication schedule and increasing daily water intake to 2.5L.", "Your recent vitals show improvement! Continue with your current exercise routine and diet plan.", "I've analyzed your health data. Your BMI is in the healthy range. Keep up the great work!", "For better blood sugar control, consider reducing refined carbohydrates and increasing fiber intake."],
+  blood: "Your blood pressure of 120/80 mmHg is within the normal range (below 120/80). This is excellent! Keep monitoring regularly and maintain a low-sodium diet to sustain these levels.",
+  headache: "For a headache with mild fever: 1) Rest in a quiet, dark room 2) Stay well-hydrated (drink water every 30 min) 3) Consider paracetamol 500mg if fever >100°F 4) If fever persists beyond 3 days or exceeds 103°F, please visit a doctor immediately.",
+  food: "For blood sugar control, prioritize: 🥗 High-fiber foods (oats, legumes, vegetables) 🚫 Avoid refined sugars and white rice 🐟 Include omega-3 sources 🫐 Low-glycemic fruits like berries and guava. Eat small, frequent meals every 3–4 hours.",
+  exercise: "For your age group (30–40), WHO recommends: • 150–300 min of moderate activity/week • 2 days of strength training • Reduce sitting time • Activities: brisk walking, swimming, cycling are excellent for cardiovascular health.",
+  heart: "Warning signs of heart disease: 🚨 Chest pain or pressure, Shortness of breath, Pain radiating to arm/jaw, Irregular heartbeat, Fatigue, Swelling in legs. If you experience any of these, seek emergency care immediately. Call 108."
+};
+function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  addChatMsg(msg, 'user');
+  input.value = '';
+  setTimeout(() => {
+    let response = aiResponses.default[Math.floor(Math.random()*aiResponses.default.length)];
+    const lower = msg.toLowerCase();
+    if (lower.includes('blood pressure') || lower.includes('bp')) response = aiResponses.blood;
+    else if (lower.includes('headache') || lower.includes('fever')) response = aiResponses.headache;
+    else if (lower.includes('food') || lower.includes('diet') || lower.includes('sugar')) response = aiResponses.food;
+    else if (lower.includes('exercise') || lower.includes('workout')) response = aiResponses.exercise;
+    else if (lower.includes('heart')) response = aiResponses.heart;
+    addChatMsg(response, 'ai');
+  }, 800);
+}
+function askQuick(q) { navigate('aiassistant'); setTimeout(()=>{ document.getElementById('chatInput').value = q; sendMessage(); }, 100); }
+function addChatMsg(msg, from) {
+  const box = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'chat-msg msg-' + from;
+  const avatar = from === 'ai'
+    ? `<div class="chat-avatar ai-avatar"><i class="fa-solid fa-brain" style="font-size:.65rem;"></i></div>`
+    : `<div class="chat-avatar user-avatar-chat">Me</div>`;
+  div.innerHTML = avatar + `<div class="chat-bubble">${msg}</div>`;
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
+function clearChat() {
+  document.getElementById('chatMessages').innerHTML = '';
+  addChatMsg('Chat cleared. How can I help you?', 'ai');
+}
+
+// ===== CHARTS =====
+let chartInstances = {};
+function destroyChart(id) { if (chartInstances[id]) { chartInstances[id].destroy(); delete chartInstances[id]; } }
+
+function initCharts() {
+  // Health Trends
+  destroyChart('healthTrendChart');
+  const ctx1 = document.getElementById('healthTrendChart');
+  if (!ctx1) return;
+  chartInstances['healthTrendChart'] = new Chart(ctx1, {
+    type: 'line',
+    data: {
+      labels: ['Jun 12','Jun 13','Jun 14','Jun 15','Jun 16','Jun 17','Jun 18'],
+      datasets: [
+        { label:'Heart Rate', data:[74,78,74,88,79,82,76], borderColor:'#f43f5e', tension:.4, fill:false, pointRadius:4, pointBackgroundColor:'#f43f5e' },
+        { label:'Blood Sugar', data:[92,88,88,118,92,105,98], borderColor:'#13827a', tension:.4, fill:false, pointRadius:4, pointBackgroundColor:'#13827a' },
+        { label:'SpO₂', data:[98.8,99,98.8,96.5,99,97.8,98.5], borderColor:'#2492d4', tension:.4, fill:false, pointRadius:4, pointBackgroundColor:'#2492d4' }
+      ]
+    },
+    options: { responsive:true, plugins:{legend:{position:'bottom', labels:{font:{size:11}}}}, scales:{ y:{grid:{color:'rgba(0,0,0,.05)'}}, x:{grid:{color:'rgba(0,0,0,.05)'}} } }
+  });
+
+  // Disease Pie
+  destroyChart('diseasePieChart');
+  const ctx2 = document.getElementById('diseasePieChart');
+  if (!ctx2) return;
+  chartInstances['diseasePieChart'] = new Chart(ctx2, {
+    type: 'doughnut',
+    data: {
+      labels: ['Diabetes','Hypertension','Obesity','Heart Disease','Respiratory','Other'],
+      datasets: [{ data:[23,19,15,12,11,20], backgroundColor:['#13827a','#2492d4','#fbbf24','#f43f5e','#8b5cf6','#94a3b8'], borderWidth:2, borderColor:'white' }]
+    },
+    options: { responsive:true, plugins:{legend:{position:'bottom', labels:{font:{size:11}}}} }
+  });
+}
+
+function initMonitoringCharts() {
+  destroyChart('hrHistoryChart');
+  const c1 = document.getElementById('hrHistoryChart');
+  if (c1) chartInstances['hrHistoryChart'] = new Chart(c1, {
+    type:'line', data:{ labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+    datasets:[{ label:'Heart Rate (bpm)', data:[74,78,74,88,79,82,76], borderColor:'#f43f5e', backgroundColor:'rgba(244,63,94,.1)', tension:.4, fill:true }]},
+    options:{ responsive:true, plugins:{legend:{display:false}}, scales:{ y:{ min:60, max:100, grid:{color:'rgba(0,0,0,.05)'} }, x:{grid:{color:'rgba(0,0,0,.05)'}} } }
+  });
+  destroyChart('bpHistoryChart');
+  const c2 = document.getElementById('bpHistoryChart');
+  if (c2) chartInstances['bpHistoryChart'] = new Chart(c2, {
+    type:'line', data:{ labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+    datasets:[
+      { label:'Systolic', data:[117,122,118,135,118,125,120], borderColor:'#2492d4', tension:.4, fill:false },
+      { label:'Diastolic', data:[76,80,78,90,78,82,80], borderColor:'#13827a', tension:.4, fill:false }
+    ]}, options:{ responsive:true, plugins:{legend:{position:'bottom'}}, scales:{ y:{grid:{color:'rgba(0,0,0,.05)'}}, x:{grid:{color:'rgba(0,0,0,.05)'}} } }
+  });
+}
+
+function initVaccChart() {
+  destroyChart('vaccChart');
+  const c = document.getElementById('vaccChart');
+  if (c) chartInstances['vaccChart'] = new Chart(c, {
+    type:'bar', data:{ labels:['COVID-19','Flu','Hepatitis B','Tetanus','HPV','Pneumococcal'],
+    datasets:[{ label:'Vaccination Rate %', data:[91,67,78,85,54,62], backgroundColor:['#13827a','#fbbf24','#2492d4','#34d399','#8b5cf6','#f43f5e'], borderRadius:6 }]},
+    options:{ responsive:true, plugins:{legend:{display:false}}, scales:{ y:{ max:100, grid:{color:'rgba(0,0,0,.05)'} }, x:{grid:{display:false}} } }
+  });
+}
+
+function initFitnessChart() {
+  destroyChart('fitnessChart');
+  const c = document.getElementById('fitnessChart');
+  if (c) chartInstances['fitnessChart'] = new Chart(c, {
+    type:'bar', data:{ labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+    datasets:[{ label:'Steps', data:[8200,7500,9100,6800,7200,10400,6248], backgroundColor:'rgba(19,130,122,.7)', borderRadius:6 },
+              { label:'Calories Burned', data:[1900,1800,2100,1650,1750,2300,1842], backgroundColor:'rgba(36,146,212,.5)', borderRadius:6 }]},
+    options:{ responsive:true, plugins:{legend:{position:'bottom'}}, scales:{ y:{grid:{color:'rgba(0,0,0,.05)'}}, x:{grid:{display:false}} } }
+  });
+}
+
+function initAnalyticsCharts() {
+  destroyChart('communityTrendChart');
+  const c1 = document.getElementById('communityTrendChart');
+  if (c1) chartInstances['communityTrendChart'] = new Chart(c1, {
+    type:'line', data:{ labels:['Jan','Feb','Mar','Apr','May','Jun'],
+    datasets:[
+      { label:'New Cases', data:[234,198,287,312,276,241], borderColor:'#f43f5e', tension:.4, fill:false },
+      { label:'Recovered', data:[180,210,260,295,280,258], borderColor:'#13827a', tension:.4, fill:false },
+      { label:'Vaccinated', data:[1240,1580,1820,2100,2340,2580], borderColor:'#2492d4', tension:.4, fill:false }
+    ]}, options:{ responsive:true, plugins:{legend:{position:'bottom'}}, scales:{ y:{grid:{color:'rgba(0,0,0,.05)'}}, x:{grid:{color:'rgba(0,0,0,.05)'}} } }
+  });
+  destroyChart('ageHealthChart');
+  const c2 = document.getElementById('ageHealthChart');
+  if (c2) chartInstances['ageHealthChart'] = new Chart(c2, {
+    type:'bar', data:{ labels:['0–18','19–30','31–45','46–60','60+'],
+    datasets:[
+      { label:'Healthy', data:[92,78,65,52,38], backgroundColor:'#13827a', borderRadius:4 },
+      { label:'At Risk', data:[8,22,35,48,62], backgroundColor:'#fbbf24', borderRadius:4 }
+    ]}, options:{ responsive:true, plugins:{legend:{position:'bottom'}}, scales:{ x:{stacked:true, grid:{display:false}}, y:{stacked:true, grid:{color:'rgba(0,0,0,.05)'}} } }
+  });
+}
+
+function initRiskChart() {
+  destroyChart('riskRadarChart');
+  const c = document.getElementById('riskRadarChart');
+  if (c) chartInstances['riskRadarChart'] = new Chart(c, {
+    type:'radar', data:{ labels:['Diabetes','Hypertension','Heart Disease','Obesity','Stroke','Cancer'],
+    datasets:[
+      { label:'Your Risk %', data:[72,48,22,18,30,15], borderColor:'#f43f5e', backgroundColor:'rgba(244,63,94,.15)', pointBackgroundColor:'#f43f5e' },
+      { label:'Avg Community', data:[35,28,20,25,22,18], borderColor:'#13827a', backgroundColor:'rgba(19,130,122,.1)', pointBackgroundColor:'#13827a' }
+    ]}, options:{ responsive:true, plugins:{legend:{position:'bottom'}}, scales:{ r:{ min:0, max:100, grid:{color:'rgba(0,0,0,.06)'}, ticks:{stepSize:20, font:{size:10}} } } }
+  });
+}
+</script>
+</body>
+</html>
