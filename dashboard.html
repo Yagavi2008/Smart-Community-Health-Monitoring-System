@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard – VitalNet</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link href="../css/style.css" rel="stylesheet">
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- ======= SIDEBAR ======= -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon"><i class="fas fa-heartbeat"></i></div>
+      <div class="brand-text">
+        <div class="brand-name">VitalNet</div>
+        <div class="brand-sub">Health Monitor</div>
+      </div>
+    </div>
+
+    <div class="sidebar-user">
+      <div class="user-avatar">AP</div>
+      <div class="user-info">
+        <div class="user-name">Arun Prakash</div>
+        <div class="user-role">Community Member</div>
+      </div>
+      <i class="fas fa-chevron-right" style="color:var(--teal-400);font-size:11px;"></i>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Main Menu</div>
+      <a class="nav-item active" href="dashboard.html"><i class="fas fa-th-large"></i> Dashboard</a>
+      <a class="nav-item" href="health-profile.html"><i class="fas fa-user-circle"></i> Health Profile</a>
+      <a class="nav-item" href="health-monitoring.html"><i class="fas fa-heartbeat"></i> Vital Monitoring<span class="nav-badge teal">Live</span></a>
+      <a class="nav-item" href="medical-records.html"><i class="fas fa-file-medical"></i> Medical Records</a>
+      <a class="nav-item" href="appointments.html"><i class="fas fa-calendar-check"></i> Appointments<span class="nav-badge green">3</span></a>
+      <a class="nav-item" href="medicine-reminder.html"><i class="fas fa-pills"></i> Medicine Reminder<span class="nav-badge red">2</span></a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">AI & Health Tools</div>
+      <a class="nav-item" href="ai-assistant.html"><i class="fas fa-robot"></i> AI Health Assistant</a>
+      <a class="nav-item" href="vaccination.html"><i class="fas fa-syringe"></i> Vaccination Tracker</a>
+      <a class="nav-item" href="fitness-tracker.html"><i class="fas fa-running"></i> Fitness Tracker</a>
+      <a class="nav-item" href="community-analytics.html"><i class="fas fa-chart-bar"></i> Community Analytics</a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">System</div>
+      <a class="nav-item" href="notifications.html"><i class="fas fa-bell"></i> Notifications<span class="nav-badge red">5</span></a>
+      <a class="nav-item" href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+    </div>
+
+    <div class="sidebar-footer">
+      <a class="nav-item" href="../index.html"><i class="fas fa-home"></i> Back to Home</a>
+      <a class="nav-item" href="../pages/login.html" style="color:rgba(239,68,68,.7);"><i class="fas fa-sign-out-alt"></i> Sign Out</a>
+    </div>
+  </aside>
+
+  <!-- ======= TOPBAR ======= -->
+  <header class="topbar">
+    <button class="topbar-btn hamburger" id="hamburger"><i class="fas fa-bars"></i></button>
+    <div class="topbar-title">
+      <h4>Dashboard</h4>
+      <p>Welcome back, Arun! <span class="pulse-dot"></span> All vitals normal</p>
+    </div>
+    <div class="topbar-search">
+      <i class="fas fa-search"></i>
+      <input type="text" placeholder="Search patients, records, vitals...">
+    </div>
+    <div class="topbar-actions">
+      <button class="topbar-btn tooltip" data-tip="Toggle Dark Mode" id="themeToggle"><i class="fas fa-moon" id="themeIcon"></i></button>
+      <button class="topbar-btn tooltip" data-tip="Emergency Alert" data-modal-open="emergencyModal" style="color:var(--danger);border-color:rgba(239,68,68,.3);">
+        <i class="fas fa-exclamation-triangle"></i>
+      </button>
+      <button class="topbar-btn" data-action="notifications" data-modal-open="notifModal">
+        <i class="fas fa-bell"></i>
+        <div class="topbar-notif-dot"></div>
+      </button>
+      <a href="health-profile.html" style="display:flex;align-items:center;gap:8px;text-decoration:none;">
+        <div class="user-avatar" style="width:36px;height:36px;font-size:14px;">AP</div>
+      </a>
+    </div>
+  </header>
+
+  <!-- ======= MAIN CONTENT ======= -->
+  <main class="main-content">
+    <div class="page-content">
+
+      <!-- Emergency Banner (conditional) -->
+      <div class="emergency-banner" id="emergencyBannerTop" style="display:none;">
+        <div class="emergency-icon">🚨</div>
+        <div>
+          <div style="font-size:15px;font-weight:700;">Emergency Alert Active</div>
+          <div style="font-size:13px;opacity:.9;">Abnormal SpO₂ detected (92%) — Healthcare worker notified</div>
+        </div>
+        <button onclick="document.getElementById('emergencyBannerTop').style.display='none'" style="background:rgba(255,255,255,.2);border:none;color:white;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;font-weight:600;margin-left:auto;">Dismiss</button>
+      </div>
+
+      <!-- STAT CARDS -->
+      <div class="grid-4 mb-24">
+        <div class="stat-card teal fade-in anim-delay-1">
+          <div class="stat-icon teal"><i class="fas fa-users"></i></div>
+          <div class="stat-info">
+            <div class="stat-label">Total Members</div>
+            <div class="stat-value" data-count="12847">0</div>
+            <div class="stat-change up"><i class="fas fa-arrow-up"></i> 8.2% this month</div>
+          </div>
+        </div>
+        <div class="stat-card green fade-in anim-delay-2">
+          <div class="stat-icon green"><i class="fas fa-user-md"></i></div>
+          <div class="stat-info">
+            <div class="stat-label">Active Patients</div>
+            <div class="stat-value" data-count="3241">0</div>
+            <div class="stat-change up"><i class="fas fa-arrow-up"></i> 5.1% this month</div>
+          </div>
+        </div>
+        <div class="stat-card orange fade-in anim-delay-3">
+          <div class="stat-icon orange"><i class="fas fa-calendar-check"></i></div>
+          <div class="stat-info">
+            <div class="stat-label">Appointments Today</div>
+            <div class="stat-value" data-count="48">0</div>
+            <div class="stat-change down"><i class="fas fa-arrow-down"></i> 2.3% vs yesterday</div>
+          </div>
+        </div>
+        <div class="stat-card red fade-in anim-delay-4">
+          <div class="stat-icon red"><i class="fas fa-exclamation-triangle"></i></div>
+          <div class="stat-info">
+            <div class="stat-label">Emergency Cases</div>
+            <div class="stat-value" data-count="7">0</div>
+            <div class="stat-change up"><i class="fas fa-arrow-up"></i> 3 active now</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LIVE VITALS -->
+      <div class="card mb-24 fade-in anim-delay-2">
+        <div class="card-header">
+          <div class="card-title"><i class="fas fa-heartbeat"></i> Live Vital Signs <span class="badge-pill badge-teal ms-2"><span class="pulse-dot" style="width:6px;height:6px;"></span> Live</span></div>
+          <div class="flex-gap-8">
+            <a href="health-monitoring.html" class="btn-outline btn-sm"><i class="fas fa-chart-line"></i> Full Monitor</a>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-6 col-md-2">
+              <div class="vital-card">
+                <div class="vital-icon" style="background:rgba(239,68,68,.1);color:#ef4444;"><i class="fas fa-heartbeat"></i></div>
+                <div class="vital-value" id="live-hr" style="color:#ef4444;">72</div>
+                <div class="vital-unit">bpm</div>
+                <div class="vital-label">Heart Rate</div>
+                <div class="vital-status normal"><i class="fas fa-check"></i> Normal</div>
+              </div>
+            </div>
+            <div class="col-6 col-md-2">
+              <div class="vital-card">
+                <div class="vital-icon" style="background:rgba(59,130,246,.1);color:#3b82f6;"><i class="fas fa-tachometer-alt"></i></div>
+                <div class="vital-value" id="live-bp" style="color:#3b82f6;font-size:20px;">120/80</div>
+                <div class="vital-unit">mmHg</div>
+                <div class="vital-label">Blood Pressure</div>
+                <div class="vital-status normal"><i class="fas fa-check"></i> Normal</div>
+              </div>
+            </div>
+            <div class="col-6 col-md-2">
+              <div class="vital-card">
+                <div class="vital-icon" style="background:rgba(245,158,11,.1);color:#f59e0b;"><i class="fas fa-tint"></i></div>
+                <div class="vital-value" id="live-sugar" style="color:#f59e0b;">95</div>
+                <div class="vital-unit">mg/dL</div>
+                <div class="vital-label">Blood Sugar</div>
+                <div class="vital-status normal"><i class="fas fa-check"></i> Normal</div>
+              </div>
+            </div>
+            <div class="col-6 col-md-2">
+              <div class="vital-card">
+                <div class="vital-icon" style="background:rgba(22,144,144,.1);color:var(--teal-500);"><i class="fas fa-lungs"></i></div>
+                <div class="vital-value" id="live-spo2" style="color:var(--teal-500);">98%</div>
+                <div class="vital-unit">SpO₂</div>
+                <div class="vital-label">Oxygen Level</div>
+                <div class="vital-status good"><i class="fas fa-check"></i> Excellent</div>
+              </div>
+            </div>
+            <div class="col-6 col-md-2">
+              <div class="vital-card">
+                <div class="vital-icon" style="background:rgba(16,185,129,.1);color:#10b981;"><i class="fas fa-thermometer-half"></i></div>
+                <div class="vital-value" id="live-temp" style="color:#10b981;font-size:20px;">98.6°F</div>
+                <div class="vital-unit">Temperature</div>
+                <div class="vital-label">Body Temp</div>
+                <div class="vital-status normal"><i class="fas fa-check"></i> Normal</div>
+              </div>
+            </div>
+            <div class="col-6 col-md-2">
+              <div class="vital-card">
+                <div class="vital-icon" style="background:rgba(139,92,246,.1);color:#8b5cf6;"><i class="fas fa-weight"></i></div>
+                <div class="vital-value" style="color:#8b5cf6;">22.4</div>
+                <div class="vital-unit">kg/m²</div>
+                <div class="vital-label">BMI</div>
+                <div class="vital-status normal"><i class="fas fa-check"></i> Healthy</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CHARTS ROW -->
+      <div class="row g-4 mb-24">
+        <div class="col-md-8">
+          <div class="card h-100">
+            <div class="card-header">
+              <div class="card-title"><i class="fas fa-chart-line"></i> Health Trends (2025)</div>
+              <div class="flex-gap-8">
+                <div class="tab-nav" style="margin:0;border:none;gap:0;">
+                  <div class="tab-item active" style="padding:4px 12px;font-size:12px;">Year</div>
+                  <div class="tab-item" style="padding:4px 12px;font-size:12px;">Month</div>
+                  <div class="tab-item" style="padding:4px 12px;font-size:12px;">Week</div>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div style="height:280px;position:relative;">
+                <canvas id="healthTrendsChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card h-100">
+            <div class="card-header">
+              <div class="card-title"><i class="fas fa-chart-pie"></i> Disease Distribution</div>
+            </div>
+            <div class="card-body">
+              <div style="height:240px;position:relative;">
+                <canvas id="diseaseChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECOND ROW -->
+      <div class="row g-4 mb-24">
+        <!-- Upcoming Appointments -->
+        <div class="col-md-4">
+          <div class="card h-100">
+            <div class="card-header">
+              <div class="card-title"><i class="fas fa-calendar-alt"></i> Upcoming Appointments</div>
+              <a href="appointments.html" class="text-sm text-teal fw-600">View All</a>
+            </div>
+            <div class="card-body" style="padding-top:12px;">
+              <div class="appt-card">
+                <div class="appt-date-box"><div class="appt-day">14</div><div class="appt-month">Jul</div></div>
+                <div class="appt-info">
+                  <div class="appt-name">General Checkup</div>
+                  <div class="appt-doctor"><i class="fas fa-user-md"></i> Dr. Priya Sharma</div>
+                  <div class="appt-time"><i class="fas fa-clock"></i> 10:30 AM</div>
+                </div>
+                <div class="badge-pill badge-green">Confirmed</div>
+              </div>
+              <div class="appt-card">
+                <div class="appt-date-box"><div class="appt-day">18</div><div class="appt-month">Jul</div></div>
+                <div class="appt-info">
+                  <div class="appt-name">Cardiology Review</div>
+                  <div class="appt-doctor"><i class="fas fa-user-md"></i> Dr. Rajesh Kumar</div>
+                  <div class="appt-time"><i class="fas fa-clock"></i> 2:00 PM</div>
+                </div>
+                <div class="badge-pill badge-orange">Pending</div>
+              </div>
+              <div class="appt-card">
+                <div class="appt-date-box" style="background:var(--teal-400);"><div class="appt-day">22</div><div class="appt-month">Jul</div></div>
+                <div class="appt-info">
+                  <div class="appt-name">Blood Test Follow-up</div>
+                  <div class="appt-doctor"><i class="fas fa-user-md"></i> Dr. Meena Iyer</div>
+                  <div class="appt-time"><i class="fas fa-clock"></i> 11:00 AM</div>
+                </div>
+                <div class="badge-pill badge-teal">Scheduled</div>
+              </div>
+              <a href="appointments.html" class="btn-outline btn-sm" style="width:100%;justify-content:center;margin-top:4px;">
+                <i class="fas fa-plus"></i> Book New Appointment
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Medicine Reminders -->
+        <div class="col-md-4">
+          <div class="card h-100">
+            <div class="card-header">
+              <div class="card-title"><i class="fas fa-pills"></i> Today's Medicines</div>
+              <a href="medicine-reminder.html" class="text-sm text-teal fw-600">Manage</a>
+            </div>
+            <div class="card-body" style="padding-top:12px;">
+              <div class="med-card">
+                <div class="med-icon"><i class="fas fa-capsules"></i></div>
+                <div class="med-info">
+                  <div class="med-name">Metformin 500mg</div>
+                  <div class="med-dose">1 tablet after meals</div>
+                  <div class="med-time"><i class="fas fa-clock"></i> 8:00 AM, 8:00 PM</div>
+                </div>
+                <div class="med-check done"><i class="fas fa-check"></i></div>
+              </div>
+              <div class="med-card">
+                <div class="med-icon"><i class="fas fa-pills"></i></div>
+                <div class="med-info">
+                  <div class="med-name">Atorvastatin 10mg</div>
+                  <div class="med-dose">1 tablet before sleep</div>
+                  <div class="med-time"><i class="fas fa-clock"></i> 10:00 PM</div>
+                </div>
+                <div class="med-check"></div>
+              </div>
+              <div class="med-card">
+                <div class="med-icon"><i class="fas fa-tablets"></i></div>
+                <div class="med-info">
+                  <div class="med-name">Vitamin D3 1000IU</div>
+                  <div class="med-dose">1 tablet with breakfast</div>
+                  <div class="med-time"><i class="fas fa-clock"></i> 8:00 AM</div>
+                </div>
+                <div class="med-check done"><i class="fas fa-check"></i></div>
+              </div>
+
+              <div style="margin-top:12px;">
+                <div class="flex-between mb-4">
+                  <span class="text-sm fw-600">Adherence Today</span>
+                  <span class="text-sm fw-600 text-teal">67%</span>
+                </div>
+                <div class="progress">
+                  <div class="progress-bar" style="width:67%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="col-md-4">
+          <div class="card h-100">
+            <div class="card-header">
+              <div class="card-title"><i class="fas fa-history"></i> Recent Activity</div>
+            </div>
+            <div class="card-body">
+              <div class="timeline">
+                <div class="timeline-item">
+                  <div class="timeline-dot"></div>
+                  <div class="timeline-time">Today, 9:15 AM</div>
+                  <div class="timeline-title">Vitals recorded</div>
+                  <div class="timeline-desc">BP: 118/78, HR: 71 bpm – All normal</div>
+                </div>
+                <div class="timeline-item">
+                  <div class="timeline-dot green"></div>
+                  <div class="timeline-time">Today, 8:00 AM</div>
+                  <div class="timeline-title">Medicine taken</div>
+                  <div class="timeline-desc">Metformin 500mg – Morning dose</div>
+                </div>
+                <div class="timeline-item">
+                  <div class="timeline-dot orange"></div>
+                  <div class="timeline-time">Yesterday, 6:30 PM</div>
+                  <div class="timeline-title">Exercise logged</div>
+                  <div class="timeline-desc">Walking – 35 minutes, 3,200 steps</div>
+                </div>
+                <div class="timeline-item">
+                  <div class="timeline-dot"></div>
+                  <div class="timeline-time">Jul 10, 11:00 AM</div>
+                  <div class="timeline-title">Appointment completed</div>
+                  <div class="timeline-desc">Dr. Priya Sharma – General checkup</div>
+                </div>
+                <div class="timeline-item">
+                  <div class="timeline-dot red"></div>
+                  <div class="timeline-time">Jul 9, 3:20 PM</div>
+                  <div class="timeline-title">Health alert triggered</div>
+                  <div class="timeline-desc">Blood sugar elevated – 178 mg/dL</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ANALYTICS + AI RECS ROW -->
+      <div class="row g-4 mb-24">
+        <div class="col-md-8">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><i class="fas fa-chart-bar"></i> Age-wise Health Statistics</div>
+              <div class="badge-pill badge-teal">Community View</div>
+            </div>
+            <div class="card-body">
+              <div style="height:260px;">
+                <canvas id="ageGroupChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card h-100">
+            <div class="card-header">
+              <div class="card-title"><i class="fas fa-robot"></i> AI Recommendations</div>
+              <a href="ai-assistant.html" class="text-sm text-teal fw-600">Chat</a>
+            </div>
+            <div class="card-body">
+              <div class="alert alert-info mb-12">
+                <i class="fas fa-info-circle"></i>
+                <div class="alert-content">
+                  <div class="alert-title">Hydration Alert</div>
+                  <div class="alert-text">You've logged only 4 glasses of water today. Aim for 8-10 glasses.</div>
+                </div>
+              </div>
+              <div class="alert alert-success mb-12">
+                <i class="fas fa-check-circle"></i>
+                <div class="alert-content">
+                  <div class="alert-title">Good Sleep Pattern</div>
+                  <div class="alert-text">Your average sleep is 7.2 hours — within the recommended range.</div>
+                </div>
+              </div>
+              <div class="alert alert-warning mb-12">
+                <i class="fas fa-exclamation-triangle"></i>
+                <div class="alert-content">
+                  <div class="alert-title">Exercise Reminder</div>
+                  <div class="alert-text">You haven't logged exercise in 2 days. A 20-min walk is recommended.</div>
+                </div>
+              </div>
+              <a href="ai-assistant.html" class="btn-primary" style="width:100%;justify-content:center;">
+                <i class="fas fa-robot"></i> Ask AI Assistant
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DISEASE RISK + COMMUNITY METRICS -->
+      <div class="row g-4 mb-24">
+        <div class="col-md-5">
+          <div class="card h-100">
+            <div class="card-header">
+              <div class="card-title"><i class="fas fa-dna"></i> Disease Risk Assessment</div>
+              <a href="health-monitoring.html" class="text-sm text-teal fw-600">Full Report</a>
+            </div>
+            <div class="card-body">
+              <div class="row g-3">
+                <div class="col-6">
+                  <div class="risk-card">
+                    <div class="risk-header">
+                      <div class="risk-header-icon" style="background:rgba(245,158,11,.1);color:#f59e0b;"><i class="fas fa-tint"></i></div>
+                      <div>
+                        <div class="risk-name">Diabetes</div>
+                        <div class="risk-level" style="color:#f59e0b;">Moderate</div>
+                      </div>
+                    </div>
+                    <div class="risk-meter-bar">
+                      <div class="risk-fill" style="width:42%;background:#f59e0b;"></div>
+                    </div>
+                    <div class="risk-pct">42% risk score</div>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="risk-card">
+                    <div class="risk-header">
+                      <div class="risk-header-icon" style="background:rgba(59,130,246,.1);color:#3b82f6;"><i class="fas fa-tachometer-alt"></i></div>
+                      <div>
+                        <div class="risk-name">Hypertension</div>
+                        <div class="risk-level" style="color:#10b981;">Low</div>
+                      </div>
+                    </div>
+                    <div class="risk-meter-bar">
+                      <div class="risk-fill" style="width:22%;background:#10b981;"></div>
+                    </div>
+                    <div class="risk-pct">22% risk score</div>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="risk-card">
+                    <div class="risk-header">
+                      <div class="risk-header-icon" style="background:rgba(16,185,129,.1);color:#10b981;"><i class="fas fa-weight"></i></div>
+                      <div>
+                        <div class="risk-name">Obesity</div>
+                        <div class="risk-level" style="color:#10b981;">Low</div>
+                      </div>
+                    </div>
+                    <div class="risk-meter-bar">
+                      <div class="risk-fill" style="width:18%;background:#10b981;"></div>
+                    </div>
+                    <div class="risk-pct">18% risk score</div>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="risk-card">
+                    <div class="risk-header">
+                      <div class="risk-header-icon" style="background:rgba(239,68,68,.1);color:#ef4444;"><i class="fas fa-heart"></i></div>
+                      <div>
+                        <div class="risk-name">Heart Disease</div>
+                        <div class="risk-level" style="color:#f59e0b;">Moderate</div>
+                      </div>
+                    </div>
+                    <div class="risk-meter-bar">
+                      <div class="risk-fill" style="width:35%;background:#f59e0b;"></div>
+                    </div>
+                    <div class="risk-pct">35% risk score</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card h-100">
+            <div class="card-header">
+              <div class="card-title"><i class="fas fa-chart-area"></i> Monthly Health Reports</div>
+            </div>
+            <div class="card-body">
+              <div style="height:180px;position:relative;">
+                <canvas id="monthlyReportsChart"></canvas>
+              </div>
+              <div class="row g-2 mt-12">
+                <div class="col-6">
+                  <div style="background:var(--bg-secondary);border-radius:var(--radius-md);padding:10px;text-align:center;">
+                    <div style="font-size:20px;font-weight:800;color:var(--teal-500);">225</div>
+                    <div class="text-sm text-muted">Reports This Month</div>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div style="background:var(--bg-secondary);border-radius:var(--radius-md);padding:10px;text-align:center;">
+                    <div style="font-size:20px;font-weight:800;color:var(--success);">+19%</div>
+                    <div class="text-sm text-muted">vs Last Month</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="card h-100">
+            <div class="card-header">
+              <div class="card-title"><i class="fas fa-trophy"></i> Health Score</div>
+            </div>
+            <div class="card-body text-center">
+              <div style="position:relative;display:inline-block;margin:12px 0;">
+                <svg width="140" height="140" viewBox="0 0 140 140">
+                  <circle cx="70" cy="70" r="58" fill="none" stroke="var(--border-color)" stroke-width="12"/>
+                  <circle cx="70" cy="70" r="58" fill="none" stroke="url(#scoreGrad)" stroke-width="12"
+                    stroke-dasharray="364" stroke-dashoffset="91" stroke-linecap="round"
+                    transform="rotate(-90 70 70)"/>
+                  <defs>
+                    <linearGradient id="scoreGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stop-color="var(--teal-500)"/>
+                      <stop offset="100%" stop-color="var(--aqua)"/>
+                    </linearGradient>
+                  </defs>
+                </svg>
+                <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;">
+                  <div style="font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:var(--teal-500);line-height:1;">75</div>
+                  <div style="font-size:11px;color:var(--text-muted);">/ 100</div>
+                </div>
+              </div>
+              <div style="font-size:16px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">Good Health</div>
+              <div style="font-size:12px;color:var(--text-muted);margin-bottom:16px;">Above community average</div>
+              <div style="display:flex;flex-direction:column;gap:8px;text-align:left;">
+                <div class="flex-between"><span class="text-sm">Vitals</span><div class="progress" style="width:100px;"><div class="progress-bar" style="width:85%;"></div></div></div>
+                <div class="flex-between"><span class="text-sm">Activity</span><div class="progress" style="width:100px;"><div class="progress-bar green" style="width:70%;"></div></div></div>
+                <div class="flex-between"><span class="text-sm">Nutrition</span><div class="progress" style="width:100px;"><div class="progress-bar orange" style="width:60%;"></div></div></div>
+                <div class="flex-between"><span class="text-sm">Sleep</span><div class="progress" style="width:100px;"><div class="progress-bar" style="width:80%;"></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUICK STATS + VACCINATION -->
+      <div class="row g-4 mb-24">
+        <div class="col-md-4">
+          <div class="card h-100">
+            <div class="card-header">
+              <div class="card-title"><i class="fas fa-syringe"></i> Vaccination Status</div>
+              <a href="vaccination.html" class="text-sm text-teal fw-600">View All</a>
+            </div>
+            <div class="card-body">
+              <div class="flex-between mb-8">
+                <span class="text-sm fw-600">Immunization Rate</span>
+                <span class="text-sm fw-600 text-success">78%</span>
+              </div>
+              <div class="progress mb-16"><div class="progress-bar green" style="width:78%;"></div></div>
+
+              <div class="vacc-item">
+                <div class="vacc-icon" style="background:rgba(16,185,129,.1);color:#10b981;"><i class="fas fa-syringe"></i></div>
+                <div class="vacc-info">
+                  <div class="vacc-name">COVID-19 Booster</div>
+                  <div class="vacc-date">Feb 15, 2025</div>
+                </div>
+                <div class="badge-pill badge-green"><i class="fas fa-check"></i> Done</div>
+              </div>
+              <div class="vacc-item">
+                <div class="vacc-icon" style="background:rgba(22,144,144,.1);color:var(--teal-500);"><i class="fas fa-syringe"></i></div>
+                <div class="vacc-info">
+                  <div class="vacc-name">Influenza Vaccine</div>
+                  <div class="vacc-date">Oct 2024 (Annual)</div>
+                </div>
+                <div class="badge-pill badge-green"><i class="fas fa-check"></i> Done</div>
+              </div>
+              <div class="vacc-item">
+                <div class="vacc-icon" style="background:rgba(245,158,11,.1);color:#f59e0b;"><i class="fas fa-syringe"></i></div>
+                <div class="vacc-info">
+                  <div class="vacc-name">Hepatitis B Booster</div>
+                  <div class="vacc-date">Due: Aug 2025</div>
+                </div>
+                <div class="badge-pill badge-orange"><i class="fas fa-clock"></i> Upcoming</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card h-100">
+            <div class="card-header">
+              <div class="card-title"><i class="fas fa-running"></i> Today's Activity</div>
+              <a href="fitness-tracker.html" class="text-sm text-teal fw-600">Full Report</a>
+            </div>
+            <div class="card-body">
+              <div class="row g-2 mb-16">
+                <div class="col-6">
+                  <div style="background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.15);border-radius:var(--radius-md);padding:14px;text-align:center;">
+                    <div style="font-size:24px;font-weight:800;color:#10b981;">6,842</div>
+                    <div class="text-sm text-muted">Steps</div>
+                    <div style="font-size:11px;font-weight:600;color:#10b981;">Goal: 10,000</div>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div style="background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.15);border-radius:var(--radius-md);padding:14px;text-align:center;">
+                    <div style="font-size:24px;font-weight:800;color:#ef4444;">342</div>
+                    <div class="text-sm text-muted">Calories</div>
+                    <div style="font-size:11px;font-weight:600;color:#ef4444;">Goal: 500</div>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div style="background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.15);border-radius:var(--radius-md);padding:14px;text-align:center;">
+                    <div style="font-size:24px;font-weight:800;color:#3b82f6;">4</div>
+                    <div class="text-sm text-muted">Water (glasses)</div>
+                    <div style="font-size:11px;font-weight:600;color:#3b82f6;">Goal: 8</div>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div style="background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.15);border-radius:var(--radius-md);padding:14px;text-align:center;">
+                    <div style="font-size:24px;font-weight:800;color:#f59e0b;">35</div>
+                    <div class="text-sm text-muted">Exercise (min)</div>
+                    <div style="font-size:11px;font-weight:600;color:#f59e0b;">Goal: 60</div>
+                  </div>
+                </div>
+              </div>
+              <a href="fitness-tracker.html" class="btn-outline btn-sm" style="width:100%;justify-content:center;">
+                <i class="fas fa-plus"></i> Log Activity
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card h-100">
+            <div class="card-header">
+              <div class="card-title"><i class="fas fa-bell"></i> Active Alerts</div>
+              <a href="notifications.html" class="text-sm text-teal fw-600">All Notifs</a>
+            </div>
+            <div class="card-body">
+              <div class="notif-item">
+                <div class="notif-icon" style="background:rgba(239,68,68,.1);color:#ef4444;"><i class="fas fa-exclamation"></i></div>
+                <div class="notif-body">
+                  <div class="notif-title">High Blood Sugar Alert</div>
+                  <div class="notif-text">Post-meal reading of 178 mg/dL detected</div>
+                  <div class="notif-time">2 hours ago</div>
+                </div>
+              </div>
+              <div class="notif-item">
+                <div class="notif-icon" style="background:rgba(245,158,11,.1);color:#f59e0b;"><i class="fas fa-pills"></i></div>
+                <div class="notif-body">
+                  <div class="notif-title">Medicine Reminder</div>
+                  <div class="notif-text">Atorvastatin 10mg – due at 10:00 PM</div>
+                  <div class="notif-time">Upcoming tonight</div>
+                </div>
+              </div>
+              <div class="notif-item">
+                <div class="notif-icon" style="background:rgba(22,144,144,.1);color:var(--teal-500);"><i class="fas fa-calendar"></i></div>
+                <div class="notif-body">
+                  <div class="notif-title">Appointment Tomorrow</div>
+                  <div class="notif-text">Dr. Priya Sharma – 10:30 AM General Checkup</div>
+                  <div class="notif-time">Jul 14 at 10:30 AM</div>
+                </div>
+              </div>
+              <div class="notif-item">
+                <div class="notif-icon" style="background:rgba(16,185,129,.1);color:#10b981;"><i class="fas fa-syringe"></i></div>
+                <div class="notif-body">
+                  <div class="notif-title">Vaccination Due Soon</div>
+                  <div class="notif-text">Hepatitis B Booster due in 3 weeks</div>
+                  <div class="notif-time">Due: Aug 1, 2025</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- COMMUNITY HEALTH TABLE -->
+      <div class="card mb-24">
+        <div class="card-header">
+          <div class="card-title"><i class="fas fa-table"></i> Recent Health Records</div>
+          <div class="flex-gap-8">
+            <div class="filter-bar" style="margin:0;">
+              <div class="filter-chip active">All</div>
+              <div class="filter-chip">Normal</div>
+              <div class="filter-chip">Warning</div>
+              <div class="filter-chip">Critical</div>
+            </div>
+            <a href="medical-records.html" class="btn-outline btn-sm"><i class="fas fa-eye"></i> View All</a>
+          </div>
+        </div>
+        <div class="card-body" style="padding:0;">
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Patient</th>
+                  <th>Date</th>
+                  <th>Heart Rate</th>
+                  <th>Blood Pressure</th>
+                  <th>Blood Sugar</th>
+                  <th>SpO₂</th>
+                  <th>Temperature</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><div class="avatar-cell"><div class="mini-avatar">AP</div><div><div class="fw-600">Arun Prakash</div><div class="text-sm text-muted">#PT001</div></div></div></td>
+                  <td>Jul 13, 2025</td>
+                  <td><span class="text-success fw-600">72 bpm</span></td>
+                  <td><span class="fw-600">120/80</span></td>
+                  <td><span class="text-warning fw-600">178 mg/dL</span></td>
+                  <td><span class="text-success fw-600">98%</span></td>
+                  <td>98.6°F</td>
+                  <td><div class="badge-pill badge-orange"><i class="fas fa-exclamation-triangle"></i> Warning</div></td>
+                  <td><button class="btn-ghost btn-sm" data-modal-open="recordModal"><i class="fas fa-eye"></i></button></td>
+                </tr>
+                <tr>
+                  <td><div class="avatar-cell"><div class="mini-avatar" style="background:linear-gradient(135deg,#3b82f6,#60a5fa);">KR</div><div><div class="fw-600">Kamala Rajan</div><div class="text-sm text-muted">#PT002</div></div></div></td>
+                  <td>Jul 13, 2025</td>
+                  <td><span class="text-success fw-600">68 bpm</span></td>
+                  <td><span class="text-warning fw-600">145/92</span></td>
+                  <td><span class="text-success fw-600">96 mg/dL</span></td>
+                  <td><span class="text-success fw-600">97%</span></td>
+                  <td>99.1°F</td>
+                  <td><div class="badge-pill badge-orange"><i class="fas fa-exclamation-triangle"></i> Warning</div></td>
+                  <td><button class="btn-ghost btn-sm" data-modal-open="recordModal"><i class="fas fa-eye"></i></button></td>
+                </tr>
+                <tr>
+                  <td><div class="avatar-cell"><div class="mini-avatar" style="background:linear-gradient(135deg,#10b981,#34d399);">SM</div><div><div class="fw-600">Suresh Mani</div><div class="text-sm text-muted">#PT003</div></div></div></td>
+                  <td>Jul 12, 2025</td>
+                  <td><span class="text-success fw-600">74 bpm</span></td>
+                  <td><span class="text-success fw-600">118/76</span></td>
+                  <td><span class="text-success fw-600">92 mg/dL</span></td>
+                  <td><span class="text-success fw-600">99%</span></td>
+                  <td>98.4°F</td>
+                  <td><div class="badge-pill badge-green"><i class="fas fa-check"></i> Normal</div></td>
+                  <td><button class="btn-ghost btn-sm" data-modal-open="recordModal"><i class="fas fa-eye"></i></button></td>
+                </tr>
+                <tr>
+                  <td><div class="avatar-cell"><div class="mini-avatar" style="background:linear-gradient(135deg,#ef4444,#f87171);">LN</div><div><div class="fw-600">Lakshmi Narayanan</div><div class="text-sm text-muted">#PT004</div></div></div></td>
+                  <td>Jul 12, 2025</td>
+                  <td><span class="text-danger fw-600">108 bpm</span></td>
+                  <td><span class="text-danger fw-600">158/98</span></td>
+                  <td><span class="text-danger fw-600">215 mg/dL</span></td>
+                  <td><span class="text-warning fw-600">93%</span></td>
+                  <td>100.2°F</td>
+                  <td><div class="badge-pill badge-red"><i class="fas fa-times-circle"></i> Critical</div></td>
+                  <td><button class="btn-ghost btn-sm" data-modal-open="recordModal"><i class="fas fa-eye"></i></button></td>
+                </tr>
+                <tr>
+                  <td><div class="avatar-cell"><div class="mini-avatar" style="background:linear-gradient(135deg,#8b5cf6,#a78bfa);">VP</div><div><div class="fw-600">Vijaya Priya</div><div class="text-sm text-muted">#PT005</div></div></div></td>
+                  <td>Jul 11, 2025</td>
+                  <td><span class="text-success fw-600">70 bpm</span></td>
+                  <td><span class="text-success fw-600">116/74</span></td>
+                  <td><span class="text-success fw-600">88 mg/dL</span></td>
+                  <td><span class="text-success fw-600">98%</span></td>
+                  <td>98.2°F</td>
+                  <td><div class="badge-pill badge-green"><i class="fas fa-check"></i> Normal</div></td>
+                  <td><button class="btn-ghost btn-sm" data-modal-open="recordModal"><i class="fas fa-eye"></i></button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /page-content -->
+  </main>
+</div><!-- /app-layout -->
+
+<!-- ======= MODALS ======= -->
+
+<!-- Emergency Modal -->
+<div class="modal-overlay" id="emergencyModal">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-header">
+      <div class="modal-title" style="color:var(--danger);"><i class="fas fa-exclamation-triangle"></i> Trigger Emergency Alert</div>
+      <button class="modal-close" data-modal-close="emergencyModal">&times;</button>
+    </div>
+    <div class="alert alert-danger mb-16">
+      <i class="fas fa-exclamation-circle"></i>
+      <div class="alert-content">
+        <div class="alert-title">Emergency Alert</div>
+        <div class="alert-text">This will immediately notify your emergency contacts and the nearest healthcare worker.</div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Emergency Type</label>
+      <select class="form-control">
+        <option>Select emergency type...</option>
+        <option>Chest Pain</option>
+        <option>Difficulty Breathing</option>
+        <option>Severe Dizziness</option>
+        <option>High Blood Pressure</option>
+        <option>Diabetic Emergency</option>
+        <option>Cardiac Emergency</option>
+        <option>Other Medical Emergency</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Additional Notes</label>
+      <textarea class="form-control" rows="2" placeholder="Describe your symptoms briefly..."></textarea>
+    </div>
+    <div class="flex-gap-8" style="justify-content:flex-end;gap:10px;">
+      <button class="btn-ghost" data-modal-close="emergencyModal">Cancel</button>
+      <button class="btn-danger" onclick="Modal.close('emergencyModal');document.getElementById('emergencyBannerTop').style.display='flex';Toast.show('Emergency alert sent! Help is on the way.','danger',8000);">
+        <i class="fas fa-exclamation-triangle"></i> Send Alert Now
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Notifications Modal -->
+<div class="modal-overlay" id="notifModal">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-header">
+      <div class="modal-title"><i class="fas fa-bell"></i> Notifications</div>
+      <button class="modal-close" data-modal-close="notifModal">&times;</button>
+    </div>
+    <div class="notif-item">
+      <div class="notif-icon" style="background:rgba(239,68,68,.1);color:#ef4444;"><i class="fas fa-heartbeat"></i></div>
+      <div class="notif-body">
+        <div class="notif-title">Abnormal Vital Detected</div>
+        <div class="notif-text">Post-meal blood sugar: 178 mg/dL (above normal)</div>
+        <div class="notif-time">2 hours ago</div>
+      </div>
+    </div>
+    <div class="notif-item">
+      <div class="notif-icon" style="background:rgba(245,158,11,.1);color:#f59e0b;"><i class="fas fa-pills"></i></div>
+      <div class="notif-body">
+        <div class="notif-title">Medicine Reminder</div>
+        <div class="notif-text">Atorvastatin 10mg is due at 10:00 PM tonight</div>
+        <div class="notif-time">Scheduled</div>
+      </div>
+    </div>
+    <div class="notif-item">
+      <div class="notif-icon" style="background:rgba(22,144,144,.1);color:var(--teal-500);"><i class="fas fa-calendar-check"></i></div>
+      <div class="notif-body">
+        <div class="notif-title">Appointment Reminder</div>
+        <div class="notif-text">Dr. Priya Sharma tomorrow at 10:30 AM</div>
+        <div class="notif-time">Tomorrow</div>
+      </div>
+    </div>
+    <div class="notif-item">
+      <div class="notif-icon" style="background:rgba(16,185,129,.1);color:#10b981;"><i class="fas fa-robot"></i></div>
+      <div class="notif-body">
+        <div class="notif-title">AI Health Tip</div>
+        <div class="notif-text">You've reached 70% of your daily step goal. Keep walking!</div>
+        <div class="notif-time">4 hours ago</div>
+      </div>
+    </div>
+    <div class="notif-item">
+      <div class="notif-icon" style="background:rgba(59,130,246,.1);color:#3b82f6;"><i class="fas fa-syringe"></i></div>
+      <div class="notif-body">
+        <div class="notif-title">Vaccination Due</div>
+        <div class="notif-text">Hepatitis B Booster due in 3 weeks – Aug 1, 2025</div>
+        <div class="notif-time">3 days ago</div>
+      </div>
+    </div>
+    <div style="padding-top:12px;text-align:center;">
+      <a href="notifications.html" class="btn-outline btn-sm" style="width:100%;justify-content:center;" onclick="Modal.close('notifModal')">View All Notifications</a>
+    </div>
+  </div>
+</div>
+
+<!-- Record Detail Modal -->
+<div class="modal-overlay" id="recordModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title"><i class="fas fa-file-medical"></i> Health Record Detail</div>
+      <button class="modal-close" data-modal-close="recordModal">&times;</button>
+    </div>
+    <div class="row g-3">
+      <div class="col-6"><div class="form-label">Patient</div><div class="fw-600">Arun Prakash</div></div>
+      <div class="col-6"><div class="form-label">Record Date</div><div class="fw-600">Jul 13, 2025, 9:15 AM</div></div>
+      <div class="col-4"><div class="form-label">Heart Rate</div><div class="fw-600 text-success">72 bpm</div></div>
+      <div class="col-4"><div class="form-label">Blood Pressure</div><div class="fw-600">120/80 mmHg</div></div>
+      <div class="col-4"><div class="form-label">Blood Sugar</div><div class="fw-600 text-warning">178 mg/dL</div></div>
+      <div class="col-4"><div class="form-label">SpO₂</div><div class="fw-600 text-success">98%</div></div>
+      <div class="col-4"><div class="form-label">Temperature</div><div class="fw-600">98.6°F</div></div>
+      <div class="col-4"><div class="form-label">BMI</div><div class="fw-600">22.4 kg/m²</div></div>
+    </div>
+    <div class="alert alert-warning mt-16">
+      <i class="fas fa-exclamation-triangle"></i>
+      <div class="alert-content">
+        <div class="alert-title">Clinical Note</div>
+        <div class="alert-text">Post-meal blood sugar of 178 mg/dL is elevated. Monitor closely and consult doctor if consistent. Consider reducing carbohydrate intake.</div>
+      </div>
+    </div>
+    <div class="flex-gap-8 mt-16" style="justify-content:flex-end;gap:10px;">
+      <button class="btn-ghost" data-modal-close="recordModal">Close</button>
+      <button class="btn-primary"><i class="fas fa-download"></i> Download Report</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="../js/app.js"></script>
+</body>
+</html>
