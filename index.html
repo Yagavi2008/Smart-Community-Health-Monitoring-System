@@ -1,314 +1,307 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Health Profile – VitalNet</title>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-<link href="style.css" rel="stylesheet">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>VitalNet — Smart Community Health Monitoring System</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<link rel="stylesheet" href="css/style.css" />
 <style>
-.profile-hero { background: linear-gradient(135deg, var(--teal-800), var(--teal-700)); border-radius: var(--radius-xl); padding: 32px; margin-bottom: 24px; position: relative; overflow: hidden; }
-.profile-hero::after { content: ''; position: absolute; top: -60px; right: -60px; width: 200px; height: 200px; background: radial-gradient(circle, rgba(255,255,255,.08), transparent 70%); border-radius: 50%; }
-.profile-avatar-lg { width: 88px; height: 88px; border-radius: 50%; background: linear-gradient(135deg, var(--teal-400), var(--aqua)); display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 800; color: var(--teal-900); border: 3px solid rgba(255,255,255,.2); flex-shrink: 0; }
-.profile-name { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; color: var(--white); margin-bottom: 4px; }
-.profile-meta { font-size: 14px; color: rgba(255,255,255,.7); margin-bottom: 8px; }
-.profile-stat-mini { background: rgba(255,255,255,.1); border-radius: var(--radius-md); padding: 12px 18px; text-align: center; }
-.profile-stat-mini-val { font-size: 20px; font-weight: 800; color: var(--white); }
-.profile-stat-mini-lbl { font-size: 11px; color: rgba(255,255,255,.6); margin-top: 2px; }
-.info-section { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-xl); padding: 24px; margin-bottom: 20px; }
-.info-section-title { font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-.info-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-color); }
-.info-row:last-child { border-bottom: none; }
-.info-label { font-size: 13px; color: var(--text-muted); }
-.info-value { font-size: 14px; font-weight: 600; color: var(--text-primary); }
-.vital-grid-card { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 18px; text-align: center; transition: var(--transition); }
-.vital-grid-card:hover { border-color: var(--teal-400); }
-.vital-grid-val { font-size: 22px; font-weight: 800; margin-bottom: 2px; }
-.vital-grid-lbl { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
-.medical-tag { background: rgba(22,144,144,.1); color: var(--teal-400); border: 1px solid rgba(22,144,144,.2); border-radius: var(--radius-full); font-size: 12px; padding: 4px 12px; display: inline-block; margin: 4px; }
-.medical-tag.allergy { background: rgba(239,68,68,.08); color: #ef4444; border-color: rgba(239,68,68,.2); }
-.edit-btn { background: transparent; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 6px 14px; font-size: 13px; font-weight: 600; color: var(--text-secondary); cursor: pointer; transition: var(--transition); }
-.edit-btn:hover { border-color: var(--teal-400); color: var(--teal-400); }
+  body { background: #fff; }
+
+  /* Nav */
+  .landing-nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 999;
+    padding: 0 60px; height: 68px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(255,255,255,.95); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-brand { display:flex; align-items:center; gap:10px; text-decoration:none; }
+  .nav-brand .logo { width:36px; height:36px; background: linear-gradient(135deg,#1565C0,#00ACC1); border-radius:10px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:17px; }
+  .nav-brand .name { font-family:var(--font-display); font-size:18px; font-weight:800; color:var(--text-primary); }
+  .nav-links { display:flex; align-items:center; gap:28px; }
+  .nav-links a { font-size:13.5px; font-weight:500; color:var(--text-secondary); text-decoration:none; transition:color .2s; }
+  .nav-links a:hover { color:var(--primary); }
+  .nav-cta { display:flex; gap:10px; }
+
+  /* Hero */
+  .hero { padding: 140px 60px 80px; background: linear-gradient(135deg,#0D47A1 0%,#1565C0 55%,#00838F 100%); min-height: 90vh; display:flex; align-items:center; position:relative; overflow:hidden; }
+  .hero::after { content:''; position:absolute; bottom:-1px; left:0; right:0; height:80px; background:#fff; clip-path:ellipse(60% 100% at 50% 100%); }
+  .hero-inner { display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center; max-width:1280px; margin:0 auto; width:100%; position:relative; z-index:1; }
+
+  /* Pulse animation */
+  .pulse-ring { position:absolute; border-radius:50%; border:2px solid rgba(255,255,255,.15); animation:expand 3s infinite; }
+  .pulse-ring:nth-child(1) { width:200px; height:200px; top:-80px; right:-60px; animation-delay:0s; }
+  .pulse-ring:nth-child(2) { width:350px; height:350px; top:-155px; right:-135px; animation-delay:1s; }
+  .pulse-ring:nth-child(3) { width:500px; height:500px; top:-230px; right:-210px; animation-delay:2s; }
+  @keyframes expand { 0%{opacity:.6;transform:scale(.9);} 100%{opacity:0;transform:scale(1.1);} }
+
+  /* ECG Line SVG animation */
+  .ecg-svg { width:100%; height:50px; margin-bottom:20px; }
+  .ecg-path { stroke:#7CD1E8; stroke-width:2; fill:none; stroke-dasharray:500; stroke-dashoffset:500; animation:drawECG 2.5s ease forwards; }
+  @keyframes drawECG { to { stroke-dashoffset: 0; } }
+
+  /* Mockup */
+  .dashboard-mockup {
+    background:rgba(255,255,255,.12);
+    border:1px solid rgba(255,255,255,.2);
+    border-radius:20px; padding:20px;
+    backdrop-filter:blur(20px);
+  }
+  .mockup-header { display:flex; align-items:center; gap:8px; margin-bottom:16px; }
+  .mockup-dot { width:10px; height:10px; border-radius:50%; }
+  .mockup-title { font-size:12px; font-weight:600; color:rgba(255,255,255,.7); margin-left:4px; }
+  .mockup-vitals { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:14px; }
+  .mockup-vital { background:rgba(255,255,255,.1); border-radius:10px; padding:12px; text-align:center; }
+  .mockup-vital .mv-val { font-family:var(--font-display); font-size:22px; font-weight:800; color:#fff; }
+  .mockup-vital .mv-lbl { font-size:10px; color:rgba(255,255,255,.55); margin-top:2px; }
+  .mockup-chart-bar { display:flex; gap:4px; align-items:flex-end; height:48px; margin-top:10px; }
+  .mockup-chart-bar span { flex:1; background:rgba(255,255,255,.2); border-radius:3px 3px 0 0; animation:barrise .6s ease forwards; opacity:0; }
+  @keyframes barrise { to { opacity:1; } }
+
+  /* Sections */
+  .section { padding: 80px 60px; max-width:1280px; margin:0 auto; }
+  .section-tag { display:inline-flex; align-items:center; gap:6px; background:#E3F0FF; color:var(--primary); padding:5px 13px; border-radius:20px; font-size:12px; font-weight:700; letter-spacing:.5px; margin-bottom:14px; }
+  .section-title { font-family:var(--font-display); font-size:36px; font-weight:800; margin-bottom:14px; color:var(--text-primary); }
+  .section-desc  { font-size:15px; color:var(--text-secondary); line-height:1.7; max-width:560px; }
+
+  /* How it works */
+  .how-section { background:var(--bg); }
+  .how-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:24px; margin-top:48px; }
+  .how-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:24px; position:relative; text-align:center; }
+  .how-number { font-family:var(--font-display); font-size:48px; font-weight:900; color:#E3F0FF; position:absolute; top:12px; right:16px; line-height:1; }
+  .how-icon { width:54px; height:54px; background:#E3F0FF; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:22px; color:var(--primary); margin:0 auto 14px; }
+  .how-title { font-size:14px; font-weight:700; margin-bottom:6px; }
+  .how-desc  { font-size:12px; color:var(--text-secondary); line-height:1.6; }
+  .connector { display:flex; align-items:center; justify-content:center; padding-top:40px; color:var(--text-muted); font-size:20px; }
+
+  /* Stats banner */
+  .stats-banner { background:linear-gradient(135deg,#0D47A1,#00838F); padding:60px; border-radius:20px; color:#fff; display:grid; grid-template-columns:repeat(4,1fr); gap:32px; text-align:center; }
+  .stats-banner .s-val { font-family:var(--font-display); font-size:40px; font-weight:900; }
+  .stats-banner .s-lbl { font-size:13px; color:rgba(255,255,255,.65); margin-top:4px; }
+
+  /* Footer */
+  footer { background: var(--primary-dark); color:rgba(255,255,255,.7); padding:40px 60px; display:flex; align-items:center; justify-content:space-between; }
+  footer .brand { font-family:var(--font-display); font-size:18px; font-weight:800; color:#fff; }
+  footer a { color:rgba(255,255,255,.55); text-decoration:none; font-size:13px; margin:0 12px; }
+  footer a:hover { color:#fff; }
+
+  @media(max-width:900px) {
+    .landing-nav { padding:0 20px; }
+    .hero { padding:100px 20px 60px; }
+    .hero-inner { grid-template-columns:1fr; gap:32px; }
+    .section { padding:60px 20px; }
+    .how-grid { grid-template-columns:repeat(2,1fr); }
+    .stats-banner { grid-template-columns:repeat(2,1fr); padding:40px 24px; }
+    footer { flex-direction:column; gap:16px; text-align:center; padding:30px 20px; }
+    .feature-grid { grid-template-columns:1fr; }
+  }
 </style>
 </head>
 <body>
-<div class="app-layout">
 
-<!-- SIDEBAR -->
-<aside class="sidebar" id="sidebar">
-  <div class="sidebar-brand">
-    <div class="brand-icon"><i class="fas fa-heartbeat"></i></div>
-    <div class="brand-text">
-      <div class="brand-name">VitalNet</div>
-      <div class="brand-sub">Health Monitor</div>
-    </div>
+<!-- NAV -->
+<nav class="landing-nav">
+  <a href="index.html" class="nav-brand">
+    <div class="logo"><i class="fa-solid fa-heart-pulse"></i></div>
+    <span class="name">VitalNet</span>
+  </a>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#how">How It Works</a>
+    <a href="#stats">Impact</a>
+    <a href="dashboard.html">Dashboard</a>
   </div>
-  <div class="sidebar-user">
-    <div class="user-avatar">AP</div>
-    <div class="user-info">
-      <div class="user-name">Arun Prakash</div>
-      <div class="user-role">Community Member</div>
-    </div>
+  <div class="nav-cta">
+    <a href="dashboard.html" class="btn-outline">Live Demo</a>
+    <a href="dashboard.html" class="btn-primary" style="text-decoration:none;"><i class="fa-solid fa-arrow-right"></i> Get Started</a>
   </div>
-  <div class="nav-section">
-    <div class="nav-label">Main Menu</div>
-    <a class="nav-item" href="dashboard.html"><i class="fas fa-th-large"></i> Dashboard</a>
-    <a class="nav-item active" href="health-profile.html"><i class="fas fa-user-circle"></i> Health Profile</a>
-    <a class="nav-item" href="health-monitoring.html"><i class="fas fa-heartbeat"></i> Vital Monitoring<span class="nav-badge teal">Live</span></a>
-    <a class="nav-item" href="medical-records.html"><i class="fas fa-file-medical"></i> Medical Records</a>
-    <a class="nav-item" href="appointments.html"><i class="fas fa-calendar-check"></i> Appointments<span class="nav-badge green">3</span></a>
-    <a class="nav-item" href="medicine-reminder.html"><i class="fas fa-pills"></i> Medicine Reminder<span class="nav-badge red">2</span></a>
-  </div>
-  <div class="nav-section">
-    <div class="nav-label">AI & Health Tools</div>
-    <a class="nav-item" href="ai-assistant.html"><i class="fas fa-robot"></i> AI Health Assistant</a>
-    <a class="nav-item" href="vaccination.html"><i class="fas fa-syringe"></i> Vaccination Tracker</a>
-    <a class="nav-item" href="fitness-tracker.html"><i class="fas fa-running"></i> Fitness Tracker</a>
-    <a class="nav-item" href="community-analytics.html"><i class="fas fa-chart-bar"></i> Community Analytics</a>
-  </div>
-  <div class="nav-section">
-    <div class="nav-label">System</div>
-    <a class="nav-item" href="notifications.html"><i class="fas fa-bell"></i> Notifications<span class="nav-badge red">5</span></a>
-    <a class="nav-item" href="settings.html"><i class="fas fa-cog"></i> Settings</a>
-  </div>
-  <div class="sidebar-footer">
-    <a class="nav-item" href="index.html"><i class="fas fa-home"></i> Back to Home</a>
-    <a class="nav-item" href="#" style="color:rgba(239,68,68,.7);"><i class="fas fa-sign-out-alt"></i> Sign Out</a>
-  </div>
-</aside>
+</nav>
 
-<!-- TOPBAR -->
-<header class="topbar">
-  <button class="topbar-btn hamburger" id="hamburger"><i class="fas fa-bars"></i></button>
-  <div class="topbar-title">
-    <h4>Health Profile</h4>
-    <p>Manage your personal health information</p>
-  </div>
-  <div class="topbar-actions ms-auto">
-    <button class="topbar-btn" id="themeToggle"><i class="fas fa-moon" id="themeIcon"></i></button>
-    <button class="topbar-btn" data-modal-open="notifModal"><i class="fas fa-bell"></i><div class="topbar-notif-dot"></div></button>
-    <div class="user-avatar" style="width:36px;height:36px;font-size:14px;">AP</div>
-  </div>
-</header>
-
-<!-- MAIN -->
-<main class="main-content">
-<div class="page-content">
-
-  <!-- Profile Hero -->
-  <div class="profile-hero">
-    <div class="d-flex align-items-center gap-4 mb-4">
-      <div class="profile-avatar-lg">AP</div>
-      <div>
-        <div class="profile-name">Arun Prakash</div>
-        <div class="profile-meta"><i class="fas fa-map-marker-alt me-1"></i>Chennai, Tamil Nadu &nbsp;|&nbsp; <i class="fas fa-id-card me-1"></i>ID: #PT001</div>
-        <div class="d-flex gap-2 flex-wrap">
-          <span class="badge-pill badge-green"><i class="fas fa-check"></i> All Vitals Normal</span>
-          <span class="badge-pill badge-teal"><i class="fas fa-user-md"></i> Community Member</span>
-        </div>
+<!-- HERO -->
+<section class="hero">
+  <div class="pulse-ring"></div>
+  <div class="pulse-ring"></div>
+  <div class="pulse-ring"></div>
+  <div class="hero-inner">
+    <div class="hero-content">
+      <div class="hero-tag">
+        <i class="fa-solid fa-satellite-dish"></i>
+        SIH 2025 — Smart India Hackathon Project
       </div>
-      <div class="ms-auto">
-        <button class="cta-btn-outline-white" style="font-size:13px;padding:8px 16px;" onclick="Toast.show('Profile edit mode enabled','info')">
-          <i class="fas fa-edit"></i> Edit Profile
-        </button>
+
+      <svg class="ecg-svg" viewBox="0 0 400 50">
+        <path class="ecg-path" d="M0,25 L60,25 L70,5 L80,45 L90,15 L100,25 L160,25 L170,5 L180,45 L190,15 L200,25 L260,25 L270,5 L280,45 L290,15 L300,25 L400,25" />
+      </svg>
+
+      <h1 class="hero-title">Smart Community<br><span>Health Monitoring</span><br>System</h1>
+      <p class="hero-desc">AI-powered real-time vitals monitoring, disease risk prediction, and emergency response for communities — accessible, scalable, and life-saving.</p>
+
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <a href="dashboard.html" class="btn-primary" style="text-decoration:none;padding:12px 24px;font-size:14px;">
+          <i class="fa-solid fa-display"></i> Open Dashboard
+        </a>
+        <a href="emergency.html" class="btn-outline" style="text-decoration:none;padding:12px 24px;font-size:14px;border-color:rgba(255,255,255,.5);color:#fff;">
+          <i class="fa-solid fa-triangle-exclamation"></i> Emergency Centre
+        </a>
+      </div>
+
+      <div class="hero-stats">
+        <div class="hero-stat"><div class="val">5,000+</div><div class="lbl">Patients Monitored</div></div>
+        <div class="hero-stat"><div class="val">98.6%</div><div class="lbl">System Uptime</div></div>
+        <div class="hero-stat"><div class="val">2 min</div><div class="lbl">Avg Alert Response</div></div>
       </div>
     </div>
-    <div class="row g-3">
-      <div class="col-6 col-md-3"><div class="profile-stat-mini"><div class="profile-stat-mini-val">28</div><div class="profile-stat-mini-lbl">Age (Years)</div></div></div>
-      <div class="col-6 col-md-3"><div class="profile-stat-mini"><div class="profile-stat-mini-val">72 kg</div><div class="profile-stat-mini-lbl">Weight</div></div></div>
-      <div class="col-6 col-md-3"><div class="profile-stat-mini"><div class="profile-stat-mini-val">175 cm</div><div class="profile-stat-mini-lbl">Height</div></div></div>
-      <div class="col-6 col-md-3"><div class="profile-stat-mini"><div class="profile-stat-mini-val">22.4</div><div class="profile-stat-mini-lbl">BMI (Healthy)</div></div></div>
+
+    <div class="dashboard-mockup">
+      <div class="mockup-header">
+        <div class="mockup-dot" style="background:#ff5f57"></div>
+        <div class="mockup-dot" style="background:#febc2e"></div>
+        <div class="mockup-dot" style="background:#28c840"></div>
+        <span class="mockup-title">VitalNet Live Dashboard</span>
+      </div>
+      <div class="mockup-vitals">
+        <div class="mockup-vital"><div class="mv-val">72</div><div class="mv-lbl">♥ BPM</div></div>
+        <div class="mockup-vital"><div class="mv-val">98%</div><div class="mv-lbl">SpO₂</div></div>
+        <div class="mockup-vital"><div class="mv-val">120/80</div><div class="mv-lbl">BP mmHg</div></div>
+        <div class="mockup-vital"><div class="mv-val">98.4°F</div><div class="mv-lbl">Temp</div></div>
+        <div class="mockup-vital"><div class="mv-val">16</div><div class="mv-lbl">Resp/min</div></div>
+        <div class="mockup-vital"><div class="mv-val">LOW</div><div class="mv-lbl" style="color:#7CD1E8;">Risk</div></div>
+      </div>
+      <div style="background:rgba(255,255,255,.08);border-radius:8px;padding:10px;">
+        <div style="font-size:10px;color:rgba(255,255,255,.5);margin-bottom:6px;">Heart Rate — Last 8 readings</div>
+        <div class="mockup-chart-bar">
+          <span style="height:55%;animation-delay:.1s"></span>
+          <span style="height:70%;animation-delay:.2s"></span>
+          <span style="height:60%;animation-delay:.3s"></span>
+          <span style="height:80%;animation-delay:.4s"></span>
+          <span style="height:65%;animation-delay:.5s"></span>
+          <span style="height:90%;animation-delay:.6s"></span>
+          <span style="height:72%;animation-delay:.7s"></span>
+          <span style="height:75%;animation-delay:.8s;background:rgba(124,209,232,.6)"></span>
+        </div>
+      </div>
+      <div style="margin-top:12px;display:flex;gap:6px;">
+        <a href="ai-assistant.html" style="flex:1;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:8px;text-align:center;font-size:11px;font-weight:600;color:#fff;text-decoration:none;"><i class="fa-solid fa-robot"></i> AI Assistant</a>
+        <a href="risk-prediction.html" style="flex:1;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:8px;text-align:center;font-size:11px;font-weight:600;color:#fff;text-decoration:none;"><i class="fa-solid fa-chart-line"></i> Risk Predict</a>
+        <a href="emergency.html" style="flex:1;background:rgba(220,38,38,.4);border:1px solid rgba(220,38,38,.5);border-radius:8px;padding:8px;text-align:center;font-size:11px;font-weight:600;color:#fff;text-decoration:none;"><i class="fa-solid fa-bell"></i> Emergency</a>
+      </div>
     </div>
   </div>
+</section>
 
-  <div class="row g-4">
-    <!-- LEFT COL -->
-    <div class="col-md-4">
-
-      <!-- Personal Info -->
-      <div class="info-section">
-        <div class="info-section-title"><i class="fas fa-user" style="color:var(--teal-400)"></i> Personal Information</div>
-        <div class="info-row"><span class="info-label">Full Name</span><span class="info-value">Arun Prakash</span></div>
-        <div class="info-row"><span class="info-label">Date of Birth</span><span class="info-value">15 March 1997</span></div>
-        <div class="info-row"><span class="info-label">Gender</span><span class="info-value">Male</span></div>
-        <div class="info-row"><span class="info-label">Blood Group</span><span class="info-value" style="color:var(--danger)"><i class="fas fa-tint"></i> O+</span></div>
-        <div class="info-row"><span class="info-label">Marital Status</span><span class="info-value">Single</span></div>
-        <div class="info-row"><span class="info-label">Occupation</span><span class="info-value">Software Engineer</span></div>
-      </div>
-
-      <!-- Contact -->
-      <div class="info-section">
-        <div class="info-section-title"><i class="fas fa-phone" style="color:var(--teal-400)"></i> Contact Details</div>
-        <div class="info-row"><span class="info-label">Phone</span><span class="info-value">+91 98765 43210</span></div>
-        <div class="info-row"><span class="info-label">Email</span><span class="info-value">arun@example.com</span></div>
-        <div class="info-row"><span class="info-label">Address</span><span class="info-value" style="text-align:right;max-width:180px;">12 Anna Nagar, Chennai - 600040</span></div>
-      </div>
-
-      <!-- Emergency Contacts -->
-      <div class="info-section">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <div class="info-section-title mb-0"><i class="fas fa-phone-alt" style="color:#ef4444"></i> Emergency Contacts</div>
-          <button class="edit-btn">+ Add</button>
-        </div>
-        <div class="info-row"><span class="info-label"><i class="fas fa-user me-1"></i>Ravi Prakash (Father)</span><span class="info-value">+91 99887 66554</span></div>
-        <div class="info-row"><span class="info-label"><i class="fas fa-user me-1"></i>Meena Prakash (Mother)</span><span class="info-value">+91 99887 66553</span></div>
-      </div>
-
+<!-- FEATURES -->
+<section class="section" id="features">
+  <div style="text-align:center;margin-bottom:48px;">
+    <div class="section-tag" style="display:inline-flex;"><i class="fa-solid fa-star"></i> Core Features</div>
+    <h2 class="section-title" style="text-align:center;">Everything your community needs</h2>
+    <p class="section-desc" style="margin:0 auto;text-align:center;">From real-time monitoring to AI-powered insights — VitalNet covers the full spectrum of community healthcare.</p>
+  </div>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="feature-icon"><i class="fa-solid fa-heart-pulse"></i></div>
+      <h3 class="feature-title">Real-Time Vitals</h3>
+      <p class="feature-desc">Continuous monitoring of heart rate, SpO₂, blood pressure, temperature and respiratory rate with instant anomaly detection.</p>
     </div>
-
-    <!-- RIGHT COL -->
-    <div class="col-md-8">
-
-      <!-- Live Vitals -->
-      <div class="info-section">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <div class="info-section-title mb-0"><i class="fas fa-heartbeat" style="color:#ef4444"></i> Current Vitals <span class="badge-pill badge-teal ms-2"><span class="pulse-dot" style="width:6px;height:6px;"></span> Live</span></div>
-          <a href="health-monitoring.html" class="btn-outline btn-sm"><i class="fas fa-chart-line"></i> Full Monitor</a>
-        </div>
-        <div class="row g-3">
-          <div class="col-6 col-md-4">
-            <div class="vital-grid-card">
-              <div class="vital-grid-val" style="color:#ef4444" id="hr-val">72 <span style="font-size:13px">bpm</span></div>
-              <div class="vital-grid-lbl">Heart Rate</div>
-              <div class="vital-status normal"><i class="fas fa-check"></i> Normal</div>
-            </div>
-          </div>
-          <div class="col-6 col-md-4">
-            <div class="vital-grid-card">
-              <div class="vital-grid-val" style="color:#3b82f6;font-size:18px">120/80</div>
-              <div class="vital-grid-lbl">Blood Pressure (mmHg)</div>
-              <div class="vital-status normal"><i class="fas fa-check"></i> Normal</div>
-            </div>
-          </div>
-          <div class="col-6 col-md-4">
-            <div class="vital-grid-card">
-              <div class="vital-grid-val" style="color:var(--teal-400)" id="spo2-val">98%</div>
-              <div class="vital-grid-lbl">SpO₂ Level</div>
-              <div class="vital-status good"><i class="fas fa-check"></i> Excellent</div>
-            </div>
-          </div>
-          <div class="col-6 col-md-4">
-            <div class="vital-grid-card">
-              <div class="vital-grid-val" style="color:#f59e0b">95 <span style="font-size:13px">mg/dL</span></div>
-              <div class="vital-grid-lbl">Blood Sugar</div>
-              <div class="vital-status normal"><i class="fas fa-check"></i> Normal</div>
-            </div>
-          </div>
-          <div class="col-6 col-md-4">
-            <div class="vital-grid-card">
-              <div class="vital-grid-val" style="color:#10b981;font-size:18px">98.6°F</div>
-              <div class="vital-grid-lbl">Body Temperature</div>
-              <div class="vital-status normal"><i class="fas fa-check"></i> Normal</div>
-            </div>
-          </div>
-          <div class="col-6 col-md-4">
-            <div class="vital-grid-card">
-              <div class="vital-grid-val" style="color:#8b5cf6">22.4</div>
-              <div class="vital-grid-lbl">BMI (kg/m²)</div>
-              <div class="vital-status normal"><i class="fas fa-check"></i> Healthy</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Medical History -->
-      <div class="info-section">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <div class="info-section-title mb-0"><i class="fas fa-notes-medical" style="color:var(--teal-400)"></i> Medical History</div>
-          <button class="edit-btn">Edit</button>
-        </div>
-        <div class="row g-3">
-          <div class="col-md-6">
-            <div class="form-label" style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Existing Conditions</div>
-            <span class="medical-tag"><i class="fas fa-circle me-1" style="font-size:8px"></i>Type 2 Diabetes (Controlled)</span>
-            <span class="medical-tag"><i class="fas fa-circle me-1" style="font-size:8px"></i>Mild Hypertension</span>
-          </div>
-          <div class="col-md-6">
-            <div class="form-label" style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Allergies</div>
-            <span class="medical-tag allergy"><i class="fas fa-exclamation-triangle me-1"></i>Penicillin</span>
-            <span class="medical-tag allergy"><i class="fas fa-exclamation-triangle me-1"></i>Peanuts</span>
-          </div>
-          <div class="col-md-6">
-            <div class="form-label" style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Past Surgeries</div>
-            <div class="info-row" style="padding:8px 0;"><span class="info-label">Appendectomy</span><span class="info-value">March 2018</span></div>
-          </div>
-          <div class="col-md-6">
-            <div class="form-label" style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Family History</div>
-            <span class="medical-tag">Diabetes (Father)</span>
-            <span class="medical-tag">Hypertension (Mother)</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Current Medications -->
-      <div class="info-section">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <div class="info-section-title mb-0"><i class="fas fa-pills" style="color:#3b82f6"></i> Current Medications</div>
-          <a href="medicine-reminder.html" class="btn-outline btn-sm">Manage</a>
-        </div>
-        <div class="med-card">
-          <div class="med-icon"><i class="fas fa-capsules"></i></div>
-          <div class="med-info">
-            <div class="med-name">Metformin 500mg</div>
-            <div class="med-dose">1 tablet after meals · Twice daily</div>
-            <div class="med-time"><i class="fas fa-clock"></i> 8:00 AM & 8:00 PM</div>
-          </div>
-          <div class="badge-pill badge-green">Active</div>
-        </div>
-        <div class="med-card">
-          <div class="med-icon"><i class="fas fa-pills"></i></div>
-          <div class="med-info">
-            <div class="med-name">Atorvastatin 10mg</div>
-            <div class="med-dose">1 tablet before sleep</div>
-            <div class="med-time"><i class="fas fa-clock"></i> 10:00 PM</div>
-          </div>
-          <div class="badge-pill badge-green">Active</div>
-        </div>
-        <div class="med-card">
-          <div class="med-icon"><i class="fas fa-tablets"></i></div>
-          <div class="med-info">
-            <div class="med-name">Vitamin D3 1000 IU</div>
-            <div class="med-dose">1 tablet with breakfast</div>
-            <div class="med-time"><i class="fas fa-clock"></i> 8:00 AM</div>
-          </div>
-          <div class="badge-pill badge-teal">Supplement</div>
-        </div>
-      </div>
-
-      <!-- Assigned Doctor -->
-      <div class="info-section">
-        <div class="info-section-title"><i class="fas fa-user-md" style="color:var(--teal-400)"></i> Assigned Healthcare Provider</div>
-        <div class="d-flex align-items-center gap-3">
-          <div class="user-avatar" style="width:52px;height:52px;font-size:18px;">PS</div>
-          <div>
-            <div style="font-size:16px;font-weight:700;color:var(--text-primary)">Dr. Priya Sharma</div>
-            <div style="font-size:13px;color:var(--text-muted)">General Physician · MBBS, MD</div>
-            <div style="font-size:13px;color:var(--teal-400);margin-top:4px;"><i class="fas fa-phone me-1"></i>+91 94455 66778</div>
-          </div>
-          <div class="ms-auto d-flex gap-2">
-            <a href="appointments.html" class="btn-primary btn-sm"><i class="fas fa-calendar"></i> Book Appointment</a>
-          </div>
-        </div>
-      </div>
-
+    <div class="feature-card">
+      <div class="feature-icon"><i class="fa-solid fa-robot"></i></div>
+      <h3 class="feature-title">AI Health Assistant</h3>
+      <p class="feature-desc">Conversational AI that interprets symptoms, answers health queries, and provides actionable guidance 24/7.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><i class="fa-solid fa-chart-line"></i></div>
+      <h3 class="feature-title">Disease Risk Prediction</h3>
+      <p class="feature-desc">Machine learning models assess diabetes, hypertension, and cardiac risk with explainable probability scores.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+      <h3 class="feature-title">Emergency Alerts</h3>
+      <p class="feature-desc">Automated critical alerts with GPS dispatch, SMS/call notifications to family and nearest healthcare facility.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><i class="fa-solid fa-globe"></i></div>
+      <h3 class="feature-title">Population Analytics</h3>
+      <p class="feature-desc">Community-wide health trends, disease prevalence maps, outbreak early warning, and resource planning dashboards.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><i class="fa-solid fa-shield-halved"></i></div>
+      <h3 class="feature-title">Secure & Private</h3>
+      <p class="feature-desc">HIPAA-aligned data handling, end-to-end encryption, role-based access control, and full audit trails.</p>
     </div>
   </div>
+</section>
 
-</div>
-</main>
-</div>
+<!-- HOW IT WORKS -->
+<section style="background:var(--bg); padding:80px 0;" id="how">
+  <div class="section" style="padding-top:0;padding-bottom:0;">
+    <div style="text-align:center;margin-bottom:48px;">
+      <div class="section-tag" style="display:inline-flex;"><i class="fa-solid fa-circle-nodes"></i> Workflow</div>
+      <h2 class="section-title" style="text-align:center;">How VitalNet Works</h2>
+    </div>
+    <div class="how-grid">
+      <div class="how-card">
+        <div class="how-number">01</div>
+        <div class="how-icon"><i class="fa-solid fa-microchip"></i></div>
+        <h4 class="how-title">IoT Sensor Collection</h4>
+        <p class="how-desc">Wearable and bedside sensors capture vitals continuously and transmit via Wi-Fi / LoRa.</p>
+      </div>
+      <div class="how-card">
+        <div class="how-number">02</div>
+        <div class="how-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+        <h4 class="how-title">Secure Data Ingestion</h4>
+        <p class="how-desc">Encrypted payloads land in the cloud pipeline; data is validated, timestamped, and stored.</p>
+      </div>
+      <div class="how-card">
+        <div class="how-number">03</div>
+        <div class="how-icon"><i class="fa-solid fa-brain"></i></div>
+        <h4 class="how-title">AI Analysis & Risk Scoring</h4>
+        <p class="how-desc">ML models analyse trends, detect anomalies, and score disease risk in milliseconds.</p>
+      </div>
+      <div class="how-card">
+        <div class="how-number">04</div>
+        <div class="how-icon"><i class="fa-solid fa-bell-ring"></i></div>
+        <h4 class="how-title">Alert & Response</h4>
+        <p class="how-desc">Critical findings trigger multi-channel alerts to doctors, family, and emergency services instantly.</p>
+      </div>
+    </div>
+  </div>
+</section>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
-<script src="app.js"></script>
+<!-- STATS BANNER -->
+<section class="section" id="stats">
+  <div class="stats-banner">
+    <div><div class="s-val" data-count="5000" data-suffix="+">0</div><div class="s-lbl">Patients Monitored</div></div>
+    <div><div class="s-val" data-count="98.6" data-suffix="%" data-dec="1">0</div><div class="s-lbl">System Uptime</div></div>
+    <div><div class="s-val" data-count="47" data-suffix="s">0</div><div class="s-lbl">Avg Alert Time</div></div>
+    <div><div class="s-val" data-count="12" data-suffix=" PHC">0</div><div class="s-lbl">Health Centres Connected</div></div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="brand">VitalNet</div>
+    <div style="font-size:12px;margin-top:4px;">Smart Community Health Monitoring System — SIH 2025</div>
+  </div>
+  <div>
+    <a href="index.html">Home</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="ai-assistant.html">AI Assistant</a>
+    <a href="emergency.html">Emergency</a>
+    <a href="analytics.html">Analytics</a>
+  </div>
+  <div style="font-size:12px;">© 2025 VitalNet. Built for SIH 2025.</div>
+</footer>
+
+<script src="js/app.js"></script>
 <script>
-// Live vitals mini-simulation
-setInterval(() => {
-  const hr = document.getElementById('hr-val');
-  const spo2 = document.getElementById('spo2-val');
-  if(hr) hr.innerHTML = (70 + Math.floor(Math.random()*6)) + ' <span style="font-size:13px">bpm</span>';
-  if(spo2) spo2.textContent = (97 + Math.floor(Math.random()*2)) + '%';
-}, 4000);
+  // Animate stats on scroll
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { document.querySelectorAll('[data-count]').forEach(el => { const t=parseFloat(el.dataset.count),sf=el.dataset.suffix||'',dc=el.dataset.dec||0;let s=0;const d=1400;const step=ts=>{if(!s)s=ts;const p=Math.min((ts-s)/d,1);const ea=1-Math.pow(1-p,3);el.textContent=(ea*t).toFixed(dc)+sf;if(p<1)requestAnimationFrame(step);};requestAnimationFrame(step);}); observer.disconnect(); } });
+  }, { threshold: .3 });
+  const banner = document.querySelector('.stats-banner');
+  if (banner) observer.observe(banner);
 </script>
 </body>
 </html>
