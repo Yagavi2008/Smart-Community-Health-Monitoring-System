@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fitness Tracker — VitalNet</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="fitness-tracker.html" data-role="member" data-title="Fitness Tracker" data-sub="Daily activity, steps and hydration">
+
+<div class="grid grid-4" style="margin-bottom:1rem;">
+  <div class="card stat-card"><div class="stat-icon" style="background:var(--primary-soft);color:var(--primary);"><i class="fa-solid fa-shoe-prints"></i></div><div class="stat-label">Steps Today</div><div class="stat-value">6,240 <span style="font-size:.7rem;font-weight:400;">/ 8,000</span></div><div class="progress"><div class="progress-bar" style="width:78%;"></div></div></div>
+  <div class="card stat-card"><div class="stat-icon" style="background:var(--teal-soft);color:var(--teal);"><i class="fa-solid fa-fire"></i></div><div class="stat-label">Calories Burned</div><div class="stat-value">1,340 <span style="font-size:.7rem;font-weight:400;">kcal</span></div></div>
+  <div class="card stat-card"><div class="stat-icon" style="background:var(--warn-soft);color:var(--warn);"><i class="fa-solid fa-person-running"></i></div><div class="stat-label">Exercise Time</div><div class="stat-value">32 <span style="font-size:.7rem;font-weight:400;">min</span></div></div>
+  <div class="card stat-card"><div class="stat-icon" style="background:var(--ok-soft);color:var(--ok);"><i class="fa-solid fa-glass-water"></i></div><div class="stat-label">Water Intake</div><div class="stat-value">1.8 <span style="font-size:.7rem;font-weight:400;">/ 2.5 L</span></div><div class="progress"><div class="progress-bar" style="width:72%;"></div></div></div>
+</div>
+
+<div class="grid" style="grid-template-columns:2fr 1fr;">
+  <div class="card card-lg">
+    <div class="card-head"><h3>Weekly Activity</h3></div>
+    <div style="height:230px;"><canvas id="fitnessChart"></canvas></div>
+  </div>
+  <div class="card card-lg">
+    <div class="card-head"><h3>Log Activity</h3></div>
+    <form data-demo="Activity logged.">
+      <div class="form-group"><label>Steps</label><input type="number" class="form-control" placeholder="e.g. 4000"></div>
+      <div class="form-group"><label>Exercise (min)</label><input type="number" class="form-control" placeholder="e.g. 20"></div>
+      <div class="form-group"><label>Water (glasses)</label><input type="number" class="form-control" placeholder="e.g. 2"></div>
+      <button class="btn btn-primary btn-block">Log</button>
+    </form>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/layout.js"></script>
+<script src="js/app.js"></script>
+<script>
+vnBarChart(document.getElementById('fitnessChart'),
+  ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+  [{label:'Steps (x100)', data:[62,71,55,80,68,90,62], backgroundColor:VN_COLORS.teal}]);
+</script>
+</body>
+</html>
