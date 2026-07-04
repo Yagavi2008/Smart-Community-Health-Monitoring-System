@@ -1,284 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>AI Assistant — VitalNet</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-<link rel="stylesheet" href="css/style.css" />
-<style>
-  .ai-layout { display:grid; grid-template-columns:1fr 320px; gap:20px; height:calc(100vh - var(--header-h) - 56px); }
-  .chat-panel { display:flex; flex-direction:column; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; }
-  .chat-header { padding:16px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:12px; }
-  .ai-avatar-lg { width:42px;height:42px;background:linear-gradient(135deg,#1565C0,#00ACC1);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;color:#fff; }
-  .chat-messages { flex:1; overflow-y:auto; padding:20px; display:flex; flex-direction:column; gap:14px; }
-  .chat-input-row { padding:14px 16px; border-top:1px solid var(--border); display:flex; gap:10px; }
-  .chat-input-row input { flex:1; border:1.5px solid var(--border); border-radius:10px; padding:10px 14px; font-size:13px; font-family:var(--font-main); outline:none; }
-  .chat-input-row input:focus { border-color:var(--primary-light); }
-  .quick-chips { padding:0 16px 12px; display:flex; gap:8px; flex-wrap:wrap; }
-  .chip { padding:5px 12px; background:var(--bg); border:1px solid var(--border); border-radius:20px; font-size:12px; font-weight:500; color:var(--text-secondary); cursor:pointer; transition:all .2s; white-space:nowrap; }
-  .chip:hover { background:#E3F0FF; border-color:var(--primary-light); color:var(--primary); }
-
-  .right-panel { display:flex; flex-direction:column; gap:16px; overflow-y:auto; }
-  .quick-stat { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--border); }
-  .quick-stat:last-child { border-bottom:none; }
-  .quick-stat .qs-label { font-size:12px; color:var(--text-secondary); }
-  .quick-stat .qs-val   { font-size:13px; font-weight:700; color:var(--text-primary); }
-
-  .typing-indicator { display:flex; align-items:center; gap:5px; padding:10px 14px; background:var(--bg); border:1px solid var(--border); border-radius:12px; border-top-left-radius:4px; width:fit-content; }
-  .typing-dot { width:7px;height:7px;background:var(--text-muted);border-radius:50%;animation:typingAnim 1.2s infinite; }
-  .typing-dot:nth-child(2){animation-delay:.2s}
-  .typing-dot:nth-child(3){animation-delay:.4s}
-  @keyframes typingAnim { 0%,60%,100%{transform:translateY(0);opacity:.4} 30%{transform:translateY(-6px);opacity:1} }
-
-  @media(max-width:900px){ .ai-layout{grid-template-columns:1fr;} .right-panel{display:none;} }
-</style>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Health Profile — VitalNet</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body data-page="health-profile.html" data-role="member" data-title="Health Profile" data-sub="Personal and medical information used across VitalNet">
 
-<aside class="sidebar">
-  <div class="sidebar-brand">
-    <div class="logo-icon"><i class="fa-solid fa-heart-pulse"></i></div>
-    <div class="brand-text"><div class="brand-name">VitalNet</div><div class="brand-sub">Health Monitoring</div></div>
+<div class="grid" style="grid-template-columns:1fr 2fr;align-items:start;">
+  <div class="card card-lg" style="text-align:center;">
+    <div class="avatar" style="width:72px;height:72px;font-size:1.4rem;margin:0 auto 1rem;">YS</div>
+    <h3 class="mb-0">Yagavi S</h3>
+    <p class="text-muted" style="font-size:.85rem;">Community Member · Meenam Rasi</p>
+    <div class="badge badge-ok" style="margin-top:.5rem;">Profile 90% complete</div>
+    <div class="progress" style="margin-top:.8rem;"><div class="progress-bar" style="width:90%;"></div></div>
   </div>
-  <nav class="sidebar-nav">
-    <div class="nav-section-label">Main</div>
-    <a href="dashboard.html" class="nav-link"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
-    <a href="ai-assistant.html" class="nav-link active"><i class="fa-solid fa-robot"></i> AI Assistant</a>
-    <a href="risk-prediction.html" class="nav-link"><i class="fa-solid fa-chart-line"></i> Risk Prediction</a>
-    <a href="analytics.html" class="nav-link"><i class="fa-solid fa-chart-pie"></i> Population Analytics</a>
-    <a href="emergency.html" class="nav-link"><i class="fa-solid fa-triangle-exclamation"></i> Emergency <span class="badge-dot"></span></a>
-    <div class="nav-section-label">Management</div>
-    <a href="#" class="nav-link"><i class="fa-solid fa-users"></i> Patients</a>
-    <a href="#" class="nav-link"><i class="fa-solid fa-user-doctor"></i> Doctors</a>
-    <a href="#" class="nav-link"><i class="fa-solid fa-gear"></i> Settings</a>
-  </nav>
-  <div class="sidebar-footer">
-    <div class="user-card">
-      <div class="user-avatar">DR</div>
-      <div class="user-info"><div class="user-name">Dr. Ramesh Kumar</div><div class="user-role">Senior Physician</div></div>
+
+  <form class="card card-lg" data-demo="Health profile updated.">
+    <div class="card-head"><h3>Personal Details</h3></div>
+    <div class="form-row">
+      <div class="form-group"><label>Full Name</label><input class="form-control" value="Yagavi S"></div>
+      <div class="form-group"><label>Date of Birth</label><input type="date" class="form-control" value="2004-03-15"></div>
     </div>
-  </div>
-</aside>
-
-<header class="top-header">
-  <button class="hamburger"><i class="fa-solid fa-bars"></i></button>
-  <div class="header-title"><h1>AI Health Assistant</h1><p>Powered by VitalNet Intelligence Engine</p></div>
-  <div class="header-actions">
-    <div class="status-pill"><div class="dot"></div> AI Online</div>
-    <button class="btn-icon" id="clearBtn" title="Clear Chat"><i class="fa-solid fa-rotate-left"></i></button>
-    <div style="font-size:13px;font-weight:600;color:var(--text-secondary);" id="live-clock"></div>
-  </div>
-</header>
-
-<main class="main-content">
-  <div class="page-body">
-    <div class="ai-layout">
-
-      <!-- CHAT PANEL -->
-      <div class="chat-panel">
-        <div class="chat-header">
-          <div class="ai-avatar-lg"><i class="fa-solid fa-robot"></i></div>
-          <div>
-            <div style="font-weight:700;font-size:15px;">VitalNet AI</div>
-            <div style="font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:5px;"><span style="width:7px;height:7px;background:var(--success);border-radius:50%;display:inline-block;"></span> Always available</div>
-          </div>
-          <div style="margin-left:auto;display:flex;gap:6px;">
-            <span class="badge badge-info"><i class="fa-solid fa-brain"></i> Clinical Mode</span>
-          </div>
-        </div>
-
-        <div class="chat-messages" id="chatMessages">
-          <!-- Welcome message -->
-          <div class="chat-msg bot">
-            <div class="chat-avatar"><i class="fa-solid fa-robot"></i></div>
-            <div>
-              <div class="chat-bubble">
-                👋 Hello! I'm <strong>VitalNet AI</strong>, your intelligent health assistant.<br><br>
-                I can help you with:
-                <ul style="margin:8px 0 0 16px;line-height:1.9;">
-                  <li>Interpreting patient vitals & lab results</li>
-                  <li>Symptom assessment & triage guidance</li>
-                  <li>Disease risk explanations</li>
-                  <li>Medication & care recommendations</li>
-                  <li>Emergency protocol assistance</li>
-                </ul>
-                <br>How can I assist you today?
-              </div>
-              <div class="chat-time">Now</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Quick chips -->
-        <div class="quick-chips" id="quickChips">
-          <div class="chip" onclick="sendQuick('What does high blood pressure mean?')">High BP meaning</div>
-          <div class="chip" onclick="sendQuick('Patient has SpO₂ of 88% - what should I do?')">Low SpO₂ advice</div>
-          <div class="chip" onclick="sendQuick('Symptoms of diabetes in elderly patients')">Diabetes symptoms</div>
-          <div class="chip" onclick="sendQuick('Heart rate 130 bpm — is it dangerous?')">Tachycardia info</div>
-          <div class="chip" onclick="sendQuick('Emergency protocol for cardiac arrest')">Cardiac emergency</div>
-        </div>
-
-        <!-- Input -->
-        <div class="chat-input-row">
-          <input type="text" id="chatInput" placeholder="Ask about symptoms, vitals, medications, risk factors…" />
-          <button class="btn-primary" id="sendBtn" style="padding:10px 18px;" onclick="sendMessage()">
-            <i class="fa-solid fa-paper-plane"></i>
-          </button>
-        </div>
-      </div>
-
-      <!-- RIGHT PANEL -->
-      <div class="right-panel">
-        <!-- Current Patient Vitals -->
-        <div class="card">
-          <div class="card-header"><div class="card-title"><i class="fa-solid fa-user-injured" style="color:var(--primary)"></i> Active Patient</div></div>
-          <div class="card-body">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
-              <div class="user-avatar" style="width:44px;height:44px;font-size:16px;background:var(--primary);">RK</div>
-              <div>
-                <div style="font-weight:700;font-size:14px;">Ravi Kumar</div>
-                <div style="font-size:12px;color:var(--text-muted);">58y • Male • Ward B-4</div>
-              </div>
-              <span class="badge badge-danger" style="margin-left:auto;">Critical</span>
-            </div>
-            <div class="quick-stat"><span class="qs-label">❤️ Heart Rate</span><span class="qs-val" id="ai-hr">72 bpm</span></div>
-            <div class="quick-stat"><span class="qs-label">🫁 SpO₂</span><span class="qs-val" id="ai-spo2">98%</span></div>
-            <div class="quick-stat"><span class="qs-label">🩸 Blood Pressure</span><span class="qs-val" id="ai-bp">120/80</span></div>
-            <div class="quick-stat"><span class="qs-label">🌡️ Temperature</span><span class="qs-val" id="ai-temp">98.4°F</span></div>
-            <div class="quick-stat"><span class="qs-label">💧 Glucose</span><span class="qs-val">285 mg/dL</span></div>
-            <button class="btn-primary w-100 mt-4" onclick="sendQuick('Analyse current vitals for patient Ravi Kumar — HR 118bpm, BP 155/95, SpO2 91%, Glucose 285mg/dL')">
-              <i class="fa-solid fa-stethoscope"></i> Analyse Vitals
-            </button>
-          </div>
-        </div>
-
-        <!-- AI Features -->
-        <div class="card">
-          <div class="card-header"><div class="card-title">AI Capabilities</div></div>
-          <div class="card-body" style="display:flex;flex-direction:column;gap:10px;">
-            <div style="display:flex;gap:10px;align-items:flex-start;">
-              <div style="width:32px;height:32px;background:#E3F0FF;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--primary);font-size:14px;flex-shrink:0;"><i class="fa-solid fa-magnifying-glass-chart"></i></div>
-              <div><div style="font-size:13px;font-weight:600;">Symptom Analysis</div><div style="font-size:11px;color:var(--text-muted);">Pattern recognition from 50k+ cases</div></div>
-            </div>
-            <div style="display:flex;gap:10px;align-items:flex-start;">
-              <div style="width:32px;height:32px;background:#E0F7FA;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:14px;flex-shrink:0;"><i class="fa-solid fa-pills"></i></div>
-              <div><div style="font-size:13px;font-weight:600;">Drug Interaction Check</div><div style="font-size:11px;color:var(--text-muted);">Alerts on contraindications</div></div>
-            </div>
-            <div style="display:flex;gap:10px;align-items:flex-start;">
-              <div style="width:32px;height:32px;background:var(--success-light);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--success);font-size:14px;flex-shrink:0;"><i class="fa-solid fa-clipboard-list"></i></div>
-              <div><div style="font-size:13px;font-weight:600;">Care Plan Generation</div><div style="font-size:11px;color:var(--text-muted);">Personalised treatment guidance</div></div>
-            </div>
-            <div style="display:flex;gap:10px;align-items:flex-start;">
-              <div style="width:32px;height:32px;background:var(--danger-light);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--danger);font-size:14px;flex-shrink:0;"><i class="fa-solid fa-triangle-exclamation"></i></div>
-              <div><div style="font-size:13px;font-weight:600;">Emergency Triage</div><div style="font-size:11px;color:var(--text-muted);">Priority & response protocols</div></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Disclaimer -->
-        <div style="background:var(--warning-light);border:1px solid #FFE082;border-radius:var(--radius-sm);padding:12px;">
-          <div style="font-size:11px;color:var(--warning);font-weight:700;margin-bottom:4px;"><i class="fa-solid fa-triangle-exclamation"></i> Medical Disclaimer</div>
-          <div style="font-size:11px;color:#795548;line-height:1.5;">VitalNet AI is a decision support tool. All recommendations should be reviewed by a qualified healthcare professional before clinical action.</div>
-        </div>
-      </div>
-
+    <div class="form-row">
+      <div class="form-group"><label>Gender</label><select class="form-control"><option>Female</option><option>Male</option><option>Other</option></select></div>
+      <div class="form-group"><label>Blood Group</label><select class="form-control"><option>O+</option><option>A+</option><option>B+</option><option>AB+</option><option>O-</option></select></div>
     </div>
-  </div>
-</main>
+    <div class="form-row">
+      <div class="form-group"><label>Height (cm)</label><input type="number" class="form-control" value="162"></div>
+      <div class="form-group"><label>Weight (kg)</label><input type="number" class="form-control" value="58"></div>
+    </div>
+    <div class="form-group"><label>Medical History</label><textarea class="form-control" rows="3" placeholder="Allergies, chronic conditions, past surgeries...">No known allergies. Mild seasonal asthma.</textarea></div>
+    <div class="form-row">
+      <div class="form-group"><label>Emergency Contact Name</label><input class="form-control" placeholder="Contact name"></div>
+      <div class="form-group"><label>Emergency Contact Number</label><input class="form-control" placeholder="+91"></div>
+    </div>
+    <button class="btn btn-primary">Save Changes</button>
+  </form>
+</div>
 
+<script src="js/layout.js"></script>
 <script src="js/app.js"></script>
-<script>
-const RESPONSES = {
-  'high blood pressure': `**High Blood Pressure (Hypertension)**\n\nBlood pressure is measured as systolic/diastolic (mmHg):\n\n• **Normal:** < 120/80 mmHg\n• **Elevated:** 120–129 / < 80 mmHg\n• **Stage 1 HTN:** 130–139 / 80–89 mmHg\n• **Stage 2 HTN:** ≥ 140/90 mmHg\n• **Hypertensive Crisis:** > 180/120 mmHg ⚠️\n\n**Immediate actions for Stage 2+:**\n1. Confirm reading with second measurement\n2. Check for end-organ symptoms (chest pain, headache, vision changes)\n3. Administer antihypertensive if prescribed\n4. Consider emergency referral if >180/120`,
-  'spo₂ of 88%': `**⚠️ Critical: SpO₂ 88% requires immediate action!**\n\nNormal SpO₂ is 95–100%. At 88%, the patient is hypoxic.\n\n**Immediate steps:**\n1. 🚨 Place patient in recovery position\n2. 💨 Administer supplemental O₂ (start at 2–4 L/min via nasal cannula)\n3. 📈 Target SpO₂ ≥ 94%\n4. 📋 Check respiratory rate & work of breathing\n5. 🏥 Escalate to emergency team immediately\n6. Consider: bronchospasm, pulmonary oedema, PE\n\n**Do NOT leave patient unattended.**`,
-  'diabetes': `**Diabetes Symptoms in Elderly Patients**\n\nOlder adults often present atypically:\n\n**Classic symptoms:**\n• Polyuria (frequent urination)\n• Polydipsia (excessive thirst)\n• Unexplained weight loss\n• Blurred vision\n\n**Atypical in elderly:**\n• Fatigue & weakness (often mistaken for aging)\n• Cognitive decline or confusion\n• Recurrent infections (UTI, skin)\n• Slow wound healing\n• Orthostatic hypotension\n\n**Diagnostic threshold:** Fasting glucose ≥ 126 mg/dL on 2 occasions, or HbA1c ≥ 6.5%\n\n*Recommend: Fasting glucose + HbA1c for this patient.*`,
-  'heart rate 130': `**Tachycardia: HR 130 bpm**\n\nHR > 100 bpm = Tachycardia. At 130, this requires assessment.\n\n**Possible causes:**\n• Anxiety / pain / fever\n• Dehydration / hypovolemia\n• Anaemia\n• Hyperthyroidism\n• Atrial fibrillation / flutter\n• SVT (Supraventricular tachycardia)\n\n**Assessment checklist:**\n1. Is patient symptomatic? (chest pain, SOB, syncope)\n2. Check BP — is there haemodynamic compromise?\n3. 12-lead ECG immediately\n4. Check O₂ sat, temperature, glucose\n\n**If unstable → Activate emergency protocol NOW.**`,
-  'cardiac arrest': `**🚨 Cardiac Arrest Emergency Protocol**\n\n**IMMEDIATELY:**\n1. Call code (emergency alert system)\n2. Start CPR: 30 compressions : 2 breaths (100–120/min)\n3. Attach AED/defibrillator as soon as available\n4. Follow AED prompts — shock if advised\n\n**Team roles:**\n• Lead: Compressions (rotate every 2 min)\n• Airway: BVM ventilation\n• IV: Adrenaline 1mg IV every 3–5 min\n• Recorder: Document times\n\n**Reversible causes (4H/4T):** Hypoxia, Hypovolaemia, Hypo/Hyperkalaemia, Hypothermia / Tension pneumothorax, Tamponade, Toxins, Thrombosis`,
-  'analyse current vitals': `**🔴 Critical Vitals Analysis — Ravi Kumar (58M)**\n\n| Parameter | Value | Status |\n|---|---|---|\n| Heart Rate | 118 bpm | ⚠️ Tachycardia |\n| Blood Pressure | 155/95 mmHg | 🔴 Stage 2 HTN |\n| SpO₂ | 91% | 🔴 Hypoxic |\n| Glucose | 285 mg/dL | 🔴 Hyperglycaemia |\n\n**Clinical Assessment:**\nMultiple critical parameters. This patient presents with a potentially dangerous combination of hypertensive crisis, hypoxia, and uncontrolled hyperglycaemia.\n\n**Recommended immediate actions:**\n1. 🚨 Escalate to ICU/emergency physician NOW\n2. 💨 Supplemental O₂ — target SpO₂ ≥ 94%\n3. 💉 IV access — antihypertensive + insulin sliding scale\n4. 📊 Continuous cardiac monitoring & 12-lead ECG\n5. 📞 Alert family / NOK`
-};
-
-function getAIResponse(text) {
-  const t = text.toLowerCase();
-  if (t.includes('blood pressure') || t.includes('hypertension') || t.includes('bp')) return RESPONSES['high blood pressure'];
-  if (t.includes('spo') || t.includes('oxygen') || t.includes('88%')) return RESPONSES['spo₂ of 88%'];
-  if (t.includes('diabetes') || t.includes('glucose') || t.includes('sugar')) return RESPONSES['diabetes'];
-  if (t.includes('heart rate') || t.includes('tachycardia') || t.includes('130')) return RESPONSES['heart rate 130'];
-  if (t.includes('cardiac') || t.includes('arrest') || t.includes('cpr')) return RESPONSES['cardiac arrest'];
-  if (t.includes('analyse') || t.includes('analyze') || t.includes('ravi')) return RESPONSES['analyse current vitals'];
-  return `Thank you for your query: **"${text}"**\n\nBased on current clinical context, I recommend:\n\n• Review the patient's full history and medication list\n• Cross-reference with latest vitals from the dashboard\n• Consult the risk prediction module for a full assessment\n• If urgent, activate emergency protocol from the Emergency Centre\n\nWould you like me to focus on a specific aspect? (e.g. symptoms, vitals, medications, risk score)`;
-}
-
-function formatMessage(text) {
-  return text
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/^• /gm, '&bull; ')
-    .replace(/\n/g, '<br>')
-    .replace(/(\d+)\. /g, '<span style="font-weight:700;color:var(--primary)">$1.</span> ');
-}
-
-function addMessage(text, role) {
-  const wrap = document.getElementById('chatMessages');
-  const div  = document.createElement('div');
-  div.className = `chat-msg ${role}`;
-  const now = new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
-  if (role === 'user') {
-    div.innerHTML = `<div class="chat-avatar"><i class="fa-solid fa-user"></i></div><div><div class="chat-bubble">${text}</div><div class="chat-time">${now}</div></div>`;
-  } else {
-    div.innerHTML = `<div class="chat-avatar"><i class="fa-solid fa-robot"></i></div><div><div class="chat-bubble">${formatMessage(text)}</div><div class="chat-time">${now}</div></div>`;
-  }
-  wrap.appendChild(div);
-  wrap.scrollTop = wrap.scrollHeight;
-}
-
-function showTyping() {
-  const wrap = document.getElementById('chatMessages');
-  const div  = document.createElement('div');
-  div.className = 'chat-msg bot'; div.id = 'typingIndicator';
-  div.innerHTML = `<div class="chat-avatar"><i class="fa-solid fa-robot"></i></div><div><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>`;
-  wrap.appendChild(div);
-  wrap.scrollTop = wrap.scrollHeight;
-}
-
-function removeTyping() {
-  const t = document.getElementById('typingIndicator');
-  if (t) t.remove();
-}
-
-function sendMessage() {
-  const input = document.getElementById('chatInput');
-  const text  = input.value.trim();
-  if (!text) return;
-  input.value = '';
-  addMessage(text, 'user');
-  document.getElementById('quickChips').style.display = 'none';
-  showTyping();
-  setTimeout(() => {
-    removeTyping();
-    addMessage(getAIResponse(text), 'bot');
-  }, 1200 + Math.random() * 800);
-}
-
-function sendQuick(text) {
-  document.getElementById('chatInput').value = text;
-  sendMessage();
-}
-
-document.getElementById('chatInput').addEventListener('keypress', e => { if (e.key === 'Enter') sendMessage(); });
-document.getElementById('clearBtn').addEventListener('click', () => {
-  document.getElementById('chatMessages').innerHTML = '';
-  document.getElementById('quickChips').style.display = 'flex';
-  addMessage('Chat cleared. How can I help you?', 'bot');
-});
-
-// Live vitals update in sidebar
-setInterval(() => {
-  VNVitals.randomize();
-  document.getElementById('ai-hr').textContent   = VNVitals.heartRate + ' bpm';
-  document.getElementById('ai-spo2').textContent  = VNVitals.spo2 + '%';
-  document.getElementById('ai-bp').textContent    = `${VNVitals.bp_s}/${VNVitals.bp_d}`;
-  document.getElementById('ai-temp').textContent  = VNVitals.temp + '°F';
-}, 4000);
-</script>
 </body>
 </html>
