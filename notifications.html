@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notifications — VitalNet</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="notifications.html" data-role="member" data-title="Notifications" data-sub="Alerts, reminders and updates">
+
+<div class="card card-lg">
+  <div class="card-head"><h3>All Notifications</h3><button class="btn btn-outline btn-sm" onclick="vnToast('All notifications marked as read.')">Mark all read</button></div>
+  <div class="list-row"><span><i class="fa-solid fa-triangle-exclamation" style="color:var(--alert);"></i> Blood pressure reading was above your normal range</span><span class="text-muted" style="font-size:.75rem;">1h ago</span></div>
+  <div class="list-row"><span><i class="fa-solid fa-pills" style="color:var(--warn);"></i> Reminder: take Vitamin D3 at 8:00 PM</span><span class="text-muted" style="font-size:.75rem;">3h ago</span></div>
+  <div class="list-row"><span><i class="fa-solid fa-calendar-check" style="color:var(--primary);"></i> Appointment with Dr. R. Meena confirmed for Tue</span><span class="text-muted" style="font-size:.75rem;">Yesterday</span></div>
+  <div class="list-row"><span><i class="fa-solid fa-syringe" style="color:var(--teal);"></i> Tdap booster due on 14 Aug 2026</span><span class="text-muted" style="font-size:.75rem;">2d ago</span></div>
+  <div class="list-row"><span><i class="fa-solid fa-file-medical" style="color:var(--ok);"></i> New lab report uploaded by Dr. R. Meena</span><span class="text-muted" style="font-size:.75rem;">4d ago</span></div>
+</div>
+
+<script src="js/layout.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
