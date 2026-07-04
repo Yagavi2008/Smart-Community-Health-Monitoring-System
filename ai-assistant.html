@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Health Assistant — VitalNet</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="ai-assistant.html" data-role="member" data-title="AI Health Assistant" data-sub="Symptom guidance and lifestyle recommendations">
+
+<div class="grid" style="grid-template-columns:2fr 1fr;">
+  <div class="card card-lg">
+    <div class="card-head"><h3><i class="fa-solid fa-robot" style="color:var(--teal);"></i> Ask VitalNet AI</h3><span class="badge badge-ok">Online</span></div>
+    <div id="aiChatLog" style="height:340px;overflow-y:auto;display:flex;flex-direction:column;gap:.6rem;padding:.5rem 0;">
+      <div class="list-row"><div class="badge badge-ok" style="max-width:75%;white-space:normal;text-align:left;"><i class="fa-solid fa-robot"></i> Hi Yagavi! I'm your AI health assistant. Ask me about symptoms, blood pressure, sugar levels, sleep, or general wellness.</div></div>
+    </div>
+    <form id="aiChatForm" style="display:flex;gap:.6rem;margin-top:.6rem;">
+      <input id="aiChatInput" class="form-control" placeholder="e.g. My blood pressure feels high today" autocomplete="off">
+      <button class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i></button>
+    </form>
+    <p class="text-muted" style="font-size:.72rem;margin-top:.6rem;">This assistant gives general guidance only and does not replace professional medical advice.</p>
+  </div>
+
+  <div class="card card-lg">
+    <div class="card-head"><h3>Quick Topics</h3></div>
+    <div class="list-row"><button class="btn btn-outline btn-sm btn-block" onclick="document.getElementById('aiChatInput').value='Tell me about managing fever';document.getElementById('aiChatForm').dispatchEvent(new Event('submit'))">Fever guidance</button></div>
+    <div class="list-row"><button class="btn btn-outline btn-sm btn-block" onclick="document.getElementById('aiChatInput').value='How do I manage blood pressure?';document.getElementById('aiChatForm').dispatchEvent(new Event('submit'))">Blood pressure tips</button></div>
+    <div class="list-row"><button class="btn btn-outline btn-sm btn-block" onclick="document.getElementById('aiChatInput').value='Sleep recommendations please';document.getElementById('aiChatForm').dispatchEvent(new Event('submit'))">Sleep advice</button></div>
+    <div class="list-row"><button class="btn btn-outline btn-sm btn-block" onclick="document.getElementById('aiChatInput').value='How much water should I drink?';document.getElementById('aiChatForm').dispatchEvent(new Event('submit'))">Hydration</button></div>
+  </div>
+</div>
+
+<script src="js/layout.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
