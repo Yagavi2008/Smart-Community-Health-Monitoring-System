@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vaccination Tracker — VitalNet</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="vaccination-tracker.html" data-role="member" data-title="Vaccination Tracker" data-sub="Immunization history and upcoming doses">
+
+<div class="grid grid-3" style="margin-bottom:1rem;">
+  <div class="card stat-card"><div class="stat-icon" style="background:var(--ok-soft);color:var(--ok);"><i class="fa-solid fa-shield-virus"></i></div><div class="stat-label">Vaccines completed</div><div class="stat-value">6</div></div>
+  <div class="card stat-card"><div class="stat-icon" style="background:var(--warn-soft);color:var(--warn);"><i class="fa-solid fa-calendar-day"></i></div><div class="stat-label">Upcoming dose</div><div class="stat-value" style="font-size:1.1rem;">Tdap Booster</div></div>
+  <div class="card stat-card"><div class="stat-icon" style="background:var(--primary-soft);color:var(--primary);"><i class="fa-solid fa-syringe"></i></div><div class="stat-label">Next due</div><div class="stat-value" style="font-size:1.1rem;">14 Aug 2026</div></div>
+</div>
+
+<div class="card card-lg">
+  <div class="card-head"><h3>Immunization History</h3><button class="btn btn-primary btn-sm" onclick="vnToast('Vaccination record added.')"><i class="fa-solid fa-plus"></i> Add Record</button></div>
+  <table class="table">
+    <thead><tr><th>Vaccine</th><th>Dose</th><th>Date Given</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>Covishield</td><td>1st &amp; 2nd</td><td>2021</td><td><span class="badge badge-ok">Complete</span></td></tr>
+      <tr><td>Hepatitis B</td><td>3-dose series</td><td>2019</td><td><span class="badge badge-ok">Complete</span></td></tr>
+      <tr><td>Tetanus (Td)</td><td>Booster</td><td>2022</td><td><span class="badge badge-ok">Complete</span></td></tr>
+      <tr><td>Influenza</td><td>Annual</td><td>Oct 2025</td><td><span class="badge badge-ok">Complete</span></td></tr>
+      <tr><td>Tdap Booster</td><td>Booster</td><td>—</td><td><span class="badge badge-warn">Due 14 Aug 2026</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<script src="js/layout.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
