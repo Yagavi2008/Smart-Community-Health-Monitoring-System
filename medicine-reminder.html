@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Medicine Reminder — VitalNet</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="medicine-reminder.html" data-role="member" data-title="Medicine Reminder" data-sub="Track daily medicines and adherence">
+
+<div class="grid" style="grid-template-columns:1fr 1.4fr;">
+  <form class="card card-lg" data-demo="Medicine reminder added.">
+    <div class="card-head"><h3>Add Medicine</h3></div>
+    <div class="form-group"><label>Medicine Name</label><input class="form-control" placeholder="e.g. Metformin 500mg"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Reminder Time</label><input type="time" class="form-control"></div>
+      <div class="form-group"><label>Frequency</label><select class="form-control"><option>Once daily</option><option>Twice daily</option><option>Thrice daily</option></select></div>
+    </div>
+    <div class="form-group"><label>Notes</label><input class="form-control" placeholder="After food, etc."></div>
+    <button class="btn btn-primary btn-block">Add Reminder</button>
+  </form>
+
+  <div class="card card-lg">
+    <div class="card-head"><h3>Today's Medicines</h3><span class="badge badge-ok">75% adherence</span></div>
+    <div class="progress" style="margin-bottom:1rem;"><div class="progress-bar" style="width:75%;"></div></div>
+    <div class="list-row"><span><i class="fa-solid fa-pills" style="color:var(--primary);"></i> Metformin 500mg — 8:00 AM</span><span class="badge badge-ok">Taken</span></div>
+    <div class="list-row"><span><i class="fa-solid fa-pills" style="color:var(--teal);"></i> Vitamin D3 — 8:00 PM</span><button class="btn btn-outline btn-sm" onclick="vnToast('Marked as taken.')">Mark taken</button></div>
+    <div class="list-row"><span><i class="fa-solid fa-pills" style="color:var(--warn);"></i> Cetirizine — 9:00 PM</span><button class="btn btn-outline btn-sm" onclick="vnToast('Marked as taken.')">Mark taken</button></div>
+    <div class="list-row"><span><i class="fa-solid fa-pills" style="color:var(--alert);"></i> Inhaler (as needed) — 10:00 PM</span><span class="badge badge-warn">Missed yesterday</span></div>
+  </div>
+</div>
+
+<script src="js/layout.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
