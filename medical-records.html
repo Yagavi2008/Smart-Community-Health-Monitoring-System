@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Medical Records — VitalNet</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="medical-records.html" data-role="member" data-title="Medical Records" data-sub="Your medical history and uploaded reports">
+
+<div class="card card-lg" style="margin-bottom:1rem;">
+  <div class="card-head">
+    <h3>Report Archive</h3>
+    <label class="btn btn-primary btn-sm" style="cursor:pointer;">
+      <i class="fa-solid fa-upload"></i> Upload Report
+      <input type="file" style="display:none;" onchange="vnToast('Report uploaded successfully.')">
+    </label>
+  </div>
+  <table class="table">
+    <thead><tr><th>Report</th><th>Type</th><th>Date</th><th>Doctor</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+      <tr><td>Full Blood Count</td><td>Lab Report</td><td>28 Jun 2026</td><td>Dr. R. Meena</td><td><span class="badge badge-ok">Normal</span></td><td><button class="btn btn-outline btn-sm" onclick="vnToast('Opening report preview...')">View</button></td></tr>
+      <tr><td>Chest X-Ray</td><td>Imaging</td><td>10 Jun 2026</td><td>Dr. K. Suresh</td><td><span class="badge badge-ok">Clear</span></td><td><button class="btn btn-outline btn-sm" onclick="vnToast('Opening report preview...')">View</button></td></tr>
+      <tr><td>Lipid Profile</td><td>Lab Report</td><td>02 May 2026</td><td>Dr. R. Meena</td><td><span class="badge badge-warn">Borderline</span></td><td><button class="btn btn-outline btn-sm" onclick="vnToast('Opening report preview...')">View</button></td></tr>
+      <tr><td>ECG Summary</td><td>Cardiology</td><td>18 Mar 2026</td><td>Dr. R. Meena</td><td><span class="badge badge-ok">Normal</span></td><td><button class="btn btn-outline btn-sm" onclick="vnToast('Opening report preview...')">View</button></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="grid grid-2">
+  <div class="card">
+    <div class="card-head"><h3>Chronic Conditions</h3></div>
+    <div class="list-row"><span>Seasonal Asthma</span><span class="badge badge-info">Mild</span></div>
+    <div class="empty-state" style="padding:1rem;"><span class="text-muted" style="font-size:.8rem;">No other chronic conditions recorded</span></div>
+  </div>
+  <div class="card">
+    <div class="card-head"><h3>Known Allergies</h3></div>
+    <div class="empty-state"><i class="fa-solid fa-shield-heart"></i><span style="font-size:.85rem;">No known drug or food allergies</span></div>
+  </div>
+</div>
+
+<script src="js/layout.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
