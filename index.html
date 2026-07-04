@@ -1,307 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>VitalNet — Smart Community Health Monitoring System</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-<link rel="stylesheet" href="css/style.css" />
-<style>
-  body { background: #fff; }
-
-  /* Nav */
-  .landing-nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 999;
-    padding: 0 60px; height: 68px;
-    display: flex; align-items: center; justify-content: space-between;
-    background: rgba(255,255,255,.95); backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border);
-  }
-  .nav-brand { display:flex; align-items:center; gap:10px; text-decoration:none; }
-  .nav-brand .logo { width:36px; height:36px; background: linear-gradient(135deg,#1565C0,#00ACC1); border-radius:10px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:17px; }
-  .nav-brand .name { font-family:var(--font-display); font-size:18px; font-weight:800; color:var(--text-primary); }
-  .nav-links { display:flex; align-items:center; gap:28px; }
-  .nav-links a { font-size:13.5px; font-weight:500; color:var(--text-secondary); text-decoration:none; transition:color .2s; }
-  .nav-links a:hover { color:var(--primary); }
-  .nav-cta { display:flex; gap:10px; }
-
-  /* Hero */
-  .hero { padding: 140px 60px 80px; background: linear-gradient(135deg,#0D47A1 0%,#1565C0 55%,#00838F 100%); min-height: 90vh; display:flex; align-items:center; position:relative; overflow:hidden; }
-  .hero::after { content:''; position:absolute; bottom:-1px; left:0; right:0; height:80px; background:#fff; clip-path:ellipse(60% 100% at 50% 100%); }
-  .hero-inner { display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center; max-width:1280px; margin:0 auto; width:100%; position:relative; z-index:1; }
-
-  /* Pulse animation */
-  .pulse-ring { position:absolute; border-radius:50%; border:2px solid rgba(255,255,255,.15); animation:expand 3s infinite; }
-  .pulse-ring:nth-child(1) { width:200px; height:200px; top:-80px; right:-60px; animation-delay:0s; }
-  .pulse-ring:nth-child(2) { width:350px; height:350px; top:-155px; right:-135px; animation-delay:1s; }
-  .pulse-ring:nth-child(3) { width:500px; height:500px; top:-230px; right:-210px; animation-delay:2s; }
-  @keyframes expand { 0%{opacity:.6;transform:scale(.9);} 100%{opacity:0;transform:scale(1.1);} }
-
-  /* ECG Line SVG animation */
-  .ecg-svg { width:100%; height:50px; margin-bottom:20px; }
-  .ecg-path { stroke:#7CD1E8; stroke-width:2; fill:none; stroke-dasharray:500; stroke-dashoffset:500; animation:drawECG 2.5s ease forwards; }
-  @keyframes drawECG { to { stroke-dashoffset: 0; } }
-
-  /* Mockup */
-  .dashboard-mockup {
-    background:rgba(255,255,255,.12);
-    border:1px solid rgba(255,255,255,.2);
-    border-radius:20px; padding:20px;
-    backdrop-filter:blur(20px);
-  }
-  .mockup-header { display:flex; align-items:center; gap:8px; margin-bottom:16px; }
-  .mockup-dot { width:10px; height:10px; border-radius:50%; }
-  .mockup-title { font-size:12px; font-weight:600; color:rgba(255,255,255,.7); margin-left:4px; }
-  .mockup-vitals { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:14px; }
-  .mockup-vital { background:rgba(255,255,255,.1); border-radius:10px; padding:12px; text-align:center; }
-  .mockup-vital .mv-val { font-family:var(--font-display); font-size:22px; font-weight:800; color:#fff; }
-  .mockup-vital .mv-lbl { font-size:10px; color:rgba(255,255,255,.55); margin-top:2px; }
-  .mockup-chart-bar { display:flex; gap:4px; align-items:flex-end; height:48px; margin-top:10px; }
-  .mockup-chart-bar span { flex:1; background:rgba(255,255,255,.2); border-radius:3px 3px 0 0; animation:barrise .6s ease forwards; opacity:0; }
-  @keyframes barrise { to { opacity:1; } }
-
-  /* Sections */
-  .section { padding: 80px 60px; max-width:1280px; margin:0 auto; }
-  .section-tag { display:inline-flex; align-items:center; gap:6px; background:#E3F0FF; color:var(--primary); padding:5px 13px; border-radius:20px; font-size:12px; font-weight:700; letter-spacing:.5px; margin-bottom:14px; }
-  .section-title { font-family:var(--font-display); font-size:36px; font-weight:800; margin-bottom:14px; color:var(--text-primary); }
-  .section-desc  { font-size:15px; color:var(--text-secondary); line-height:1.7; max-width:560px; }
-
-  /* How it works */
-  .how-section { background:var(--bg); }
-  .how-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:24px; margin-top:48px; }
-  .how-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:24px; position:relative; text-align:center; }
-  .how-number { font-family:var(--font-display); font-size:48px; font-weight:900; color:#E3F0FF; position:absolute; top:12px; right:16px; line-height:1; }
-  .how-icon { width:54px; height:54px; background:#E3F0FF; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:22px; color:var(--primary); margin:0 auto 14px; }
-  .how-title { font-size:14px; font-weight:700; margin-bottom:6px; }
-  .how-desc  { font-size:12px; color:var(--text-secondary); line-height:1.6; }
-  .connector { display:flex; align-items:center; justify-content:center; padding-top:40px; color:var(--text-muted); font-size:20px; }
-
-  /* Stats banner */
-  .stats-banner { background:linear-gradient(135deg,#0D47A1,#00838F); padding:60px; border-radius:20px; color:#fff; display:grid; grid-template-columns:repeat(4,1fr); gap:32px; text-align:center; }
-  .stats-banner .s-val { font-family:var(--font-display); font-size:40px; font-weight:900; }
-  .stats-banner .s-lbl { font-size:13px; color:rgba(255,255,255,.65); margin-top:4px; }
-
-  /* Footer */
-  footer { background: var(--primary-dark); color:rgba(255,255,255,.7); padding:40px 60px; display:flex; align-items:center; justify-content:space-between; }
-  footer .brand { font-family:var(--font-display); font-size:18px; font-weight:800; color:#fff; }
-  footer a { color:rgba(255,255,255,.55); text-decoration:none; font-size:13px; margin:0 12px; }
-  footer a:hover { color:#fff; }
-
-  @media(max-width:900px) {
-    .landing-nav { padding:0 20px; }
-    .hero { padding:100px 20px 60px; }
-    .hero-inner { grid-template-columns:1fr; gap:32px; }
-    .section { padding:60px 20px; }
-    .how-grid { grid-template-columns:repeat(2,1fr); }
-    .stats-banner { grid-template-columns:repeat(2,1fr); padding:40px 24px; }
-    footer { flex-direction:column; gap:16px; text-align:center; padding:30px 20px; }
-    .feature-grid { grid-template-columns:1fr; }
-  }
-</style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VitalNet — Smart Community Health Monitoring</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<!-- NAV -->
-<nav class="landing-nav">
-  <a href="index.html" class="nav-brand">
-    <div class="logo"><i class="fa-solid fa-heart-pulse"></i></div>
-    <span class="name">VitalNet</span>
-  </a>
-  <div class="nav-links">
-    <a href="#features">Features</a>
-    <a href="#how">How It Works</a>
-    <a href="#stats">Impact</a>
-    <a href="dashboard.html">Dashboard</a>
-  </div>
-  <div class="nav-cta">
-    <a href="dashboard.html" class="btn-outline">Live Demo</a>
-    <a href="dashboard.html" class="btn-primary" style="text-decoration:none;"><i class="fa-solid fa-arrow-right"></i> Get Started</a>
+<nav class="nav-public">
+  <div class="brand-mark"><span class="pulse-dot" style="background:var(--teal);width:9px;height:9px;border-radius:50%;display:inline-block;"></span> VitalNet</div>
+  <div class="links">
+    <a href="index.html">Home</a>
+    <a href="about.html">About Us</a>
+    <a href="contact.html">Contact</a>
+    <a href="login.html">Log In</a>
+    <a href="register.html" class="btn btn-primary btn-sm">Get Started</a>
   </div>
 </nav>
 
-<!-- HERO -->
 <section class="hero">
-  <div class="pulse-ring"></div>
-  <div class="pulse-ring"></div>
-  <div class="pulse-ring"></div>
-  <div class="hero-inner">
-    <div class="hero-content">
-      <div class="hero-tag">
-        <i class="fa-solid fa-satellite-dish"></i>
-        SIH 2025 — Smart India Hackathon Project
-      </div>
-
-      <svg class="ecg-svg" viewBox="0 0 400 50">
-        <path class="ecg-path" d="M0,25 L60,25 L70,5 L80,45 L90,15 L100,25 L160,25 L170,5 L180,45 L190,15 L200,25 L260,25 L270,5 L280,45 L290,15 L300,25 L400,25" />
-      </svg>
-
-      <h1 class="hero-title">Smart Community<br><span>Health Monitoring</span><br>System</h1>
-      <p class="hero-desc">AI-powered real-time vitals monitoring, disease risk prediction, and emergency response for communities — accessible, scalable, and life-saving.</p>
-
-      <div style="display:flex;gap:12px;flex-wrap:wrap;">
-        <a href="dashboard.html" class="btn-primary" style="text-decoration:none;padding:12px 24px;font-size:14px;">
-          <i class="fa-solid fa-display"></i> Open Dashboard
-        </a>
-        <a href="emergency.html" class="btn-outline" style="text-decoration:none;padding:12px 24px;font-size:14px;border-color:rgba(255,255,255,.5);color:#fff;">
-          <i class="fa-solid fa-triangle-exclamation"></i> Emergency Centre
-        </a>
-      </div>
-
-      <div class="hero-stats">
-        <div class="hero-stat"><div class="val">5,000+</div><div class="lbl">Patients Monitored</div></div>
-        <div class="hero-stat"><div class="val">98.6%</div><div class="lbl">System Uptime</div></div>
-        <div class="hero-stat"><div class="val">2 min</div><div class="lbl">Avg Alert Response</div></div>
-      </div>
-    </div>
-
-    <div class="dashboard-mockup">
-      <div class="mockup-header">
-        <div class="mockup-dot" style="background:#ff5f57"></div>
-        <div class="mockup-dot" style="background:#febc2e"></div>
-        <div class="mockup-dot" style="background:#28c840"></div>
-        <span class="mockup-title">VitalNet Live Dashboard</span>
-      </div>
-      <div class="mockup-vitals">
-        <div class="mockup-vital"><div class="mv-val">72</div><div class="mv-lbl">♥ BPM</div></div>
-        <div class="mockup-vital"><div class="mv-val">98%</div><div class="mv-lbl">SpO₂</div></div>
-        <div class="mockup-vital"><div class="mv-val">120/80</div><div class="mv-lbl">BP mmHg</div></div>
-        <div class="mockup-vital"><div class="mv-val">98.4°F</div><div class="mv-lbl">Temp</div></div>
-        <div class="mockup-vital"><div class="mv-val">16</div><div class="mv-lbl">Resp/min</div></div>
-        <div class="mockup-vital"><div class="mv-val">LOW</div><div class="mv-lbl" style="color:#7CD1E8;">Risk</div></div>
-      </div>
-      <div style="background:rgba(255,255,255,.08);border-radius:8px;padding:10px;">
-        <div style="font-size:10px;color:rgba(255,255,255,.5);margin-bottom:6px;">Heart Rate — Last 8 readings</div>
-        <div class="mockup-chart-bar">
-          <span style="height:55%;animation-delay:.1s"></span>
-          <span style="height:70%;animation-delay:.2s"></span>
-          <span style="height:60%;animation-delay:.3s"></span>
-          <span style="height:80%;animation-delay:.4s"></span>
-          <span style="height:65%;animation-delay:.5s"></span>
-          <span style="height:90%;animation-delay:.6s"></span>
-          <span style="height:72%;animation-delay:.7s"></span>
-          <span style="height:75%;animation-delay:.8s;background:rgba(124,209,232,.6)"></span>
-        </div>
-      </div>
-      <div style="margin-top:12px;display:flex;gap:6px;">
-        <a href="ai-assistant.html" style="flex:1;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:8px;text-align:center;font-size:11px;font-weight:600;color:#fff;text-decoration:none;"><i class="fa-solid fa-robot"></i> AI Assistant</a>
-        <a href="risk-prediction.html" style="flex:1;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:8px;text-align:center;font-size:11px;font-weight:600;color:#fff;text-decoration:none;"><i class="fa-solid fa-chart-line"></i> Risk Predict</a>
-        <a href="emergency.html" style="flex:1;background:rgba(220,38,38,.4);border:1px solid rgba(220,38,38,.5);border-radius:8px;padding:8px;text-align:center;font-size:11px;font-weight:600;color:#fff;text-decoration:none;"><i class="fa-solid fa-bell"></i> Emergency</a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- FEATURES -->
-<section class="section" id="features">
-  <div style="text-align:center;margin-bottom:48px;">
-    <div class="section-tag" style="display:inline-flex;"><i class="fa-solid fa-star"></i> Core Features</div>
-    <h2 class="section-title" style="text-align:center;">Everything your community needs</h2>
-    <p class="section-desc" style="margin:0 auto;text-align:center;">From real-time monitoring to AI-powered insights — VitalNet covers the full spectrum of community healthcare.</p>
-  </div>
-  <div class="feature-grid">
-    <div class="feature-card">
-      <div class="feature-icon"><i class="fa-solid fa-heart-pulse"></i></div>
-      <h3 class="feature-title">Real-Time Vitals</h3>
-      <p class="feature-desc">Continuous monitoring of heart rate, SpO₂, blood pressure, temperature and respiratory rate with instant anomaly detection.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon"><i class="fa-solid fa-robot"></i></div>
-      <h3 class="feature-title">AI Health Assistant</h3>
-      <p class="feature-desc">Conversational AI that interprets symptoms, answers health queries, and provides actionable guidance 24/7.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon"><i class="fa-solid fa-chart-line"></i></div>
-      <h3 class="feature-title">Disease Risk Prediction</h3>
-      <p class="feature-desc">Machine learning models assess diabetes, hypertension, and cardiac risk with explainable probability scores.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
-      <h3 class="feature-title">Emergency Alerts</h3>
-      <p class="feature-desc">Automated critical alerts with GPS dispatch, SMS/call notifications to family and nearest healthcare facility.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon"><i class="fa-solid fa-globe"></i></div>
-      <h3 class="feature-title">Population Analytics</h3>
-      <p class="feature-desc">Community-wide health trends, disease prevalence maps, outbreak early warning, and resource planning dashboards.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon"><i class="fa-solid fa-shield-halved"></i></div>
-      <h3 class="feature-title">Secure & Private</h3>
-      <p class="feature-desc">HIPAA-aligned data handling, end-to-end encryption, role-based access control, and full audit trails.</p>
-    </div>
-  </div>
-</section>
-
-<!-- HOW IT WORKS -->
-<section style="background:var(--bg); padding:80px 0;" id="how">
-  <div class="section" style="padding-top:0;padding-bottom:0;">
-    <div style="text-align:center;margin-bottom:48px;">
-      <div class="section-tag" style="display:inline-flex;"><i class="fa-solid fa-circle-nodes"></i> Workflow</div>
-      <h2 class="section-title" style="text-align:center;">How VitalNet Works</h2>
-    </div>
-    <div class="how-grid">
-      <div class="how-card">
-        <div class="how-number">01</div>
-        <div class="how-icon"><i class="fa-solid fa-microchip"></i></div>
-        <h4 class="how-title">IoT Sensor Collection</h4>
-        <p class="how-desc">Wearable and bedside sensors capture vitals continuously and transmit via Wi-Fi / LoRa.</p>
-      </div>
-      <div class="how-card">
-        <div class="how-number">02</div>
-        <div class="how-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
-        <h4 class="how-title">Secure Data Ingestion</h4>
-        <p class="how-desc">Encrypted payloads land in the cloud pipeline; data is validated, timestamped, and stored.</p>
-      </div>
-      <div class="how-card">
-        <div class="how-number">03</div>
-        <div class="how-icon"><i class="fa-solid fa-brain"></i></div>
-        <h4 class="how-title">AI Analysis & Risk Scoring</h4>
-        <p class="how-desc">ML models analyse trends, detect anomalies, and score disease risk in milliseconds.</p>
-      </div>
-      <div class="how-card">
-        <div class="how-number">04</div>
-        <div class="how-icon"><i class="fa-solid fa-bell-ring"></i></div>
-        <h4 class="how-title">Alert & Response</h4>
-        <p class="how-desc">Critical findings trigger multi-channel alerts to doctors, family, and emergency services instantly.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- STATS BANNER -->
-<section class="section" id="stats">
-  <div class="stats-banner">
-    <div><div class="s-val" data-count="5000" data-suffix="+">0</div><div class="s-lbl">Patients Monitored</div></div>
-    <div><div class="s-val" data-count="98.6" data-suffix="%" data-dec="1">0</div><div class="s-lbl">System Uptime</div></div>
-    <div><div class="s-val" data-count="47" data-suffix="s">0</div><div class="s-lbl">Avg Alert Time</div></div>
-    <div><div class="s-val" data-count="12" data-suffix=" PHC">0</div><div class="s-lbl">Health Centres Connected</div></div>
-  </div>
-</section>
-
-<!-- FOOTER -->
-<footer>
   <div>
-    <div class="brand">VitalNet</div>
-    <div style="font-size:12px;margin-top:4px;">Smart Community Health Monitoring System — SIH 2025</div>
+    <span class="eyebrow"><i class="fa-solid fa-wave-square"></i> AI-powered community health</span>
+    <h1>Your community's vitals, read in real time.</h1>
+    <p class="lead">VitalNet connects community members, doctors, and health admins on one platform — live vitals monitoring, AI-guided risk prediction, and emergency response, built for real neighbourhoods, not just hospitals.</p>
+    <div class="hero-cta">
+      <a href="register.html" class="btn btn-primary"><i class="fa-solid fa-user-plus"></i> Create Free Account</a>
+      <a href="dashboard.html" class="btn btn-outline"><i class="fa-solid fa-gauge-high"></i> View Live Demo</a>
+    </div>
+    <div class="chip-scroll" style="margin-top:1.8rem;">
+      <span class="chip"><i class="fa-solid fa-heart-pulse"></i> Real-time vitals</span>
+      <span class="chip"><i class="fa-solid fa-brain"></i> Disease risk AI</span>
+      <span class="chip"><i class="fa-solid fa-bell"></i> Emergency alerts</span>
+      <span class="chip"><i class="fa-solid fa-syringe"></i> Vaccination tracking</span>
+    </div>
   </div>
-  <div>
-    <a href="index.html">Home</a>
-    <a href="dashboard.html">Dashboard</a>
-    <a href="ai-assistant.html">AI Assistant</a>
-    <a href="emergency.html">Emergency</a>
-    <a href="analytics.html">Analytics</a>
+  <div class="card card-lg">
+    <div class="card-head"><h3>Live Vitals — Community Snapshot</h3><span class="badge badge-ok"><i class="fa-solid fa-circle" style="font-size:6px;"></i> Streaming</span></div>
+    <svg class="ecg-strip" viewBox="0 0 400 60"><path class="ecg-live" d="M0 30 L60 30 L75 10 L90 50 L105 30 L160 30 L175 15 L190 45 L205 30 L400 30"/></svg>
+    <div class="grid grid-3" style="margin-top:1rem;">
+      <div><div class="stat-label">Avg SpO₂</div><div class="stat-value" style="font-size:1.2rem;">97%</div></div>
+      <div><div class="stat-label">Avg BPM</div><div class="stat-value" style="font-size:1.2rem;">76</div></div>
+      <div><div class="stat-label">Alerts today</div><div class="stat-value" style="font-size:1.2rem;color:var(--alert);">3</div></div>
+    </div>
   </div>
-  <div style="font-size:12px;">© 2025 VitalNet. Built for SIH 2025.</div>
+</section>
+
+<section class="section" style="background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+  <div class="section-head">
+    <span class="eyebrow"><i class="fa-solid fa-layer-group"></i> Everything in one place</span>
+    <h2>One platform, every layer of community health</h2>
+    <p>From an individual's daily vitals to a health admin's population-level view.</p>
+  </div>
+  <div class="grid grid-4">
+    <div class="feature-card"><div class="feature-icon"><i class="fa-solid fa-heart-pulse"></i></div><h4>Health Monitoring</h4><p class="text-muted" style="font-size:.86rem;">Track BP, sugar, SpO₂, temperature and BMI with instant abnormal-reading alerts.</p></div>
+    <div class="feature-card"><div class="feature-icon"><i class="fa-solid fa-robot"></i></div><h4>AI Health Assistant</h4><p class="text-muted" style="font-size:.86rem;">Symptom-based guidance and preventive lifestyle recommendations, on demand.</p></div>
+    <div class="feature-card"><div class="feature-icon"><i class="fa-solid fa-chart-line"></i></div><h4>Disease Risk Prediction</h4><p class="text-muted" style="font-size:.86rem;">Diabetes, hypertension, obesity and heart-disease risk scored from your records.</p></div>
+    <div class="feature-card"><div class="feature-icon"><i class="fa-solid fa-triangle-exclamation"></i></div><h4>Emergency Alerts</h4><p class="text-muted" style="font-size:.86rem;">Abnormal vitals instantly notify health workers and emergency contacts.</p></div>
+    <div class="feature-card"><div class="feature-icon"><i class="fa-solid fa-calendar-check"></i></div><h4>Appointments</h4><p class="text-muted" style="font-size:.86rem;">Book, reschedule and track doctor visits without a phone call.</p></div>
+    <div class="feature-card"><div class="feature-icon"><i class="fa-solid fa-syringe"></i></div><h4>Vaccination Tracker</h4><p class="text-muted" style="font-size:.86rem;">Immunization history plus reminders for upcoming doses.</p></div>
+    <div class="feature-card"><div class="feature-icon"><i class="fa-solid fa-person-running"></i></div><h4>Fitness Tracker</h4><p class="text-muted" style="font-size:.86rem;">Steps, exercise minutes, calories and water intake in one ring view.</p></div>
+    <div class="feature-card"><div class="feature-icon"><i class="fa-solid fa-chart-pie"></i></div><h4>Community Analytics</h4><p class="text-muted" style="font-size:.86rem;">Disease trends and age-group health statistics for administrators.</p></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head">
+    <span class="eyebrow"><i class="fa-solid fa-users"></i> Built for every role</span>
+    <h2>Role-based access for how your community actually works</h2>
+  </div>
+  <div class="grid grid-3">
+    <div class="card card-lg">
+      <div class="feature-icon"><i class="fa-solid fa-user"></i></div>
+      <h4>Community Member</h4>
+      <p class="text-muted" style="font-size:.86rem;">Log vitals, chat with the AI assistant, book appointments, and track fitness &amp; medicines.</p>
+      <a href="dashboard.html" class="btn btn-outline btn-sm">Open member dashboard</a>
+    </div>
+    <div class="card card-lg">
+      <div class="feature-icon"><i class="fa-solid fa-user-doctor"></i></div>
+      <h4>Doctor</h4>
+      <p class="text-muted" style="font-size:.86rem;">Review patient records, manage appointments, and issue personalised recommendations.</p>
+      <a href="doctor-dashboard.html" class="btn btn-outline btn-sm">Open doctor dashboard</a>
+    </div>
+    <div class="card card-lg">
+      <div class="feature-icon"><i class="fa-solid fa-user-shield"></i></div>
+      <h4>Health Admin</h4>
+      <p class="text-muted" style="font-size:.86rem;">Oversee users and doctors, monitor emergencies, and analyse community-wide health data.</p>
+      <a href="admin-dashboard.html" class="btn btn-outline btn-sm">Open admin dashboard</a>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="background:var(--primary-deep);color:#fff;border-radius:24px;margin:0 5% 3rem;text-align:center;">
+  <h2 style="color:#fff;">Ready to see your community's health, live?</h2>
+  <p style="color:#BFDAF0;margin-bottom:1.4rem;">Set up a profile in under two minutes.</p>
+  <a href="register.html" class="btn btn-teal">Create Free Account <i class="fa-solid fa-arrow-right"></i></a>
+</section>
+
+<footer class="footer-public">
+  <div class="footer-cols">
+    <div>
+      <div class="brand-mark" style="color:#fff;">VitalNet</div>
+      <p style="max-width:32ch;">Smart community health monitoring — real-time vitals, AI guidance, emergency response.</p>
+    </div>
+    <div><h4 style="color:#fff;font-size:.85rem;">Product</h4>
+      <p><a href="dashboard.html">Dashboard</a></p><p><a href="ai-assistant.html">AI Assistant</a></p><p><a href="admin-analytics.html">Community Analytics</a></p></div>
+    <div><h4 style="color:#fff;font-size:.85rem;">Company</h4>
+      <p><a href="about.html">About Us</a></p><p><a href="contact.html">Contact</a></p></div>
+    <div><h4 style="color:#fff;font-size:.85rem;">Account</h4>
+      <p><a href="login.html">Log In</a></p><p><a href="register.html">Register</a></p></div>
+  </div>
+  <div style="border-top:1px solid rgba(255,255,255,.12);padding-top:1rem;">© 2026 VitalNet · SIH 2025 Prototype — Smart Community Health Monitoring System</div>
 </footer>
 
-<script src="js/app.js"></script>
-<script>
-  // Animate stats on scroll
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) { document.querySelectorAll('[data-count]').forEach(el => { const t=parseFloat(el.dataset.count),sf=el.dataset.suffix||'',dc=el.dataset.dec||0;let s=0;const d=1400;const step=ts=>{if(!s)s=ts;const p=Math.min((ts-s)/d,1);const ea=1-Math.pow(1-p,3);el.textContent=(ea*t).toFixed(dc)+sf;if(p<1)requestAnimationFrame(step);};requestAnimationFrame(step);}); observer.disconnect(); } });
-  }, { threshold: .3 });
-  const banner = document.querySelector('.stats-banner');
-  if (banner) observer.observe(banner);
-</script>
 </body>
 </html>
