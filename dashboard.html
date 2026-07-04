@@ -1,340 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard — VitalNet</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<link rel="stylesheet" href="css/style.css" />
-<style>
-  .vitals-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:20px; }
-  .chart-row   { display:grid; grid-template-columns:2fr 1fr; gap:20px; margin-bottom:20px; }
-  .bottom-row  { display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; }
-  .patient-row { display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--border); }
-  .patient-row:last-child { border-bottom:none; }
-  .patient-avatar { width:36px;height:36px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0; }
-  .patient-info { flex:1; }
-  .patient-name { font-size:13px;font-weight:600; }
-  .patient-meta { font-size:11px;color:var(--text-muted); }
-  @media(max-width:900px){ .vitals-grid{grid-template-columns:repeat(2,1fr);} .chart-row{grid-template-columns:1fr;} .bottom-row{grid-template-columns:1fr;} }
-</style>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body data-page="dashboard.html" data-role="member" data-title="Good morning, Yagavi" data-sub="Here's your community health snapshot for today">
 
-<!-- SIDEBAR -->
-<aside class="sidebar">
-  <div class="sidebar-brand">
-    <div class="logo-icon"><i class="fa-solid fa-heart-pulse"></i></div>
-    <div class="brand-text">
-      <div class="brand-name">VitalNet</div>
-      <div class="brand-sub">Health Monitoring</div>
-    </div>
+<div class="grid grid-4" style="margin-bottom:1rem;">
+  <div class="card stat-card"><div class="stat-top"><div class="stat-icon" style="background:var(--primary-soft);color:var(--primary);"><i class="fa-solid fa-heart-pulse"></i></div><span class="stat-delta up">▲ normal</span></div><div class="stat-label">Heart Rate</div><div class="stat-value">76 <span style="font-size:.8rem;font-weight:400;">bpm</span></div></div>
+  <div class="card stat-card"><div class="stat-top"><div class="stat-icon" style="background:var(--teal-soft);color:var(--teal);"><i class="fa-solid fa-lungs"></i></div><span class="stat-delta up">▲ normal</span></div><div class="stat-label">SpO₂</div><div class="stat-value">97 <span style="font-size:.8rem;font-weight:400;">%</span></div></div>
+  <div class="card stat-card"><div class="stat-top"><div class="stat-icon" style="background:var(--warn-soft);color:var(--warn);"><i class="fa-solid fa-droplet"></i></div><span class="stat-delta flat">stable</span></div><div class="stat-label">Blood Pressure</div><div class="stat-value">122/80</div></div>
+  <div class="card stat-card"><div class="stat-top"><div class="stat-icon" style="background:var(--ok-soft);color:var(--ok);"><i class="fa-solid fa-weight-scale"></i></div><span class="stat-delta flat">healthy</span></div><div class="stat-label">BMI</div><div class="stat-value">22.4</div></div>
+</div>
+
+<div class="grid" style="grid-template-columns:2fr 1fr;">
+  <div class="card card-lg" style="margin-bottom:1rem;">
+    <div class="card-head"><h3>Health Trends — 7 Days</h3><span class="badge badge-info">Heart Rate &amp; SpO₂</span></div>
+    <div style="height:230px;"><canvas id="trendChart"></canvas></div>
   </div>
-  <nav class="sidebar-nav">
-    <div class="nav-section-label">Main</div>
-    <a href="dashboard.html" class="nav-link active"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
-    <a href="ai-assistant.html" class="nav-link"><i class="fa-solid fa-robot"></i> AI Assistant</a>
-    <a href="risk-prediction.html" class="nav-link"><i class="fa-solid fa-chart-line"></i> Risk Prediction</a>
-    <a href="analytics.html" class="nav-link"><i class="fa-solid fa-chart-pie"></i> Population Analytics</a>
-    <a href="emergency.html" class="nav-link"><i class="fa-solid fa-triangle-exclamation"></i> Emergency <span class="badge-dot"></span></a>
-    <div class="nav-section-label">Management</div>
-    <a href="#" class="nav-link"><i class="fa-solid fa-users"></i> Patients</a>
-    <a href="#" class="nav-link"><i class="fa-solid fa-user-doctor"></i> Doctors</a>
-    <a href="#" class="nav-link"><i class="fa-solid fa-file-medical"></i> Reports</a>
-    <a href="#" class="nav-link"><i class="fa-solid fa-gear"></i> Settings</a>
-  </nav>
-  <div class="sidebar-footer">
-    <div class="user-card">
-      <div class="user-avatar">DR</div>
-      <div class="user-info">
-        <div class="user-name">Dr. Ramesh Kumar</div>
-        <div class="user-role">Senior Physician</div>
-      </div>
-    </div>
+  <div class="card card-lg" style="margin-bottom:1rem;">
+    <div class="card-head"><h3>AI Recommendations</h3><i class="fa-solid fa-robot" style="color:var(--teal);"></i></div>
+    <div class="list-row"><span><i class="fa-solid fa-droplet" style="color:var(--primary);"></i> Drink 2 more glasses of water today</span></div>
+    <div class="list-row"><span><i class="fa-solid fa-person-walking" style="color:var(--teal);"></i> 20 min walk recommended</span></div>
+    <div class="list-row"><span><i class="fa-solid fa-bed" style="color:var(--warn);"></i> Aim for 7.5 hrs sleep tonight</span></div>
+    <a href="ai-assistant.html" class="btn btn-outline btn-sm btn-block" style="margin-top:.8rem;">Chat with AI Assistant</a>
   </div>
-</aside>
+</div>
 
-<!-- TOP HEADER -->
-<header class="top-header">
-  <button class="hamburger"><i class="fa-solid fa-bars"></i></button>
-  <div class="header-title">
-    <h1>Live Dashboard</h1>
-    <p>Real-time community vitals monitoring</p>
+<div class="grid grid-3">
+  <div class="card">
+    <div class="card-head"><h3>Upcoming Appointments</h3></div>
+    <div class="list-row"><span>Dr. R. Meena — Cardiology</span><span class="badge badge-info">Tue, 10:30 AM</span></div>
+    <div class="list-row"><span>Dr. K. Suresh — General</span><span class="badge badge-info">Fri, 4:00 PM</span></div>
+    <a href="appointments.html" class="btn btn-outline btn-sm btn-block" style="margin-top:.6rem;">Manage appointments</a>
   </div>
-  <div class="header-actions">
-    <div class="status-pill"><div class="dot"></div> System Live</div>
-    <button class="btn-icon" title="Notifications">
-      <i class="fa-solid fa-bell"></i>
-      <span class="notif-badge">3</span>
-    </button>
-    <button class="btn-icon" title="Refresh" id="refreshBtn"><i class="fa-solid fa-rotate"></i></button>
-    <div style="font-size:13px;font-weight:600;color:var(--text-secondary);" id="live-clock"></div>
+  <div class="card">
+    <div class="card-head"><h3>Medicine Reminders</h3></div>
+    <div class="list-row"><span>Metformin 500mg</span><span class="badge badge-ok">8:00 AM ✓</span></div>
+    <div class="list-row"><span>Vitamin D3</span><span class="badge badge-warn">8:00 PM</span></div>
+    <a href="medicine-reminder.html" class="btn btn-outline btn-sm btn-block" style="margin-top:.6rem;">Open reminders</a>
   </div>
-</header>
-
-<!-- MAIN -->
-<main class="main-content">
-  <div class="page-body">
-
-    <!-- Summary Stats -->
-    <div class="grid-4 mb-5">
-      <div class="stat-card">
-        <div class="stat-icon blue"><i class="fa-solid fa-users"></i></div>
-        <div class="stat-content">
-          <div class="stat-value" data-count="247">0</div>
-          <div class="stat-label">Active Patients</div>
-          <div class="stat-change up"><i class="fa-solid fa-arrow-trend-up"></i> +12 today</div>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon red"><i class="fa-solid fa-triangle-exclamation"></i></div>
-        <div class="stat-content">
-          <div class="stat-value" data-count="3">0</div>
-          <div class="stat-label">Critical Alerts</div>
-          <div class="stat-change down"><i class="fa-solid fa-circle-exclamation"></i> Needs attention</div>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon green"><i class="fa-solid fa-heart-pulse"></i></div>
-        <div class="stat-content">
-          <div class="stat-value" data-count="94" data-suffix="%">0</div>
-          <div class="stat-label">Patients Stable</div>
-          <div class="stat-change up"><i class="fa-solid fa-arrow-trend-up"></i> +2% vs yesterday</div>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon cyan"><i class="fa-solid fa-user-doctor"></i></div>
-        <div class="stat-content">
-          <div class="stat-value" data-count="18">0</div>
-          <div class="stat-label">Doctors On-Duty</div>
-          <div class="stat-change up"><i class="fa-solid fa-circle-check"></i> Full coverage</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Vitals Cards -->
-    <div style="font-family:var(--font-display);font-size:15px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
-      <i class="fa-solid fa-wave-square" style="color:var(--primary)"></i> Real-Time Vitals — Patient #PRN-0042
-      <span class="badge badge-success" style="margin-left:auto;"><i class="fa-solid fa-circle" style="font-size:8px;"></i> Live</span>
-    </div>
-    <div class="vitals-grid mb-5">
-      <div class="vital-card">
-        <div class="vital-header">
-          <div class="vital-name"><i class="fa-solid fa-heart" style="color:#E53935"></i> Heart Rate</div>
-          <span class="vital-status normal" id="hr-status">Normal</span>
-        </div>
-        <div><span class="vital-value" id="hr-val">72</span> <span class="vital-unit">bpm</span></div>
-        <div class="vital-range">Normal: 60–100 bpm</div>
-        <canvas id="hrMiniChart" height="40" style="margin-top:10px;"></canvas>
-      </div>
-      <div class="vital-card">
-        <div class="vital-header">
-          <div class="vital-name"><i class="fa-solid fa-lungs" style="color:#1565C0"></i> SpO₂</div>
-          <span class="vital-status normal" id="spo2-status">Normal</span>
-        </div>
-        <div><span class="vital-value" id="spo2-val">98</span><span class="vital-unit">%</span></div>
-        <div class="vital-range">Normal: ≥95%</div>
-        <canvas id="spo2MiniChart" height="40" style="margin-top:10px;"></canvas>
-      </div>
-      <div class="vital-card">
-        <div class="vital-header">
-          <div class="vital-name"><i class="fa-solid fa-gauge" style="color:#6A1B9A"></i> Blood Pressure</div>
-          <span class="vital-status normal" id="bp-status">Normal</span>
-        </div>
-        <div><span class="vital-value" id="bp-val">120/80</span> <span class="vital-unit">mmHg</span></div>
-        <div class="vital-range">Normal: 90–120 / 60–80</div>
-        <canvas id="bpMiniChart" height="40" style="margin-top:10px;"></canvas>
-      </div>
-      <div class="vital-card">
-        <div class="vital-header">
-          <div class="vital-name"><i class="fa-solid fa-temperature-half" style="color:#F57F17"></i> Temperature</div>
-          <span class="vital-status normal" id="temp-status">Normal</span>
-        </div>
-        <div><span class="vital-value" id="temp-val">98.4</span><span class="vital-unit">°F</span></div>
-        <div class="vital-range">Normal: 97–99°F</div>
-        <canvas id="tempMiniChart" height="40" style="margin-top:10px;"></canvas>
-      </div>
-      <div class="vital-card">
-        <div class="vital-header">
-          <div class="vital-name"><i class="fa-solid fa-wind" style="color:#00838F"></i> Resp. Rate</div>
-          <span class="vital-status normal" id="rr-status">Normal</span>
-        </div>
-        <div><span class="vital-value" id="rr-val">16</span><span class="vital-unit">/min</span></div>
-        <div class="vital-range">Normal: 12–20/min</div>
-        <canvas id="rrMiniChart" height="40" style="margin-top:10px;"></canvas>
-      </div>
-      <div class="vital-card">
-        <div class="vital-header">
-          <div class="vital-name"><i class="fa-solid fa-droplet" style="color:#E53935"></i> Glucose</div>
-          <span class="vital-status normal" id="glu-status">Normal</span>
-        </div>
-        <div><span class="vital-value" id="glu-val">95</span><span class="vital-unit">mg/dL</span></div>
-        <div class="vital-range">Normal: 70–110 mg/dL</div>
-        <canvas id="gluMiniChart" height="40" style="margin-top:10px;"></canvas>
-      </div>
-    </div>
-
-    <!-- Chart Row -->
-    <div class="chart-row mb-5">
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">Heart Rate Trend</div>
-          <div style="display:flex;gap:8px;">
-            <button class="btn-outline" style="padding:5px 12px;font-size:11px;" onclick="exportChart()"><i class="fa-solid fa-download"></i> Export</button>
-          </div>
-        </div>
-        <div class="card-body"><canvas id="hrTrendChart" height="100"></canvas></div>
-      </div>
-      <div class="card">
-        <div class="card-header"><div class="card-title">Alert Summary</div></div>
-        <div class="card-body"><canvas id="alertDonutChart" height="170"></canvas>
-          <div style="display:flex;flex-direction:column;gap:6px;margin-top:14px;">
-            <div style="display:flex;justify-content:space-between;font-size:12px;"><span><span style="color:#C62828">●</span> Critical</span><span class="fw-600">3</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:12px;"><span><span style="color:#F57F17">●</span> Warning</span><span class="fw-600">8</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:12px;"><span><span style="color:#2E7D32">●</span> Normal</span><span class="fw-600">236</span></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Bottom Row -->
-    <div class="bottom-row">
-      <div class="card">
-        <div class="card-header"><div class="card-title">Critical Patients</div><a href="emergency.html" style="font-size:12px;color:var(--primary);text-decoration:none;font-weight:600;">View All →</a></div>
-        <div class="card-body">
-          <div class="patient-row">
-            <div class="patient-avatar">RK</div>
-            <div class="patient-info"><div class="patient-name">Ravi Kumar, 58</div><div class="patient-meta">HR: 118 bpm • BP: 155/95</div></div>
-            <span class="badge badge-danger">Critical</span>
-          </div>
-          <div class="patient-row">
-            <div class="patient-avatar" style="background:var(--accent)">SL</div>
-            <div class="patient-info"><div class="patient-name">Sunita Lal, 44</div><div class="patient-meta">SpO₂: 91% • Temp: 103.2°F</div></div>
-            <span class="badge badge-danger">Critical</span>
-          </div>
-          <div class="patient-row">
-            <div class="patient-avatar" style="background:#6A1B9A">MP</div>
-            <div class="patient-info"><div class="patient-name">Mohan Patel, 67</div><div class="patient-meta">Glucose: 285 mg/dL</div></div>
-            <span class="badge badge-warning">Warning</span>
-          </div>
-          <div class="patient-row">
-            <div class="patient-avatar" style="background:var(--success)">AJ</div>
-            <div class="patient-info"><div class="patient-name">Anita Joshi, 52</div><div class="patient-meta">HR: 88 bpm • BP: 130/88</div></div>
-            <span class="badge badge-warning">Watch</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header"><div class="card-title">Recent Alerts</div></div>
-        <div class="card-body">
-          <div class="alert-banner danger mb-4"><i class="fa-solid fa-heart-crack"></i><div><div class="alert-title">Critical: Cardiac Anomaly</div><div class="alert-desc">Ravi Kumar — HR 118 bpm, BP 155/95 · 2 min ago</div></div></div>
-          <div class="alert-banner danger mb-4"><i class="fa-solid fa-lungs"></i><div><div class="alert-title">Critical: Low SpO₂</div><div class="alert-desc">Sunita Lal — SpO₂ 91% · 5 min ago</div></div></div>
-          <div class="alert-banner warning mb-4"><i class="fa-solid fa-droplet"></i><div><div class="alert-title">High Glucose</div><div class="alert-desc">Mohan Patel — 285 mg/dL · 12 min ago</div></div></div>
-          <div class="alert-banner info"><i class="fa-solid fa-circle-info"></i><div><div class="alert-title">System Update</div><div class="alert-desc">Sensor node SN-07 reconnected · 18 min ago</div></div></div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header"><div class="card-title">Quick Actions</div></div>
-        <div class="card-body" style="display:flex;flex-direction:column;gap:10px;">
-          <button class="btn-danger w-100" onclick="VNToast('Emergency protocol activated!','danger');"><i class="fa-solid fa-siren-on"></i> Activate Emergency</button>
-          <a href="ai-assistant.html" class="btn-primary w-100" style="text-decoration:none;justify-content:center;"><i class="fa-solid fa-robot"></i> AI Diagnosis</a>
-          <a href="risk-prediction.html" class="btn-outline w-100" style="text-decoration:none;justify-content:center;"><i class="fa-solid fa-chart-line"></i> Risk Assessment</a>
-          <button class="btn-outline w-100" onclick="VNToast('Report generated!','success');"><i class="fa-solid fa-file-pdf"></i> Generate Report</button>
-          <button class="btn-outline w-100" onclick="VNToast('SMS sent to all duty doctors.','info');"><i class="fa-solid fa-comment-medical"></i> Notify All Doctors</button>
-        </div>
-      </div>
-    </div>
-
+  <div class="card">
+    <div class="card-head"><h3>Recent Activity</h3></div>
+    <div class="list-row"><span class="text-muted" style="font-size:.82rem;">Logged BP reading</span><span class="text-muted" style="font-size:.75rem;">2h ago</span></div>
+    <div class="list-row"><span class="text-muted" style="font-size:.82rem;">Completed 6,240 steps</span><span class="text-muted" style="font-size:.75rem;">5h ago</span></div>
+    <div class="list-row"><span class="text-muted" style="font-size:.82rem;">Booked appointment</span><span class="text-muted" style="font-size:.75rem;">1d ago</span></div>
   </div>
-</main>
+</div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/layout.js"></script>
 <script src="js/app.js"></script>
 <script>
-// ── Mini chart factory ──
-function miniChart(id, color, data) {
-  const ctx = document.getElementById(id);
-  if (!ctx) return null;
-  return new Chart(ctx, {
-    type: 'line',
-    data: { labels: data.map((_,i)=>i), datasets: [{ data, borderColor: color, borderWidth: 2, pointRadius: 0, fill: true, backgroundColor: color + '18', tension: .4 }] },
-    options: { animation: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { display: false } }, elements: { line: { borderCapStyle: 'round' } } }
-  });
-}
-
-// ── HR Trend ──
-const labels = Array.from({length:24},(_,i)=>`${String(i).padStart(2,'0')}:00`);
-const hrData  = [70,72,74,71,69,68,75,80,78,76,74,72,73,71,70,72,74,76,78,75,72,70,71,72];
-const hrTrend = new Chart(document.getElementById('hrTrendChart'), {
-  type: 'line',
-  data: { labels, datasets: [{ label:'Heart Rate (bpm)', data:hrData, borderColor:'#1565C0', backgroundColor:'#1565C020', borderWidth:2.5, pointRadius:3, pointHoverRadius:6, tension:.4, fill:true }] },
-  options: { responsive:true, plugins:{ legend:{ display:false } }, scales:{ y:{ min:55, max:95, grid:{ color:'#E3E8EF' }, ticks:{ font:{size:11} } }, x:{ grid:{ display:false }, ticks:{ maxTicksLimit:8, font:{size:11} } } } }
-});
-
-// ── Alert Donut ──
-new Chart(document.getElementById('alertDonutChart'), {
-  type: 'doughnut',
-  data: { labels:['Critical','Warning','Normal'], datasets:[{ data:[3,8,236], backgroundColor:['#C62828','#F57F17','#2E7D32'], borderWidth:0, hoverOffset:6 }] },
-  options: { responsive:true, plugins:{ legend:{ display:false } }, cutout:'70%' }
-});
-
-// ── Mini charts ──
-const mHR   = miniChart('hrMiniChart',  '#E53935', [68,70,72,74,71,73,72]);
-const mSpO2 = miniChart('spo2MiniChart','#1565C0', [97,98,98,99,98,97,98]);
-const mBP   = miniChart('bpMiniChart',  '#6A1B9A', [118,120,122,119,121,120,120]);
-const mTemp = miniChart('tempMiniChart','#F57F17', [98.2,98.4,98.3,98.5,98.4,98.3,98.4]);
-const mRR   = miniChart('rrMiniChart',  '#00838F', [15,16,16,17,16,15,16]);
-const mGlu  = miniChart('gluMiniChart', '#E53935', [92,95,98,94,97,96,95]);
-
-// ── Live vitals update ──
-function updateStatus(id, val, low, high) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  if (val < low || val > high) { el.textContent = 'Critical'; el.className = 'vital-status danger'; }
-  else if (val < low*1.05 || val > high*.95) { el.textContent = 'Warning'; el.className = 'vital-status warning'; }
-  else { el.textContent = 'Normal'; el.className = 'vital-status normal'; }
-}
-
-function pushData(chart, val) {
-  if (!chart) return;
-  chart.data.datasets[0].data.push(val);
-  if (chart.data.datasets[0].data.length > 20) chart.data.datasets[0].data.shift();
-  chart.update('none');
-}
-
-setInterval(() => {
-  VNVitals.randomize();
-  document.getElementById('hr-val').textContent   = VNVitals.heartRate;
-  document.getElementById('spo2-val').textContent  = VNVitals.spo2;
-  document.getElementById('bp-val').textContent    = `${VNVitals.bp_s}/${VNVitals.bp_d}`;
-  document.getElementById('temp-val').textContent  = VNVitals.temp;
-  document.getElementById('rr-val').textContent    = VNVitals.rr;
-  document.getElementById('glu-val').textContent   = 90 + Math.floor(Math.random()*30);
-  updateStatus('hr-status',   VNVitals.heartRate, 60, 100);
-  updateStatus('spo2-status', VNVitals.spo2, 95, 100);
-  updateStatus('bp-status',   VNVitals.bp_s, 90, 120);
-  updateStatus('temp-status', VNVitals.temp, 97, 99);
-  updateStatus('rr-status',   VNVitals.rr, 12, 20);
-  pushData(mHR,   VNVitals.heartRate);
-  pushData(mSpO2, VNVitals.spo2);
-  pushData(mBP,   VNVitals.bp_s);
-  pushData(mTemp, VNVitals.temp);
-  pushData(mRR,   VNVitals.rr);
-  // Also update trend
-  const now = new Date();
-  hrTrend.data.labels.push(`${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`);
-  hrTrend.data.datasets[0].data.push(VNVitals.heartRate);
-  if (hrTrend.data.labels.length > 24) { hrTrend.data.labels.shift(); hrTrend.data.datasets[0].data.shift(); }
-  hrTrend.update('none');
-}, 3000);
-
-document.getElementById('refreshBtn').addEventListener('click', () => {
-  VNToast('Dashboard refreshed!','success',2000);
-});
-
-function exportChart() { VNToast('Chart exported as PNG','success',2500); }
+vnLineChart(document.getElementById('trendChart'),
+  ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+  [
+    {label:'Heart Rate (bpm)', data:[74,78,75,80,76,77,76], borderColor:VN_COLORS.primary, backgroundColor:'rgba(11,79,140,.08)'},
+    {label:'SpO2 (%)', data:[97,96,98,97,97,98,97], borderColor:VN_COLORS.teal, backgroundColor:'rgba(15,182,166,.08)'}
+  ]);
 </script>
 </body>
 </html>
