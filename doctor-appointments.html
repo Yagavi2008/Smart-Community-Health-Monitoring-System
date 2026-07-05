@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Appointment Management — VitalNet</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="doctor-appointments.html" data-role="doctor" data-title="Appointment Management" data-sub="Approve, reschedule and complete visits">
+
+<div class="card card-lg">
+  <div class="card-head"><h3>Appointment Requests</h3></div>
+  <table class="table">
+    <thead><tr><th>Patient</th><th>Requested Time</th><th>Reason</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+      <tr><td>Yagavi S</td><td>Tue, 8 Jul · 10:30 AM</td><td>Routine BP check</td><td><span class="badge badge-ok">Confirmed</span></td><td><button class="btn btn-outline btn-sm" onclick="vnToast('Marked as completed.')">Complete</button></td></tr>
+      <tr><td>Karthik R</td><td>Wed, 9 Jul · 11:00 AM</td><td>Diabetes follow-up</td><td><span class="badge badge-warn">Pending</span></td><td><button class="btn btn-primary btn-sm" onclick="vnToast('Appointment approved.')">Approve</button></td></tr>
+      <tr><td>Divya M</td><td>Thu, 10 Jul · 9:30 AM</td><td>Chest pain review</td><td><span class="badge badge-alert">Priority — Pending</span></td><td><button class="btn btn-primary btn-sm" onclick="vnToast('Appointment approved.')">Approve</button></td></tr>
+      <tr><td>Suresh V</td><td>28 Jun · 9:00 AM</td><td>Vaccination review</td><td><span class="badge badge-ok">Completed</span></td><td><button class="btn btn-outline btn-sm" onclick="vnToast('Opening visit notes...')">Notes</button></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<script src="js/layout.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
