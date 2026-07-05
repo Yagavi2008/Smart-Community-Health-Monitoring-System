@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Doctor Management — VitalNet</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="admin-doctors.html" data-role="admin" data-title="Doctor Management" data-sub="Onboard and manage clinical staff">
+
+<div class="card card-lg" style="margin-bottom:1rem;">
+  <div class="flex-between">
+    <input class="form-control" style="max-width:320px;" placeholder="Search doctors...">
+    <button class="btn btn-primary btn-sm" onclick="vnToast('New doctor onboarded.')"><i class="fa-solid fa-user-doctor"></i> Add Doctor</button>
+  </div>
+</div>
+
+<div class="card card-lg">
+  <table class="table">
+    <thead><tr><th>Doctor</th><th>Specialization</th><th>Patients</th><th>Rating</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+      <tr><td>Dr. R. Meena</td><td>Cardiology</td><td>128</td><td>4.8 ★</td><td><span class="badge badge-ok">Active</span></td><td><button class="btn btn-outline btn-sm" onclick="vnToast('Opening doctor profile...')">View</button></td></tr>
+      <tr><td>Dr. K. Suresh</td><td>General Physician</td><td>210</td><td>4.6 ★</td><td><span class="badge badge-ok">Active</span></td><td><button class="btn btn-outline btn-sm" onclick="vnToast('Opening doctor profile...')">View</button></td></tr>
+      <tr><td>Dr. A. Priya</td><td>Pediatrics</td><td>94</td><td>4.9 ★</td><td><span class="badge badge-ok">Active</span></td><td><button class="btn btn-outline btn-sm" onclick="vnToast('Opening doctor profile...')">View</button></td></tr>
+      <tr><td>Dr. N. Bala</td><td>Endocrinology</td><td>67</td><td>4.5 ★</td><td><span class="badge badge-warn">On Leave</span></td><td><button class="btn btn-outline btn-sm" onclick="vnToast('Opening doctor profile...')">View</button></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<script src="js/layout.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
