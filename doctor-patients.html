@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Patient Records — VitalNet</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="doctor-patients.html" data-role="doctor" data-title="Patient Records" data-sub="Search and review patient health history">
+
+<div class="card card-lg" style="margin-bottom:1rem;">
+  <div class="flex-between">
+    <input class="form-control" style="max-width:320px;" placeholder="Search patients by name...">
+    <select class="form-control" style="max-width:200px;"><option>All risk levels</option><option>High risk</option><option>Moderate risk</option><option>Low risk</option></select>
+  </div>
+</div>
+
+<div class="card card-lg">
+  <table class="table">
+    <thead><tr><th>Patient</th><th>Age/Gender</th><th>Last Visit</th><th>Key Vitals</th><th>Risk</th><th></th></tr></thead>
+    <tbody>
+      <tr><td>Yagavi S</td><td>22 / F</td><td>28 Jun 2026</td><td>122/80, SpO₂ 97%</td><td><span class="badge badge-ok">Low</span></td><td><button class="btn btn-outline btn-sm" onclick="vnToast('Opening full patient chart...')">Open Chart</button></td></tr>
+      <tr><td>Karthik R</td><td>45 / M</td><td>27 Jun 2026</td><td>Sugar 168 mg/dL</td><td><span class="badge badge-warn">Moderate</span></td><td><button class="btn btn-outline btn-sm" onclick="vnToast('Opening full patient chart...')">Open Chart</button></td></tr>
+      <tr><td>Divya M</td><td>58 / F</td><td>26 Jun 2026</td><td>BP 158/98</td><td><span class="badge badge-alert">High</span></td><td><button class="btn btn-outline btn-sm" onclick="vnToast('Opening full patient chart...')">Open Chart</button></td></tr>
+      <tr><td>Suresh V</td><td>34 / M</td><td>20 Jun 2026</td><td>BMI 24.1</td><td><span class="badge badge-ok">Low</span></td><td><button class="btn btn-outline btn-sm" onclick="vnToast('Opening full patient chart...')">Open Chart</button></td></tr>
+      <tr><td>Meena T</td><td>50 / F</td><td>18 Jun 2026</td><td>BMI 29.4</td><td><span class="badge badge-warn">Moderate</span></td><td><button class="btn btn-outline btn-sm" onclick="vnToast('Opening full patient chart...')">Open Chart</button></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<script src="js/layout.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
