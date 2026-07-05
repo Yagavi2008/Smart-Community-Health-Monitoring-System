@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Community Analytics — VitalNet</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="admin-analytics.html" data-role="admin" data-title="Community Analytics" data-sub="Population-level health trends and insights">
+
+<div class="grid" style="grid-template-columns:1.3fr 1fr;margin-bottom:1rem;">
+  <div class="card card-lg">
+    <div class="card-head"><h3>Monthly Health Reports Filed</h3></div>
+    <div style="height:230px;"><canvas id="monthlyChart"></canvas></div>
+  </div>
+  <div class="card card-lg">
+    <div class="card-head"><h3>Risk Distribution</h3></div>
+    <div style="height:230px;"><canvas id="riskChart"></canvas></div>
+  </div>
+</div>
+
+<div class="grid grid-3">
+  <div class="card"><div class="stat-label">Members screened this month</div><div class="stat-value">1,204</div></div>
+  <div class="card"><div class="stat-label">New risk flags raised</div><div class="stat-value" style="color:var(--warn);">86</div></div>
+  <div class="card"><div class="stat-label">Emergency response time (avg)</div><div class="stat-value">6.4 <span style="font-size:.8rem;">min</span></div></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/layout.js"></script>
+<script src="js/app.js"></script>
+<script>
+vnLineChart(document.getElementById('monthlyChart'),
+  ['Jan','Feb','Mar','Apr','May','Jun'],
+  [{label:'Reports filed', data:[820,910,1050,980,1120,1204], borderColor:VN_COLORS.primary, backgroundColor:'rgba(11,79,140,.08)'}]);
+
+vnDoughnut(document.getElementById('riskChart'),
+  ['Low risk','Moderate risk','High risk'],
+  [64,26,10],
+  [VN_COLORS.ok, VN_COLORS.warn, VN_COLORS.alert]);
+</script>
+</body>
+</html>
