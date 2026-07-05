@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Emergency Monitoring — VitalNet</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="admin-emergency.html" data-role="admin" data-title="Emergency Monitoring" data-sub="Live abnormal-reading alerts across the community">
+
+<div class="grid grid-3" style="margin-bottom:1rem;">
+  <div class="card stat-card"><div class="stat-icon" style="background:var(--alert-soft);color:var(--alert);"><i class="fa-solid fa-triangle-exclamation"></i></div><div class="stat-label">Active Alerts</div><div class="stat-value">3</div></div>
+  <div class="card stat-card"><div class="stat-icon" style="background:var(--warn-soft);color:var(--warn);"><i class="fa-solid fa-clock"></i></div><div class="stat-label">Avg Response Time</div><div class="stat-value">6.4 <span style="font-size:.8rem;">min</span></div></div>
+  <div class="card stat-card"><div class="stat-icon" style="background:var(--ok-soft);color:var(--ok);"><i class="fa-solid fa-check"></i></div><div class="stat-label">Resolved Today</div><div class="stat-value">11</div></div>
+</div>
+
+<div class="card card-lg">
+  <div class="card-head"><h3>Active Emergency Alerts</h3></div>
+  <div class="list-row"><span><i class="fa-solid fa-circle" style="color:var(--alert);font-size:8px;"></i> <strong>Divya M</strong> — BP 158/98, notified Dr. Meena + emergency contact</span><span class="badge badge-alert">Critical · 4 min ago</span></div>
+  <div class="list-row"><span><i class="fa-solid fa-circle" style="color:var(--warn);font-size:8px;"></i> <strong>Karthik R</strong> — Blood sugar 210 mg/dL, doctor notified</span><span class="badge badge-warn">Moderate · 22 min ago</span></div>
+  <div class="list-row"><span><i class="fa-solid fa-circle" style="color:var(--warn);font-size:8px;"></i> <strong>Ramesh K</strong> — SpO₂ dropped to 91%, healthcare worker dispatched</span><span class="badge badge-warn">Moderate · 40 min ago</span></div>
+  <button class="btn btn-outline btn-sm" style="margin-top:.8rem;" onclick="vnToast('Showing resolved alerts...')">View resolved alerts</button>
+</div>
+
+<script src="js/layout.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
