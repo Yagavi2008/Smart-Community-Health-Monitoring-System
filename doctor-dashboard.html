@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Doctor Dashboard — VitalNet</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="doctor-dashboard.html" data-role="doctor" data-title="Good morning, Dr. Meena" data-sub="Your patients and schedule for today">
+
+<div class="grid grid-4" style="margin-bottom:1rem;">
+  <div class="card stat-card"><div class="stat-icon" style="background:var(--primary-soft);color:var(--primary);"><i class="fa-solid fa-user-group"></i></div><div class="stat-label">Active Patients</div><div class="stat-value">128</div></div>
+  <div class="card stat-card"><div class="stat-icon" style="background:var(--teal-soft);color:var(--teal);"><i class="fa-solid fa-calendar-day"></i></div><div class="stat-label">Today's Appointments</div><div class="stat-value">9</div></div>
+  <div class="card stat-card"><div class="stat-icon" style="background:var(--alert-soft);color:var(--alert);"><i class="fa-solid fa-triangle-exclamation"></i></div><div class="stat-label">Flagged Cases</div><div class="stat-value">3</div></div>
+  <div class="card stat-card"><div class="stat-icon" style="background:var(--ok-soft);color:var(--ok);"><i class="fa-solid fa-clipboard-check"></i></div><div class="stat-label">Reports Reviewed</div><div class="stat-value">21</div></div>
+</div>
+
+<div class="grid" style="grid-template-columns:2fr 1fr;">
+  <div class="card card-lg">
+    <div class="card-head"><h3>Today's Schedule</h3></div>
+    <table class="table">
+      <thead><tr><th>Time</th><th>Patient</th><th>Reason</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>9:00 AM</td><td>Yagavi S</td><td>Routine BP check</td><td><span class="badge badge-info">Upcoming</span></td></tr>
+        <tr><td>10:30 AM</td><td>Karthik R</td><td>Diabetes follow-up</td><td><span class="badge badge-info">Upcoming</span></td></tr>
+        <tr><td>11:15 AM</td><td>Divya M</td><td>Chest pain review</td><td><span class="badge badge-alert">Priority</span></td></tr>
+        <tr><td>2:00 PM</td><td>Suresh V</td><td>Vaccination review</td><td><span class="badge badge-info">Upcoming</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card card-lg">
+    <div class="card-head"><h3>Flagged by AI Risk Engine</h3></div>
+    <div class="list-row"><span>Divya M</span><span class="badge badge-alert">High BP risk</span></div>
+    <div class="list-row"><span>Karthik R</span><span class="badge badge-warn">Diabetes risk rising</span></div>
+    <div class="list-row"><span>Meena T</span><span class="badge badge-warn">BMI trending up</span></div>
+    <a href="doctor-patients.html" class="btn btn-outline btn-sm btn-block" style="margin-top:.6rem;">Review patient records</a>
+  </div>
+</div>
+
+<script src="js/layout.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
