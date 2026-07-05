@@ -1,109 +1,66 @@
-// VitalNet - Shared JS
-(function () {
-
-  // ── Sidebar toggle (mobile) ──
-  function initSidebar() {
-    const hamburger = document.querySelector('.hamburger');
-    const sidebar   = document.querySelector('.sidebar');
-    if (!hamburger || !sidebar) return;
-    hamburger.addEventListener('click', () => sidebar.classList.toggle('open'));
-    document.addEventListener('click', (e) => {
-      if (!sidebar.contains(e.target) && !hamburger.contains(e.target))
-        sidebar.classList.remove('open');
-    });
+/* Generic form-guard so demo forms never 404 or reload blank */
+document.addEventListener("submit", (e)=>{
+  const form = e.target.closest("form[data-demo]");
+  if(form){
+    e.preventDefault();
+    const msg = form.dataset.demo || "Saved successfully.";
+    vnToast(msg);
+    if(form.dataset.redirect){ setTimeout(()=>window.location.href=form.dataset.redirect, 600); }
   }
+});
 
-  // ── Tabs ──
-  function initTabs() {
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const group = btn.closest('[data-tabs]') || btn.closest('.card') || btn.parentElement.parentElement;
-        group.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        group.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-        btn.classList.add('active');
-        const target = document.getElementById(btn.dataset.tab);
-        if (target) target.classList.add('active');
-      });
-    });
+function vnToast(text){
+  let t = document.getElementById("vn-toast");
+  if(!t){
+    t = document.createElement("div");
+    t.id = "vn-toast";
+    t.style.cssText = "position:fixed;bottom:24px;right:24px;background:#0A3A66;color:#fff;padding:.8rem 1.2rem;border-radius:10px;font-size:.85rem;z-index:999;box-shadow:0 8px 24px rgba(14,36,56,.25);transition:opacity .3s;";
+    document.body.appendChild(t);
   }
+  t.textContent = text;
+  t.style.opacity = "1";
+  clearTimeout(window.__vnToastTimer);
+  window.__vnToastTimer = setTimeout(()=>{ t.style.opacity = "0"; }, 2400);
+}
 
-  // ── Clock ──
-  function initClock() {
-    const el = document.getElementById('live-clock');
-    if (!el) return;
-    function update() {
-      const now = new Date();
-      el.textContent = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    }
-    update(); setInterval(update, 1000);
+/* AI Health Assistant demo chat */
+function vnAiReply(userText){
+  const text = userText.toLowerCase();
+  if(text.includes("fever") || text.includes("temperature")){
+    return "A temperature above 100.4°F (38°C) can indicate infection. Stay hydrated, rest, and monitor every 4 hours. Seek medical care if it crosses 103°F, lasts over 3 days, or comes with breathlessness.";
   }
-
-  // ── Animate counters ──
-  function animateCounters() {
-    document.querySelectorAll('[data-count]').forEach(el => {
-      const target = parseFloat(el.dataset.count);
-      const suffix = el.dataset.suffix || '';
-      const dec    = el.dataset.dec || 0;
-      let start = 0; const dur = 1200;
-      const step = timestamp => {
-        if (!start) start = timestamp;
-        const prog = Math.min((timestamp - start) / dur, 1);
-        const eased = 1 - Math.pow(1 - prog, 3);
-        el.textContent = (eased * target).toFixed(dec) + suffix;
-        if (prog < 1) requestAnimationFrame(step);
-      };
-      requestAnimationFrame(step);
-    });
+  if(text.includes("bp") || text.includes("blood pressure") || text.includes("hypertension")){
+    return "For healthy blood pressure, aim under 120/80 mmHg. Reduce salt intake, stay active 30 min/day, manage stress, and log your readings in Health Monitoring so trends are visible to your doctor.";
   }
+  if(text.includes("sugar") || text.includes("diabet")){
+    return "Fasting blood sugar under 100 mg/dL is normal. Favor low-glycemic meals, walk after eating, and keep consistent meal timing. I can flag concerning trends to your doctor automatically.";
+  }
+  if(text.includes("sleep")){
+    return "Adults generally need 7–9 hours of sleep. Keep a consistent bedtime, avoid screens 30 minutes before bed, and avoid caffeine after 4 PM.";
+  }
+  if(text.includes("water")){
+    return "Aim for roughly 2.5–3 litres of water a day, more in hot climates or with physical activity. Your Fitness Tracker can log this for you.";
+  }
+  return "Thanks for sharing that. Based on general guidance, keep monitoring your vitals daily and maintain a balanced diet, regular activity, and adequate sleep. For anything urgent or unusual, please consult your doctor or use the Emergency Alert button.";
+}
 
-  // ── Toast ──
-  window.VNToast = function (msg, type = 'info', duration = 3500) {
-    let container = document.getElementById('toast-container');
-    if (!container) {
-      container = document.createElement('div');
-      container.id = 'toast-container';
-      Object.assign(container.style, {
-        position: 'fixed', top: '80px', right: '20px',
-        zIndex: 9999, display: 'flex', flexDirection: 'column', gap: '8px'
-      });
-      document.body.appendChild(container);
-    }
-    const icons = { info: 'circle-info', success: 'check-circle', warning: 'triangle-exclamation', danger: 'circle-xmark' };
-    const colors = { info: '#1565C0', success: '#2E7D32', warning: '#F57F17', danger: '#C62828' };
-    const t = document.createElement('div');
-    t.style.cssText = `
-      background:#fff; border:1px solid #E3E8EF; border-left:4px solid ${colors[type]};
-      border-radius:10px; padding:12px 16px; box-shadow:0 4px 16px rgba(0,0,0,.12);
-      display:flex; align-items:center; gap:10px; min-width:280px; max-width:360px;
-      font-family:'Inter',sans-serif; font-size:13px; font-weight:500; color:#0F1923;
-      transform:translateX(120%); transition:transform .3s ease; cursor:pointer;
-    `;
-    t.innerHTML = `<i class="fa-solid fa-${icons[type]}" style="color:${colors[type]};font-size:16px;"></i><span style="flex:1">${msg}</span>`;
-    t.addEventListener('click', () => remove());
-    container.appendChild(t);
-    setTimeout(() => t.style.transform = 'translateX(0)', 50);
-    const tid = setTimeout(() => remove(), duration);
-    function remove() { clearTimeout(tid); t.style.transform = 'translateX(120%)'; setTimeout(() => t.remove(), 300); }
-  };
-
-  // ── Simulated vitals (demo) ──
-  window.VNVitals = {
-    heartRate: 72, spo2: 98, bp_s: 120, bp_d: 80, temp: 98.4, rr: 16,
-    randomize() {
-      this.heartRate = 65 + Math.floor(Math.random() * 30);
-      this.spo2      = 95 + Math.floor(Math.random() * 5);
-      this.bp_s      = 110 + Math.floor(Math.random() * 30);
-      this.bp_d      = 70  + Math.floor(Math.random() * 20);
-      this.temp      = +(98.0 + Math.random() * 2.5).toFixed(1);
-      this.rr        = 12  + Math.floor(Math.random() * 8);
-    }
-  };
-
-  document.addEventListener('DOMContentLoaded', () => {
-    initSidebar();
-    initTabs();
-    initClock();
-    animateCounters();
+function vnInitChat(){
+  const form = document.getElementById("aiChatForm");
+  const input = document.getElementById("aiChatInput");
+  const log = document.getElementById("aiChatLog");
+  if(!form) return;
+  form.addEventListener("submit",(e)=>{
+    e.preventDefault();
+    const val = input.value.trim();
+    if(!val) return;
+    log.insertAdjacentHTML("beforeend", `<div class="list-row" style="justify-content:flex-end;"><div class="badge badge-info" style="max-width:75%;white-space:normal;text-align:left;">${val}</div></div>`);
+    input.value = "";
+    log.scrollTop = log.scrollHeight;
+    setTimeout(()=>{
+      const reply = vnAiReply(val);
+      log.insertAdjacentHTML("beforeend", `<div class="list-row"><div class="badge badge-ok" style="max-width:75%;white-space:normal;text-align:left;"><i class="fa-solid fa-robot"></i> ${reply}</div></div>`);
+      log.scrollTop = log.scrollHeight;
+    }, 500);
   });
-
-})();
+}
+document.addEventListener("DOMContentLoaded", vnInitChat);
