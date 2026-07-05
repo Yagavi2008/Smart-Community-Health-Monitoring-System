@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Health Recommendations — VitalNet</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="doctor-recommendations.html" data-role="doctor" data-title="Health Recommendations" data-sub="Send personalised care plans to patients">
+
+<div class="grid" style="grid-template-columns:1fr 1.4fr;">
+  <form class="card card-lg" data-demo="Recommendation sent to patient.">
+    <div class="card-head"><h3>New Recommendation</h3></div>
+    <div class="form-group"><label>Patient</label>
+      <select class="form-control"><option>Yagavi S</option><option>Karthik R</option><option>Divya M</option><option>Suresh V</option></select>
+    </div>
+    <div class="form-group"><label>Category</label>
+      <select class="form-control"><option>Diet Plan</option><option>Exercise</option><option>Medication</option><option>Follow-up Test</option></select>
+    </div>
+    <div class="form-group"><label>Recommendation</label><textarea class="form-control" rows="4" placeholder="Write your recommendation..."></textarea></div>
+    <button class="btn btn-primary btn-block">Send to Patient</button>
+  </form>
+
+  <div class="card card-lg">
+    <div class="card-head"><h3>Recently Sent</h3></div>
+    <div class="list-row"><span><strong>Divya M</strong> — Reduce sodium intake, recheck BP in 1 week</span><span class="badge badge-alert">High priority</span></div>
+    <div class="list-row"><span><strong>Karthik R</strong> — Increase daily walk to 30 min, retest sugar</span><span class="badge badge-warn">Follow-up</span></div>
+    <div class="list-row"><span><strong>Suresh V</strong> — Continue current vaccination schedule</span><span class="badge badge-ok">Routine</span></div>
+  </div>
+</div>
+
+<script src="js/layout.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
